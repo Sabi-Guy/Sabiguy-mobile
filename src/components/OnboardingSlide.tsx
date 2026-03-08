@@ -15,6 +15,8 @@ type OnboardingSlideProps = {
   buttonText: string;
   currentSlideIndex: number;
   totalSlides: number;
+  isLastSlide: boolean;
+  onPress: () => void;
 };
 
 export default function OnboardingSlide({
@@ -25,6 +27,8 @@ export default function OnboardingSlide({
   buttonText,
   currentSlideIndex,
   totalSlides,
+  isLastSlide,
+  onPress,
 }: OnboardingSlideProps) {
   return (
     <View style={{ width }} className="flex-1 items-center justify-center px-8">
@@ -45,7 +49,7 @@ export default function OnboardingSlide({
           />
         ))}
       </View>
-      <Pressable className="mt-8 rounded-md bg-[#005823CC] px-36 py-4">
+      <Pressable className="mt-8 rounded-md bg-[#005823CC] px-36 py-4" onPress={onPress}>
         <Text className="text-white">{buttonText}</Text>
       </Pressable>
     </View>
