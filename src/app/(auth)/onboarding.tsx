@@ -1,14 +1,13 @@
 import { View, Text} from 'react-native'
-import { Link } from 'expo-router'
+import OnboardingCarousel from '@/components/onboardingCarousel'
 import React from 'react'
 
-const onboarding = () => {
-  return (
-    <View>
-      <Text className="text-red-500 font-bold text-center">onboarding</Text>
 
+export default function onboarding() {
+  return (
+    <View className='flex-1'>
+      <Text className="text-end">skip</Text>
+      <OnboardingCarousel/>
     </View>
   )
 }
-
-export default onboarding
