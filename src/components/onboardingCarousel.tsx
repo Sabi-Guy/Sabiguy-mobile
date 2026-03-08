@@ -80,27 +80,18 @@ export default function OnboardingCarousel() {
             setCurrentSlideIndex(0)
           }, 100)
         }}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <OnboardingSlide
             width={width}
             title={item.title}
             description={item.description}
             image={item.image}
-            buttonText ={item.buttonText}
+            buttonText={item.buttonText}
+            currentSlideIndex={currentSlideIndex}
+            totalSlides={slides.length}
           />
         )}
       />
-
-      <View className="absolute bottom-12 left-0 right-0 flex-row items-center justify-center">
-        {slides.map((slide, index) => (
-          <View
-            key={slide.id}
-            className={`mx-1 h-2 rounded-full ${
-              index === currentSlideIndex ? 'w-6 bg-[#005823CC]' : 'w-2 bg-gray-300'
-            }`}
-          />
-        ))}
-      </View>
     </View>
   )
 }
