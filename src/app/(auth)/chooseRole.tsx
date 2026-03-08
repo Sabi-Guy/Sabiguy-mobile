@@ -11,14 +11,14 @@ export default function chooseRole() {
     if (!selectedRole) return;
     
     if (selectedRole === "user") {
-      router.push("/(auth)/(serviceUser)/");
+      router.push("/(auth)/(serviceUser)/signup");
     } else {
       router.push("/(auth)/(serviceProvider)/");
     }
   };
 
   return (
-    <View className="flex-1 px-6 py-30 bg-white pt-20 ">
+    <View className="flex-1 px-6 py-40 bg-white pt-20 ">
       <Text className="text-2xl font-bold text-gray-900 mb-2">
         How do you want to use SabiGUY
       </Text>

@@ -31,7 +31,7 @@ export default function Roles({
         isSelected ? 'border-[#005823CC] border-2 bg-[#0058231A]' : 'border-[#231F2080]'
       }`}
     >
-      <Image source={icon} className="h-10 w-10 mr-4" resizeMode="contain" />
+      <Image source={icon} className="h-10 w-10 mr-4 gap-5" resizeMode="contain" />
       <View className="items-center">
         <Text className="text-lg font-bold text-gray-900">{title}</Text>
         <Text className="text-lg font-lg text-gray-600">{about}</Text>
