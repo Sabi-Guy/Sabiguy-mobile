@@ -1,9 +1,11 @@
 import { View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
 import React, { useState } from "react";
 import Button from "@/components/button";
+import { useRouter } from "expo-router";
 
 export default function signup() {
   const [agreed, setAgreed] = useState(false);
+  const router = useRouter();
 
   return (
     <ScrollView className="flex-1 bg-white" contentContainerStyle={{ padding: 24 }}>
@@ -93,7 +95,13 @@ export default function signup() {
         />
         <Text className="font-semibold text-[#231F20]">Continue with Google</Text>
       </Pressable>
-      <Text className="text-center">Already have and account? Login </Text>
+
+      <View className="mt-6 flex-row justify-center">
+        <Text className="text-sm text-gray-600">Already have an account? </Text>
+        <Pressable onPress={() => router.push("/(auth)/(serviceUser)/login")}>
+          <Text className="text-sm font-semibold text-[#005823CC]">Login</Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 }
