@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { FlatList, ImageSourcePropType, useWindowDimensions, View } from 'react-native'
+import { useRouter } from 'expo-router'
 import OnboardingSlide from './OnboardingSlide'
 
 type Slide = {
@@ -12,6 +13,7 @@ type Slide = {
 
 export default function OnboardingCarousel() {
   const { width } = useWindowDimensions()
+  const router = useRouter()
   const flatListRef = useRef<FlatList<Slide>>(null)
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
 
@@ -19,7 +21,7 @@ export default function OnboardingCarousel() {
     () => [
       {
         id: '1',
-        title: 'Welcome to Sabiguy',
+        title: 'Welcome to SabiGUY',
         description: 'Get things done easily, connect with verified service experts near you',
         image: require('../../assets/slide_one.png'),
       buttonText: 'Continue'  
@@ -42,22 +44,20 @@ export default function OnboardingCarousel() {
     []
   )
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlideIndex((previousIndex) => {
-        const nextIndex = (previousIndex + 1) % slides.length
-
-        flatListRef.current?.scrollToIndex({
-          index: nextIndex,
-          animated: true,
-        })
-
-        return nextIndex
+  const handleContinue = () => {
+    const nextIndex = currentSlideIndex + 1
+    if (nextIndex < slides.length) {
+      flatListRef.current?.scrollToIndex({
+        index: nextIndex,
+        animated: true,
       })
-    }, 3000)
+      setCurrentSlideIndex(nextIndex)
+    }
+  }
 
-    return () => clearInterval(interval)
-  }, [slides.length])
+  const handleGetStarted = () => {
+    router.push('/(auth)/chooseRole')
+  }
 
   return (
     <View className="flex-1">
@@ -89,6 +89,8 @@ export default function OnboardingCarousel() {
             buttonText={item.buttonText}
             currentSlideIndex={currentSlideIndex}
             totalSlides={slides.length}
+            isLastSlide={index === slides.length - 1}
+            onPress={index === slides.length - 1 ? handleGetStarted : handleContinue}
           />
         )}
       />
