@@ -1,6 +1,6 @@
 import { View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
 import React, { useState } from "react";
-import Button from "@/components/button";
+import Button from "@/components/Button";
 import { useRouter } from "expo-router";
 
 export default function signup() {

@@ -18,8 +18,8 @@ export default function chooseRole() {
   };
 
   return (
-    <View className="flex-1 px-6 py-40 bg-white pt-20 ">
-      <Text className="text-2xl font-bold text-gray-900 mb-2">
+    <View className="flex-1 justify-center px-6 bg-white">
+      <Text className="text-2xl font-bold text-gray-900 mb-6 text-center">
         How do you want to use SabiGUY
       </Text>
       <View className="space-y-4">
