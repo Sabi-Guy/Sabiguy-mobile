@@ -13,6 +13,7 @@ declare module "expo-router" {
   export const Slot: ComponentType<{ children?: ReactNode }>;
   export const Stack: ComponentType<any>;
   export const Tabs: ComponentType<any>;
+  export const Redirect: ComponentType<{ href: string }>;
 }
 
 declare module "expo-router/stack" {
