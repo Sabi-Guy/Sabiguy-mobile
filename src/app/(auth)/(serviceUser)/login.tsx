@@ -1,6 +1,7 @@
 import { View, Text, TextInput, Image, Pressable, ScrollView } from "react-native";
 import React from "react";
 import Button from "@/components/Button";
+import BackButton from "@/components/BackButton";
 import { useRouter } from "expo-router";
 
 
@@ -9,6 +10,7 @@ export default function login() {
 
   return (
     <ScrollView className="flex-1 bg-white" contentContainerStyle={{ padding: 24 }}>
+      <BackButton />
       <View className="mt-10">
         <Text className="text-3xl font-bold text-gray-900">Welcome back</Text>
         <Text className="mt-2 text-base text-gray-600">
