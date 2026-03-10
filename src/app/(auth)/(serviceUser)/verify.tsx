@@ -40,7 +40,7 @@ export default function verify() {
   };
 
   return (
-    <ScrollView className="flex-1 mt-20 bg-white" contentContainerClassName="px-6 py-8">
+    <ScrollView className="flex-1 pt-20 bg-white" contentContainerClassName="px-6 py-8">
       <BackButton />
       <View className="mt-8">
         <Text className="text-3xl font-bold text-gray-900">Verify Email</Text>
@@ -75,9 +75,9 @@ export default function verify() {
           </Text>
         ) : (
           <Pressable onPress={handleResend}>
-            <Text className="text-center text-blue-600 font-semibold">
-              I didn't receive a code{" "}
-              <Text className="text-blue-700 underline">Resend</Text>
+            <Text className="text-center text-gray-600 font-semibold">
+              I didn't receive a code
+              <Text className="text-gray-700 underline">Resend</Text>
             </Text>
           </Pressable>
         )}
