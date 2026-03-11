@@ -78,7 +78,7 @@ export default function signup() {
         </Text>
       </Pressable>
 
-      <Button buttonText="Continue" onPress={() => {}} disabled={!agreed} />
+      <Button buttonText="Continue" onPress={() => {router.push("/(auth)/(serviceUser)/accountReady")}} disabled={!agreed} />
 
       <View className="mt-6 flex-row items-center">
         <View className="h-px flex-1 bg-gray-300" />

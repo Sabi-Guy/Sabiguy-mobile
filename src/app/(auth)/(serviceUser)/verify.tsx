@@ -40,8 +40,9 @@ export default function verify() {
   };
 
   return (
-    <ScrollView className="flex-1 pt-20 bg-white" contentContainerClassName="px-6 py-8">
+    <ScrollView className="flex-1 bg-white" contentContainerClassName="px-6 py-8">
       <BackButton />
+      <View className="pt-20">
       <View className="mt-8">
         <Text className="text-3xl font-bold text-gray-900">Verify Email</Text>
         <Text className="mt-2 text-base text-gray-600">
@@ -63,19 +64,19 @@ export default function verify() {
       </View>
 
       {hasError && (
-        <Text className="mt-4 text-center text-red-500">
+        <Text className="mt-8 text-red-500">
           Wrong code, please try again
         </Text>
       )}
 
-      <View className="mt-6">
+      <View className="mt-8">
         {timeLeft > 0 ? (
-          <Text className="text-center text-gray-500">
+          <Text className=" text-gray-500">
             Send code again in {formatTime(timeLeft)}
           </Text>
         ) : (
           <Pressable onPress={handleResend}>
-            <Text className="text-center text-gray-600 font-semibold">
+            <Text className=" text-gray-600 font-semibold">
               I didn't receive a code
               <Text className="text-gray-700 underline">Resend</Text>
             </Text>
@@ -88,7 +89,7 @@ export default function verify() {
       <Pressable
         onPress={handleVerify}
         disabled={!isOtpComplete}
-        className={`py-4 rounded-lg items-center ${
+        className={` mt-16 py-4 rounded-lg items-center ${
           isOtpComplete ? "bg-[#005823CC]" : "bg-gray-400"
         }`}
       >
@@ -96,6 +97,7 @@ export default function verify() {
           Verify email
         </Text>
       </Pressable>
+      </View>
     </ScrollView>
   );
 }
