@@ -10,9 +10,14 @@ declare module "expo-router" {
 
   export function useRouter(): Router;
 
+  type Navigator = ComponentType<any> & {
+    Screen: ComponentType<any>;
+  };
+
   export const Slot: ComponentType<{ children?: ReactNode }>;
-  export const Stack: ComponentType<any>;
-  export const Tabs: ComponentType<any>;
+  export const Stack: Navigator;
+  export const Tabs: Navigator;
+  export const Link: ComponentType<any>;
   export const Redirect: ComponentType<{ href: string }>;
 }
 
