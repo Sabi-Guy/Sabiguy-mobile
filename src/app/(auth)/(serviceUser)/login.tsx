@@ -43,7 +43,8 @@ export default function login() {
         <Text className="text-sm font-semibold text-[#231F20]">Forgot Password?</Text>
       </Pressable>
 
-      <Button buttonText="Continue" onPress={() => router.push("/(protected)/(tabs)/")} />
+      {/* <Button buttonText="Continue" onPress={() => router.push("/(protected)/(tabs)/")} /> */}
+      <Button buttonText="Continue" onPress={() => router.push("/(auth)/(serviceUser)/verify")} />
 
       <View className="mt-6 flex-row items-center">
         <View className="h-px flex-1 bg-gray-300" />
