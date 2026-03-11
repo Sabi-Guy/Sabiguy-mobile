@@ -26,7 +26,7 @@ export default function chooseRole() {
         <Pressable
           onPress={() => {
             setSelectedRole("user");
-            router.push("/(auth)/(serviceUser)/signup");
+           
           }}
           className={`items-center rounded-lg border p-6 ${
             selectedRole === "user" ? "border-[#005823CC] border-2 bg-[#0058231A]" : "border-[#231F2080]"
@@ -47,7 +47,7 @@ export default function chooseRole() {
         <Pressable
           onPress={() => {
             setSelectedRole("provider");
-            router.push("/(auth)/(serviceProvider)/signup");
+        
           }}
           className={`items-center rounded-lg border p-6 ${
             selectedRole === "provider" ? "border-[#005823CC] border-2 bg-[#0058231A]" : "border-[#231F2080]"
