@@ -3,6 +3,8 @@ import { Pressable, Text, TextInput, View } from "react-native";
 
 type OTPProps = {
   length?: number;
+  value?: string;
+  onChangeCode?: (code: string) => void;
   onComplete?: (code: string) => void;
   isError?: boolean;
 };
@@ -11,9 +13,20 @@ const ACTIVE_COLOR = "#005823CC";
 const ERROR_COLOR = "#E90000";
 const DEFAULT_COLOR = "#D1D5DB";
 
-export default function OTP({ length = 6, onComplete, isError = false }: OTPProps) {
-  const [code, setCode] = useState("");
+export default function OTP({
+  length = 6,
+  value: controlledValue,
+  onChangeCode,
+  onComplete,
+  isError = false,
+}: OTPProps) {
+  const [internalCode, setInternalCode] = useState("");
   const inputRef = useRef<TextInput>(null);
+
+  const code = useMemo(() => {
+    const source = controlledValue ?? internalCode;
+    return source.replace(/\D/g, "").slice(0, length);
+  }, [controlledValue, internalCode, length]);
 
   const activeIndex = useMemo(() => {
     if (code.length >= length) {
@@ -31,7 +44,12 @@ export default function OTP({ length = 6, onComplete, isError = false }: OTPProp
 
   const handleCodeChange = (value: string) => {
     const next = value.replace(/\D/g, "").slice(0, length);
-    setCode(next);
+
+    if (controlledValue === undefined) {
+      setInternalCode(next);
+    }
+
+    onChangeCode?.(next);
   };
 
   const focusInput = () => {

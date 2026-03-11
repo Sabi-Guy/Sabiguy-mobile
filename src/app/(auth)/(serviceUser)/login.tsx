@@ -39,7 +39,7 @@ export default function login() {
         </View>
       </View>
 
-      <Pressable className="mt-4">
+      <Pressable className="mt-4" onPress={() => router.push("/(auth)/(serviceUser)/forgot")}>
         <Text className="text-sm font-semibold text-[#231F20]">Forgot Password?</Text>
       </Pressable>
 
