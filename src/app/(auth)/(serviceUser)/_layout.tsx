@@ -10,6 +10,7 @@ export default function UserLayout() {
       <Stack.Screen name="forgotOtp" options={{ headerShown: false }} />
       <Stack.Screen name="reset" options={{ headerShown: false }} />
       <Stack.Screen name="resetSuccess" options={{ headerShown: false }} />
+      <Stack.Screen name="accountReady" options={{ headerShown: false }} />
     </Stack>
   );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 
 export default function resetSuccess() {
@@ -7,9 +7,11 @@ export default function resetSuccess() {
 
   return (
     <View className="flex-1 items-center justify-center bg-white px-6">
-      <View className="h-16 w-16 items-center justify-center rounded-full bg-[#005823CC]">
-        <Text className="text-3xl text-white">✓</Text>
-      </View>
+      <Image
+        source={require("../../../../assets/reset.png")}
+       className="h-36 w-auto "
+        resizeMode="contain"
+      />
       <Text className="mt-8 text-3xl font-bold text-gray-900">Password reset successful</Text>
       <Text className="mt-2 text-center text-base text-gray-600">
         You can now use your new password to login into your account.
