@@ -38,7 +38,7 @@ export default function signup() {
       });
 
       console.log(res),
-      router.push("/(auth)/(serviceUser)/accountReady")
+      router.push("/(auth)/(serviceUser)/verify")
     } catch (error) {
       console.error(error);
     } finally {
