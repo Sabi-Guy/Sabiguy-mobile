@@ -1,13 +1,47 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import Button from "@/components/Button";
 import BackButton from "@/components/BackButton";
 import { Ionicons } from "@expo/vector-icons";
+import { apiRequest } from "@/lib/api";
 
 export default function ServiceProviderLogin() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const canSubmit = useMemo(
+    () => email.trim().length > 0 && password.length > 0 && !submitting,
+    [email, password, submitting]
+  );
+
+  const handleLogin = async () => {
+    setError(null);
+    if (!email.trim() || !password) {
+      setError("Please enter your email and password.");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await apiRequest("/auth", {
+        method: "POST",
+        json: { email, password },
+      });
+      router.push({
+        pathname: "/(auth)/(serviceProvider)/verify-email",
+        params: { email },
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to login. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <ScrollView className="flex-1 bg-white" contentContainerStyle={{ padding: 24 }}>
@@ -24,6 +58,9 @@ export default function ServiceProviderLogin() {
           <Text className="mb-2 text-sm font-medium text-gray-800">Email or phone</Text>
           <TextInput
             placeholder="Enter your email or phone"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
             className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
             placeholderTextColor="#9CA3AF"
           />
@@ -35,6 +72,8 @@ export default function ServiceProviderLogin() {
             <TextInput
               placeholder="Enter your password"
               secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
               className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 pr-12 text-base text-gray-900"
               placeholderTextColor="#9CA3AF"
             />
@@ -56,7 +95,13 @@ export default function ServiceProviderLogin() {
         <Text className="text-sm font-semibold text-[#231F20]">Forgot Password?</Text>
       </Pressable>
 
-      <Button buttonText="Continue" onPress={() => router.push("/(auth)/(serviceProvider)/verify-email")} />
+      {error ? <Text className="mt-3 text-sm text-red-500">{error}</Text> : null}
+
+      <Button
+        buttonText={submitting ? "Signing in..." : "Continue"}
+        onPress={handleLogin}
+        disabled={!canSubmit}
+      />
 
       <View className="mt-6 flex-row items-center">
         <View className="h-px flex-1 bg-gray-300" />
