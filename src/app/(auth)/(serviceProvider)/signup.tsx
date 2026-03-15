@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 export default function ServiceProviderSignup() {
   const [agreed, setAgreed] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
   const router = useRouter();
 
   return (
@@ -36,6 +37,8 @@ export default function ServiceProviderSignup() {
             placeholder="Enter your email"
             keyboardType="email-address"
             autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
             className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
             placeholderTextColor="#9CA3AF"
           />
@@ -83,7 +86,7 @@ export default function ServiceProviderSignup() {
             agreed ? "border-[#005823] bg-[#005823]" : "border-gray-400 bg-white"
           }`}
         >
-          {agreed ? <Text className="text-xs font-bold text-white">OK</Text> : null}
+          {agreed ? <Text className="text-xs font-bold text-white">✓</Text> : null}
         </View>
 
         <Text className="flex-1 text-sm text-gray-700">
@@ -94,7 +97,12 @@ export default function ServiceProviderSignup() {
 
       <Button
         buttonText="Continue"
-        onPress={() => router.push("/(auth)/(serviceProvider)/verify-email")}
+        onPress={() =>
+          router.push({
+            pathname: "/(auth)/(serviceProvider)/verify-email",
+            params: { email },
+          })
+        }
         disabled={!agreed}
       />
 
