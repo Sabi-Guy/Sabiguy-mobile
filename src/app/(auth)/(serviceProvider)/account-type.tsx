@@ -3,6 +3,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import BackButton from "@/components/BackButton";
 import { Ionicons } from "@expo/vector-icons";
+import ProgressBar from "@/components/ProgressBar";
 import * as DocumentPicker from "expo-document-picker";
 
 type AccountKind = "individual" | "business";
@@ -132,7 +133,9 @@ export default function AccountType() {
     <ScrollView className="flex-1 bg-white" contentContainerStyle={{ padding: 24 }}>
       <BackButton />
       <View className="mt-8">
-        <View className="mb-6 h-1 w-32 rounded-full bg-[#005823CC]" />
+        <View className="mb-6">
+          <ProgressBar step={2} total={5} />
+        </View>
         <Text className="text-2xl font-bold text-gray-900">Account Type</Text>
         <Text className="mt-2 text-base text-gray-600">
           We require this to make your profile setup easier

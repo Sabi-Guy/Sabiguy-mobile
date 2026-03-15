@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import BackButton from "@/components/BackButton";
 import { Ionicons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import ProgressBar from "@/components/ProgressBar";
 
 export default function FaceCapture() {
   const router = useRouter();
@@ -15,7 +16,9 @@ export default function FaceCapture() {
     <View className="flex-1 bg-white px-6 pt-6">
       <BackButton />
       <View className="mt-8">
-        <View className="mb-6 h-1 w-32 rounded-full bg-[#005823CC]" />
+        <View className="mb-6">
+          <ProgressBar step={3} total={5} />
+        </View>
         <Text className="text-2xl font-bold text-gray-900">Face capturing</Text>
         <Text className="mt-2 text-base text-gray-600">Look directly at the camera</Text>
       </View>

@@ -3,6 +3,7 @@ import { PanResponder, Pressable, ScrollView, Text, TextInput, View } from "reac
 import { useRouter } from "expo-router";
 import BackButton from "@/components/BackButton";
 import { Ionicons } from "@expo/vector-icons";
+import ProgressBar from "@/components/ProgressBar";
 
 const RADIUS_OPTIONS = ["3km", "5km", "10km", "15km", "20km", "Custom"];
 const GENDER_OPTIONS = ["Female", "Male", "Other", "Prefer not to say"];
@@ -61,7 +62,9 @@ export default function PersonalInformation() {
     <ScrollView className="flex-1 bg-white" contentContainerStyle={{ padding: 24 }}>
       <BackButton />
       <View className="mt-8">
-        <View className="mb-6 h-1 w-32 rounded-full bg-[#005823CC]" />
+        <View className="mb-6">
+          <ProgressBar step={1} total={5} />
+        </View>
         <Text className="text-2xl font-bold text-gray-900">Personal Information</Text>
         <Text className="mt-2 text-base text-gray-600">
           Let&apos;s know who you are, tell us a bit about yourself
