@@ -3,6 +3,7 @@ import { Image, Pressable, ScrollView, Text, TextInput, View } from "react-nativ
 import { useRouter } from "expo-router";
 import Button from "@/components/Button";
 import BackButton from "@/components/BackButton";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function ServiceProviderLogin() {
   const router = useRouter();
@@ -41,9 +42,11 @@ export default function ServiceProviderLogin() {
               className="absolute right-4 top-1/2 -translate-y-1/2"
               onPress={() => setShowPassword((previous) => !previous)}
             >
-              <Text className="text-sm font-semibold text-[#005823CC]">
-                {showPassword ? "Hide" : "Show"}
-              </Text>
+              <Ionicons
+                name={showPassword ? "eye-off" : "eye"}
+                size={20}
+                color="#005823CC"
+              />
             </Pressable>
           </View>
         </View>
