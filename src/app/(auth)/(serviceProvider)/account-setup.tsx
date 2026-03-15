@@ -11,13 +11,14 @@ export default function ServiceProviderAccountSetup() {
       <BackButton />
 
       <View className="h-16 w-16 items-center justify-center rounded-full bg-[#005823CC]">
-        <Text className="text-3xl text-white">OK</Text>
+        <Text className="text-3xl text-white">✓</Text>
       </View>
 
       <View className="mt-8 items-center">
         <Text className="text-3xl font-bold text-gray-900">Verification successful</Text>
         <Text className="mt-2 text-center text-base text-gray-600">
-          Welcome onboard. Complete a few more details to personalize your profile.
+          Welcome onboard, Your SABIGUY account is almost complete, just a few more details to help
+          you personalize your experience.
         </Text>
       </View>
 

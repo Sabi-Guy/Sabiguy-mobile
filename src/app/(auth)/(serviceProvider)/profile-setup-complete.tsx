@@ -8,7 +8,7 @@ export default function ProfileSetupComplete() {
   return (
     <View className="flex-1 items-center justify-center bg-white px-6">
       <View className="h-16 w-16 items-center justify-center rounded-full bg-[#005823CC]">
-        <Text className="text-3xl text-white">OK</Text>
+        <Text className="text-3xl text-white">✓</Text>
       </View>
       <Text className="mt-8 text-center text-3xl font-bold text-gray-900">Your profile setup is complete</Text>
       <Text className="mt-2 text-center text-base text-gray-600">
