@@ -2,11 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import BackButton from "@/components/BackButton";
 import OTP from "@/components/OTP";
+import { verifyEmailOtp } from "@/lib/auth";
+import { useRouter } from "expo-router";
 
 export default function verify() {
   const [isOtpComplete, setIsOtpComplete] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [hasError, setHasError] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const router = useRouter();
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -18,11 +24,22 @@ export default function verify() {
     return () => clearInterval(interval);
   }, [timeLeft]);
 
-  const handleVerify = () => {
-    if (isOtpComplete) {
-      console.log("Verifying email...");
-      // Simulate error for demo - remove this in production
+  const handleVerify = async () => {
+    if (!isOtpComplete || isSubmitting) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setHasError(false);
+      await verifyEmailOtp({ otp });
+// router.push("/(auth)/(serviceUser)/verify")
+      router.push("/auth/serviceUser/accountReady")
+    } catch (error) {
       setHasError(true);
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -54,12 +71,17 @@ export default function verify() {
       </View>
 
       <View className="mt-10 items-center">
-        <OTP 
+        <OTP
           isError={hasError}
+          onChangeCode={(code) => {
+            setOtp(code);
+            setIsOtpComplete(code.length === 6);
+          }}
           onComplete={(code) => {
             console.log("OTP completed:", code);
+            setOtp(code);
             setIsOtpComplete(true);
-          }} 
+          }}
         />
       </View>
 
@@ -88,13 +110,13 @@ export default function verify() {
 
       <Pressable
         onPress={handleVerify}
-        disabled={!isOtpComplete}
+        disabled={!isOtpComplete || isSubmitting}
         className={` mt-16 py-4 rounded-lg items-center ${
-          isOtpComplete ? "bg-[#005823CC]" : "bg-gray-400"
+          isOtpComplete && !isSubmitting ? "bg-[#005823CC]" : "bg-gray-400"
         }`}
       >
         <Text className="text-white font-semibold text-lg">
-          Verify email
+          {isSubmitting ? "Verifying..." : "Verify email"}
         </Text>
       </Pressable>
       </View>

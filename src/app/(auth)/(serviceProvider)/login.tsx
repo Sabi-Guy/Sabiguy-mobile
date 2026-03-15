@@ -33,7 +33,7 @@ export default function ServiceProviderLogin() {
         method: "POST",
         json: { email, password },
       });
-      router.push("/(protected)/(tabs)/");
+      router.push("/(protected)/(tabs)");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to login. Please try again.");
     } finally {

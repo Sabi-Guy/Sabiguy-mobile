@@ -57,26 +57,26 @@ export const loginuser = async (data: loginUserPayload) => {
 };
 
 //otp verification
-// export interface VerifyEmailPayload {
-//   otp: string;
-// }
+export interface VerifyEmailPayload {
+  otp: string;
+}
 
-// export const verifyEmailOtp = async (data: VerifyEmailPayload) => {
-//   const response = await fetch(`${BASE_URL}/auth/email`, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify(data),
-//   });
+export const verifyEmailOtp = async (data: VerifyEmailPayload) => {
+  const response = await fetch(`${BASE_URL}/auth/email`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
 
-//   const result = await response.json();
+  const result = await response.json();
 
-//   if (!response.ok) {
-//     const message =
-//       typeof result?.message === "string" ? result.message : "OTP verification failed";
-//     throw new Error(message);
-//   }
+  if (!response.ok) {
+    const message =
+      typeof result?.message === "string" ? result.message : "OTP verification failed";
+    throw new Error(message);
+  }
 
-//   return result;
-// };
+  return result;
+};

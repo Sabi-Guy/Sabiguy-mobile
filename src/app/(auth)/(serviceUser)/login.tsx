@@ -30,7 +30,7 @@ export default function login() {
         email: email.trim(),
         password,
       });
-      router.push("/(protected)/index");
+      router.push("/(protected)/(tabs)");
     } catch (error) {
       console.error(error);
     } finally {
