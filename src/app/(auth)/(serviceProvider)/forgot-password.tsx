@@ -16,7 +16,7 @@ export default function ForgotPassword() {
     setError(null);
     if (!email.trim()) {
       setError("Please enter your email.");
-      return;
+      return; 
     }
     try {
       setSubmitting(true);

@@ -80,3 +80,28 @@ export const verifyEmailOtp = async (data: VerifyEmailPayload) => {
 
   return result;
 };
+
+// forgot password
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export const forgotPassword = async (data: ForgotPasswordPayload) => {
+  const response = await fetch(`${BASE_URL}/auth/password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    const message =
+      typeof result?.message === "string" ? result.message : "Forgot password failed";
+    throw new Error(message);
+  }
+
+  return result;
+};
