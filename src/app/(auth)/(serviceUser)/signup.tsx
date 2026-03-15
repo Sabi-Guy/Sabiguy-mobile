@@ -5,7 +5,7 @@ import BackButton from "@/components/BackButton";
 import { useRouter } from "expo-router";
 
 // import { registerBuyer } from "../services/auth";
-import { registerBuyer } from "@/app/lib/auth";
+import { registerBuyer } from "@/lib/auth";
 
 export default function signup() {
   const [agreed, setAgreed] = useState(false);
