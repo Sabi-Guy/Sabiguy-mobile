@@ -8,7 +8,7 @@ export default function ForgotPasswordCode() {
   const router = useRouter();
   const { email } = useLocalSearchParams<{ email?: string }>();
   const [code, setCode] = useState("");
-  const [timeLeft, setTimeLeft] = useState(20);
+  const [timeLeft, setTimeLeft] = useState(30);
 
   const isComplete = useMemo(() => code.length === 6, [code]);
 
@@ -23,7 +23,7 @@ export default function ForgotPasswordCode() {
   const handleResend = () => {
     if (timeLeft > 0) return;
     setCode("");
-    setTimeLeft(20);
+    setTimeLeft(30);
   };
 
   const formatTime = (seconds: number) => `00:${seconds.toString().padStart(2, "0")}`;
@@ -44,7 +44,12 @@ export default function ForgotPasswordCode() {
 
       <Pressable
         className={`mt-6 rounded-md py-4 ${isComplete ? "bg-[#005823CC]" : "bg-gray-300"}`}
-        onPress={() => router.push("/(auth)/(serviceProvider)/reset-password")}
+        onPress={() =>
+          router.push({
+            pathname: "/(auth)/(serviceProvider)/reset-password",
+            params: { email, otp: code },
+          })
+        }
         disabled={!isComplete}
       >
         <Text className="text-center font-semibold text-white">Continue</Text>
