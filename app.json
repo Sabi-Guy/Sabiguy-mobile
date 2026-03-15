@@ -24,11 +24,9 @@
       },
       "predictiveBackGestureEnabled": false
     },
+    "plugins": ["expo-router"],
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-router"
-    ]
+    }
   }
 }

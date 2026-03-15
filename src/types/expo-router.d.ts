@@ -1,29 +1,37 @@
 declare module "expo-router" {
-  import type { ComponentType, ReactNode } from "react";
+  import type * as React from "react";
 
-  export interface Router {
-    back(): void;
-    canGoBack(): boolean;
-    push(href: string): void;
-    replace(href: string): void;
-  }
-
-  export function useRouter(): Router;
-
-  type Navigator = ComponentType<any> & {
-    Screen: ComponentType<any>;
+  export const Slot: React.ComponentType<any>;
+  type StackComponent = React.ComponentType<any> & {
+    Screen: React.ComponentType<any>;
+  };
+  type TabsComponent = React.ComponentType<any> & {
+    Screen: React.ComponentType<any>;
   };
 
-  export const Slot: ComponentType<{ children?: ReactNode }>;
-  export const Stack: Navigator;
-  export const Tabs: Navigator;
-  export const Link: ComponentType<any>;
-  export const Redirect: ComponentType<{ href: string }>;
+  export const Stack: StackComponent;
+  export const Tabs: TabsComponent;
+  export const Link: React.ComponentType<any>;
+  export const Redirect: React.ComponentType<any>;
+
+  export function useRouter(): {
+    push: (href: any) => void;
+    replace: (href: any) => void;
+    back: () => void;
+  };
+
+  export function useLocalSearchParams<
+    T extends Record<string, string | string[] | undefined> = Record<
+      string,
+      string | string[] | undefined
+    >
+  >(): T;
 }
 
 declare module "expo-router/stack" {
-  import type { ComponentType } from "react";
-
-  const Stack: ComponentType<any>;
+  import type * as React from "react";
+  const Stack: React.ComponentType<any> & {
+    Screen: React.ComponentType<any>;
+  };
   export default Stack;
 }

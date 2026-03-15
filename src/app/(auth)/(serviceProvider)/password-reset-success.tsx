@@ -14,7 +14,10 @@ export default function PasswordResetSuccess() {
       <Text className="mt-2 text-center text-base text-gray-600">
         You can now use your new password to login into your account.
       </Text>
-      <Pressable className="mt-10 w-full rounded-md bg-[#005823CC] py-4" onPress={() => router.push("/(auth)/(serviceProvider)/login")}>
+      <Pressable
+        className="mt-10 w-full rounded-md bg-[#005823CC] py-4"
+        onPress={() => router.push("/(auth)/(serviceProvider)/login")}
+      >
         <Text className="text-center font-semibold text-white">Login</Text>
       </Pressable>
     </View>

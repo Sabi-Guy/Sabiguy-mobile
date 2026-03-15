@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import BackButton from "@/components/BackButton";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function ResetPassword() {
   const router = useRouter();
@@ -38,9 +39,11 @@ export default function ResetPassword() {
               className="absolute right-4 top-1/2 -translate-y-1/2"
               onPress={() => setShowPassword((previous) => !previous)}
             >
-              <Text className="text-sm font-semibold text-[#005823CC]">
-                {showPassword ? "Hide" : "Show"}
-              </Text>
+              <Ionicons
+                name={showPassword ? "eye-off" : "eye"}
+                size={20}
+                color="#005823CC"
+              />
             </Pressable>
           </View>
         </View>
@@ -59,25 +62,29 @@ export default function ResetPassword() {
               className="absolute right-4 top-1/2 -translate-y-1/2"
               onPress={() => setShowConfirmPassword((previous) => !previous)}
             >
-              <Text className="text-sm font-semibold text-[#005823CC]">
-                {showConfirmPassword ? "Hide" : "Show"}
-              </Text>
+              <Ionicons
+                name={showConfirmPassword ? "eye-off" : "eye"}
+                size={20}
+                color="#005823CC"
+              />
             </Pressable>
           </View>
         </View>
       </View>
       <Pressable
-        className={`mt-8 rounded-md py-4 ${canContinue ? "bg-[#005823CC]" : "bg-gray-300"}`}
+        className={`mt-6 rounded-md py-4 ${canContinue ? "bg-[#005823CC]" : "bg-gray-300"}`}
         onPress={() => router.push("/(auth)/(serviceProvider)/password-reset-success")}
         disabled={!canContinue}
       >
         <Text className="text-center font-semibold text-white">Continue</Text>
       </Pressable>
-      <Pressable className="mt-6 self-center" onPress={() => router.push("/(auth)/(serviceProvider)/login")}>
-        <Text className="text-sm text-gray-600">
-          Already have an account? <Text className="font-semibold text-[#005823CC]">Login</Text>
-        </Text>
-      </Pressable>
+      <View className="mt-auto pb-6">
+        <Pressable className="self-center" onPress={() => router.push("/(auth)/(serviceProvider)/login")}>
+          <Text className="text-sm text-gray-600">
+            Already have an account? <Text className="font-semibold text-[#005823CC]">Login</Text>
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 }

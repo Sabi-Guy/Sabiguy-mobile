@@ -30,7 +30,12 @@ export default function ForgotPassword() {
       </View>
       <Pressable
         className={`mt-8 rounded-md py-4 ${email ? "bg-[#005823CC]" : "bg-gray-300"}`}
-        onPress={() => router.push("/(auth)/(serviceProvider)/forgot-password-code")}
+        onPress={() =>
+          router.push({
+            pathname: "/(auth)/(serviceProvider)/forgot-password-code",
+            params: { email },
+          })
+        }
         disabled={!email}
       >
         <Text className="text-center font-semibold text-white">Continue</Text>
