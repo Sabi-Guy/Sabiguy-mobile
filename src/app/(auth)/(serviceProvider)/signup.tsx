@@ -1,15 +1,66 @@
-import { View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
-import React, { useState } from "react";
+import { Alert, View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
+import React, { useMemo, useState } from "react";
 import Button from "@/components/Button";
 import BackButton from "@/components/BackButton";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { apiRequest } from "@/lib/api";
+
+const PASSWORD_RULE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
 export default function ServiceProviderSignup() {
   const [agreed, setAgreed] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  const canSubmit = useMemo(
+    () =>
+      agreed &&
+      name.trim().length > 0 &&
+      email.trim().length > 0 &&
+      phoneNumber.trim().length > 0 &&
+      password.length > 0 &&
+      !submitting,
+    [agreed, name, email, phoneNumber, password, submitting]
+  );
+
+  const handleSubmit = async () => {
+    setError(null);
+    if (!name.trim() || !email.trim() || !phoneNumber.trim() || !password) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    if (!PASSWORD_RULE.test(password)) {
+      setError(
+        "Password must be at least 8 characters long and include a letter, number, and special character."
+      );
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await apiRequest("/auth/provider", {
+        method: "POST",
+        json: { name, email, password, phoneNumber },
+      });
+
+      router.push({
+        pathname: "/(auth)/(serviceProvider)/verify-email",
+        params: { email },
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <ScrollView className="flex-1 bg-white" contentContainerStyle={{ padding: 24 }}>
@@ -26,6 +77,8 @@ export default function ServiceProviderSignup() {
           <Text className="mb-2 text-sm font-medium text-gray-800">Full Name</Text>
           <TextInput
             placeholder="Enter your name"
+            value={name}
+            onChangeText={setName}
             className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
             placeholderTextColor="#9CA3AF"
           />
@@ -49,6 +102,8 @@ export default function ServiceProviderSignup() {
           <TextInput
             placeholder="Enter your number"
             keyboardType="phone-pad"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
             className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
             placeholderTextColor="#9CA3AF"
           />
@@ -58,8 +113,10 @@ export default function ServiceProviderSignup() {
           <Text className="mb-2 text-sm font-medium text-gray-800">Password</Text>
           <View className="relative">
             <TextInput
-              placeholder="Use a minimum of 6 characters"
+              placeholder="Use a minimum of 8 characters"
               secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
               className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 pr-12 text-base text-gray-900"
               placeholderTextColor="#9CA3AF"
             />
@@ -95,15 +152,12 @@ export default function ServiceProviderSignup() {
         </Text>
       </Pressable>
 
+      {error ? <Text className="mt-4 text-sm text-red-500">{error}</Text> : null}
+
       <Button
-        buttonText="Continue"
-        onPress={() =>
-          router.push({
-            pathname: "/(auth)/(serviceProvider)/verify-email",
-            params: { email },
-          })
-        }
-        disabled={!agreed}
+        buttonText={submitting ? "Creating account..." : "Continue"}
+        onPress={handleSubmit}
+        disabled={!canSubmit}
       />
 
       <View className="mt-6 flex-row items-center">
@@ -113,15 +167,40 @@ export default function ServiceProviderSignup() {
       </View>
 
       <Pressable
-        className="mt-4 w-full flex-row items-center justify-center rounded-md py-4"
+        className={`mt-4 w-full flex-row items-center justify-center rounded-md py-4 ${
+          googleSubmitting ? "opacity-60" : ""
+        }`}
         style={{ backgroundColor: "#231F200D" }}
+        disabled={googleSubmitting}
+        onPress={() => {
+          const hasClientId =
+            !!process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ||
+            !!process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
+            !!process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+
+          if (!hasClientId) {
+            Alert.alert(
+              "Google Sign-In not configured",
+              "Ask your admin for Google OAuth client IDs, then we'll enable this."
+            );
+            return;
+          }
+
+          setGoogleSubmitting(true);
+          setTimeout(() => {
+            setGoogleSubmitting(false);
+            Alert.alert("Google Sign-In", "OAuth will be enabled once client IDs are added.");
+          }, 800);
+        }}
       >
         <Image
           source={require("../../../../assets/google.png")}
           className="mr-2 h-5 w-5"
           resizeMode="contain"
         />
-        <Text className="font-semibold text-[#231F20]">Continue with Google</Text>
+        <Text className="font-semibold text-[#231F20]">
+          {googleSubmitting ? "Connecting..." : "Continue with Google"}
+        </Text>
       </Pressable>
 
       <View className="mt-6 flex-row justify-center">

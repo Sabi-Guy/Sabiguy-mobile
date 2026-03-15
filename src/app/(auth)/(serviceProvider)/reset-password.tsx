@@ -3,18 +3,55 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import BackButton from "@/components/BackButton";
 import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams } from "expo-router";
+import { apiRequest } from "@/lib/api";
+
+const PASSWORD_RULE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
 export default function ResetPassword() {
   const router = useRouter();
+  const { email, otp } = useLocalSearchParams<{ email?: string; otp?: string }>();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const canContinue = useMemo(
-    () => password.length >= 6 && confirmPassword.length >= 6 && password === confirmPassword,
-    [password, confirmPassword]
+    () => password.length >= 8 && confirmPassword.length >= 8 && password === confirmPassword && !submitting,
+    [password, confirmPassword, submitting]
   );
+
+  const handleReset = async () => {
+    setError(null);
+    if (!email || !otp) {
+      setError("Missing reset details. Please restart the reset flow.");
+      return;
+    }
+    if (!PASSWORD_RULE.test(password)) {
+      setError(
+        "Password must be at least 8 characters long and include a letter, number, and special character."
+      );
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await apiRequest("/auth/reset", {
+        method: "POST",
+        json: { email, otp, newPassword: password },
+      });
+      router.push("/(auth)/(serviceProvider)/password-reset-success");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to reset password.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <View className="flex-1 bg-white px-6 pt-6">
@@ -73,11 +110,14 @@ export default function ResetPassword() {
       </View>
       <Pressable
         className={`mt-6 rounded-md py-4 ${canContinue ? "bg-[#005823CC]" : "bg-gray-300"}`}
-        onPress={() => router.push("/(auth)/(serviceProvider)/password-reset-success")}
+        onPress={handleReset}
         disabled={!canContinue}
       >
-        <Text className="text-center font-semibold text-white">Continue</Text>
+        <Text className="text-center font-semibold text-white">
+          {submitting ? "Updating..." : "Continue"}
+        </Text>
       </Pressable>
+      {error ? <Text className="mt-3 text-sm text-red-500">{error}</Text> : null}
       <View className="mt-auto pb-6">
         <Pressable className="self-center" onPress={() => router.push("/(auth)/(serviceProvider)/login")}>
           <Text className="text-sm text-gray-600">
