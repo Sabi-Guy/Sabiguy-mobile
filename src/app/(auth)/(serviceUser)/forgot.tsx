@@ -16,8 +16,12 @@ export default function forgot() {
 
     try {
       setSubmitting(true);
-      await forgotPassword({ email: email.trim() });
-      router.push("/(auth)/(serviceUser)/forgotOtp");
+      const trimmedEmail = email.trim();
+      await forgotPassword({ email: trimmedEmail });
+      router.push({
+        pathname: "/(auth)/(serviceUser)/forgotOtp",
+        params: { email: trimmedEmail },
+      });
     } catch (err) {
       console.error(err);
     } finally {

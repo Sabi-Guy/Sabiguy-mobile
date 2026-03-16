@@ -105,3 +105,30 @@ export const forgotPassword = async (data: ForgotPasswordPayload) => {
 
   return result;
 };
+
+// forgot password otp
+export interface ForgotPasswordOtpPayload {
+  email: string;
+  otp: string;
+  newPassword: string;
+}
+
+export const resetPassword = async (data: ForgotPasswordOtpPayload) => {
+  const response = await fetch(`${BASE_URL}/auth/reset`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    const message =
+      typeof result?.message === "string" ? result.message : "Password reset failed";
+    throw new Error(message);
+  }
+
+  return result;
+};
