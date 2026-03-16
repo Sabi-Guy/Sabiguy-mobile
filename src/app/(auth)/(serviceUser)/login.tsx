@@ -7,8 +7,11 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useState } from "react";
+
 import Button from "@/components/Button";
 import BackButton from "@/components/BackButton";
+import { Ionicons } from "@expo/vector-icons";
+
 import { useRouter } from "expo-router";
 import { loginuser } from "@/lib/auth";
 
@@ -17,6 +20,7 @@ export default function login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // () => router.push("/(auth)/(serviceUser)/signup")
   const handleLogin = async () => {
@@ -30,7 +34,7 @@ export default function login() {
         email: email.trim(),
         password,
       });
-      router.push("/(protected)/index");
+      router.push("/(protected)/(tabs)");
     } catch (error) {
       console.error(error);
     } finally {
@@ -69,14 +73,26 @@ export default function login() {
           <Text className="mb-2 text-sm font-medium text-gray-800">
             Password
           </Text>
-          <TextInput
-            placeholder="Enter your password"
-            secureTextEntry
-            className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
-            value={password}
-            onChangeText={setPassword}
-            placeholderTextColor="#9CA3AF"
-          />
+          <View className="relative">
+            <TextInput
+              placeholder="Enter your password"
+              secureTextEntry={!showPassword}
+              className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
+              value={password}
+              onChangeText={setPassword}
+              placeholderTextColor="#9CA3AF"
+            />
+            <Pressable
+              className="absolute right-4 top-1/2 -translate-y-1/2"
+              onPress={() => setShowPassword((previous) => !previous)}
+            >
+              <Ionicons
+                name={showPassword ? "eye-off" : "eye"}
+                size={20}
+                color="#005823CC"
+              />
+            </Pressable>
+          </View>
         </View>
       </View>
 

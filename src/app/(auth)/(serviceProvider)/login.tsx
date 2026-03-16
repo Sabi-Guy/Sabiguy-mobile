@@ -8,7 +8,7 @@ import { apiRequest } from "@/lib/api";
 
 export default function ServiceProviderLogin() {
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -33,7 +33,7 @@ export default function ServiceProviderLogin() {
         method: "POST",
         json: { email, password },
       });
-      router.push("/(protected)/(tabs)/");
+      router.push("/(protected)/(tabs)");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to login. Please try again.");
     } finally {
@@ -75,6 +75,7 @@ export default function ServiceProviderLogin() {
               className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 pr-12 text-base text-gray-900"
               placeholderTextColor="#9CA3AF"
             />
+
             <Pressable
               className="absolute right-4 top-1/2 -translate-y-1/2"
               onPress={() => setShowPassword((previous) => !previous)}
