@@ -1,6 +1,7 @@
 import { Slot } from "expo-router";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
+import Toast from "react-native-toast-message";
 import SplashScreen from "@/components/SplashScreen";
 import "../../global.css"
 
@@ -23,6 +24,7 @@ export default function Rootlayout() {
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <Slot />
+        <Toast />
       </SafeAreaView>
     </SafeAreaProvider>
   )
