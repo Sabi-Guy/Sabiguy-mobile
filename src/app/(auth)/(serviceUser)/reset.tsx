@@ -2,8 +2,10 @@ import React, { useMemo, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import BackButton from "@/components/BackButton";
+
 import { Ionicons } from "@expo/vector-icons";
 import { resetPassword } from "@/lib/auth";
+import Toast from "react-native-toast-message";
 
 export default function ResetPassword() {
   const router = useRouter();
@@ -46,10 +48,20 @@ export default function ResetPassword() {
         newPassword: password,
       });
       router.push("/(auth)/(serviceUser)/resetSuccess");
+      Toast.show({
+        type: "success",
+        text1: "Password reset successful",
+        text2: "You can now log in with your new password.",  
+      })
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Unable to reset password.",
       );
+      Toast.show({
+        type: "error",
+        text1: "Failed to reset password",
+        text2: err instanceof Error ? err.message : "Please try again.",
+      });
     } finally {
       setSubmitting(false);
     }

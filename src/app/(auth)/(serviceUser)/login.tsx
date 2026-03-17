@@ -10,7 +10,9 @@ import React, { useState } from "react";
 
 import Button from "@/components/Button";
 import BackButton from "@/components/BackButton";
+
 import { Ionicons } from "@expo/vector-icons";
+import Toast from "react-native-toast-message";
 
 import { useRouter } from "expo-router";
 import { loginuser } from "@/lib/auth";
@@ -34,9 +36,20 @@ export default function login() {
         email: email.trim(),
         password,
       });
+      Toast.show({
+        type: "success",
+        text1: "Login Successful",
+        text2: "Welcome back!",
+      });
       router.push("/(protected)/(tabs)");
     } catch (error) {
-      console.error(error);
+      const message =
+        error instanceof Error ? error.message : "Unable to login. Please try again.";
+      Toast.show({
+        type: "error",
+        text1: "Login failed",
+        text2: message,
+      });
     } finally {
       setIsSubmitting(false);
     }
