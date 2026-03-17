@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import BackButton from "@/components/BackButton";
 import { Ionicons } from "@expo/vector-icons";
 import { apiRequest } from "@/lib/api";
+import Toast from "react-native-toast-message";
 
 export default function ServiceProviderLogin() {
   const router = useRouter();
@@ -13,7 +14,6 @@ export default function ServiceProviderLogin() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const canSubmit = useMemo(
     () => email.trim().length > 0 && password.length > 0 && !submitting,
@@ -21,9 +21,12 @@ export default function ServiceProviderLogin() {
   );
 
   const handleLogin = async () => {
-    setError(null);
     if (!email.trim() || !password) {
-      setError("Please enter your email and password.");
+      Toast.show({
+        type: "error",
+        text1: "Missing details",
+        text2: "Please enter your email and password.",
+      });
       return;
     }
 
@@ -33,9 +36,17 @@ export default function ServiceProviderLogin() {
         method: "POST",
         json: { email, password },
       });
+      Toast.show({
+        type: "success",
+        text1: "Login successful",
+      });
       router.push("/(protected)/(tabs)");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to login. Please try again.");
+      Toast.show({
+        type: "error",
+        text1: "Login failed",
+        text2: err instanceof Error ? err.message : "Unable to login. Please try again.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -93,8 +104,6 @@ export default function ServiceProviderLogin() {
       <Pressable className="mt-4" onPress={() => router.push("/(auth)/(serviceProvider)/forgot-password")}>
         <Text className="text-sm font-semibold text-[#231F20]">Forgot Password?</Text>
       </Pressable>
-
-      {error ? <Text className="mt-3 text-sm text-red-500">{error}</Text> : null}
 
       <Button
         buttonText={submitting ? "Signing in..." : "Continue"}

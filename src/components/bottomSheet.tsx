@@ -70,7 +70,6 @@ export default function BottomSheet({
 	contentContainerStyle,
 }: BottomSheetProps) {
 	const { height: windowHeight } = useWindowDimensions();
-	const [isMounted, setIsMounted] = useState(isVisible);
 	const [activeSnapPoint, setActiveSnapPoint] = useState(initialSnapPoint);
 	const dragStartY = useRef(0);
 	const translateY = useRef(new Animated.Value(windowHeight)).current;
@@ -103,10 +102,7 @@ export default function BottomSheet({
 	);
 
 	const closeSheet = useCallback(() => {
-		animateToPoint(0, () => {
-			setIsMounted(false);
-			onClose?.();
-		});
+		onClose?.();
 	}, [animateToPoint, onClose]);
 
 	useEffect(() => {
@@ -115,20 +111,14 @@ export default function BottomSheet({
 				? initialSnapPoint
 				: validSnapPoints[validSnapPoints.length - 1];
 
-			setIsMounted(true);
 			translateY.setValue(windowHeight);
 			animateToPoint(startPoint);
 			return;
-		}
-
-		if (isMounted) {
-			closeSheet();
 		}
 	}, [
 		animateToPoint,
 		closeSheet,
 		initialSnapPoint,
-		isMounted,
 		isVisible,
 		translateY,
 		validSnapPoints,
@@ -136,10 +126,10 @@ export default function BottomSheet({
 	]);
 
 	useEffect(() => {
-		if (isMounted) {
+		if (isVisible) {
 			translateY.setValue(toTranslateY(activeSnapPoint));
 		}
-	}, [activeSnapPoint, isMounted, toTranslateY, translateY]);
+	}, [activeSnapPoint, isVisible, toTranslateY, translateY]);
 
 	const panResponder = useMemo(
 		() =>
@@ -179,12 +169,14 @@ export default function BottomSheet({
 		[translateY, windowHeight]
 	);
 
-	if (!isMounted) {
+	if (!isVisible) {
 		return null;
 	}
 
+	const shouldRenderTopArea = Boolean(topContent || showHandle);
+
 	return (
-		<Modal transparent animationType="none" visible={isMounted} onRequestClose={closeSheet}>
+		<Modal transparent animationType="none" visible={isVisible} onRequestClose={closeSheet}>
 			<View style={styles.root}>
 				<Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
 					<Pressable
@@ -195,10 +187,12 @@ export default function BottomSheet({
 
 				<Animated.View
 					style={[styles.sheet, { height: windowHeight, transform: [{ translateY }] }, sheetStyle]}
-					{...panResponder.panHandlers}
+					{...(!shouldRenderTopArea ? panResponder.panHandlers : {})}
 				>
-					{(topContent || showHandle) && (
-						<View style={styles.topArea}>{topContent ?? <View style={styles.handle} />}</View>
+					{shouldRenderTopArea && (
+						<View style={styles.topArea} {...panResponder.panHandlers}>
+							{topContent ?? <View style={styles.handle} />}
+						</View>
 					)}
 
 					<View style={[styles.content, contentContainerStyle]}>{children}</View>
