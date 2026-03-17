@@ -5,6 +5,7 @@ import BackButton from "@/components/BackButton";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { apiRequest } from "@/lib/api";
+import Toast from "react-native-toast-message";
 
 const PASSWORD_RULE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
@@ -17,7 +18,6 @@ export default function ServiceProviderSignup() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const canSubmit = useMemo(
@@ -32,15 +32,21 @@ export default function ServiceProviderSignup() {
   );
 
   const handleSubmit = async () => {
-    setError(null);
     if (!name.trim() || !email.trim() || !phoneNumber.trim() || !password) {
-      setError("Please fill in all fields.");
+      Toast.show({
+        type: "error",
+        text1: "Missing details",
+        text2: "Please fill in all fields.",
+      });
       return;
     }
     if (!PASSWORD_RULE.test(password)) {
-      setError(
-        "Password must be at least 8 characters long and include a letter, number, and special character."
-      );
+      Toast.show({
+        type: "error",
+        text1: "Weak password",
+        text2:
+          "Password must be at least 8 characters long and include a letter, number, and special character.",
+      });
       return;
     }
 
@@ -51,12 +57,21 @@ export default function ServiceProviderSignup() {
         json: { name, email, password, phoneNumber },
       });
 
+      Toast.show({
+        type: "success",
+        text1: "Signup successful",
+        text2: "Check your email for the verification code.",
+      });
       router.push({
         pathname: "/(auth)/(serviceProvider)/verify-email",
         params: { email },
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Network error. Please try again.");
+      Toast.show({
+        type: "error",
+        text1: "Signup failed",
+        text2: err instanceof Error ? err.message : "Network error. Please try again.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -151,8 +166,6 @@ export default function ServiceProviderSignup() {
           <Text className="font-semibold text-[#005823]">Terms of Services</Text>
         </Text>
       </Pressable>
-
-      {error ? <Text className="mt-4 text-sm text-red-500">{error}</Text> : null}
 
       <Button
         buttonText={submitting ? "Creating account..." : "Continue"}
