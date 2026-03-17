@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import BackButton from "@/components/BackButton";
 import { Ionicons } from "@expo/vector-icons";
 import { apiRequest } from "@/lib/api";
+import { setAuthToken, setRefreshToken } from "@/lib/token";
 import Toast from "react-native-toast-message";
 
 export default function ServiceProviderLogin() {
@@ -32,10 +33,19 @@ export default function ServiceProviderLogin() {
 
     try {
       setSubmitting(true);
-      await apiRequest("/auth", {
+      const result = await apiRequest<{
+        token?: string;
+        refreshToken?: string;
+      }>("/auth", {
         method: "POST",
         json: { email, password },
       });
+      if (result?.token) {
+        await setAuthToken(result.token);
+      }
+      if (result?.refreshToken) {
+        await setRefreshToken(result.refreshToken);
+      }
       Toast.show({
         type: "success",
         text1: "Login successful",
