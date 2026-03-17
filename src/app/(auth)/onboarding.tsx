@@ -5,12 +5,12 @@ import { Link } from "expo-router";
 
 export default function onboarding() {
   return (
-    <View className="flex-1 mt-20 mx-5">
-      <Link className="self-end mr-4 text-right text-lg font-semibold" href="/(auth)/chooseRole">
-        <Text >
-          Skip
-        </Text>
-      </Link>
+    <View className="flex-1">
+      <View className="mt-20 px-5">
+        <Link className="self-end text-right text-lg font-semibold" href="/(auth)/chooseRole">
+          <Text>Skip</Text>
+        </Link>
+      </View>
       <OnboardingCarousel />
     </View>
   );

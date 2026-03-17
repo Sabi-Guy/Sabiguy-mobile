@@ -6,9 +6,14 @@ import ServiceProviderOnboardingCarousel from "@/components/ServiceProviderOnboa
 export default function ServiceProviderOnboarding() {
   return (
     <View className="flex-1">
-      <Link href="/(auth)/(serviceProvider)/account-setup" className="self-end mr-4 text-right text-lg font-semibold">
-        <Text>skip</Text>
-      </Link>
+      <View className="mt-20 px-5">
+        <Link
+          href="/(auth)/(serviceProvider)/account-setup"
+          className="self-end text-right text-lg font-semibold"
+        >
+          <Text>Skip</Text>
+        </Link>
+      </View>
       <ServiceProviderOnboardingCarousel />
     </View>
   );
