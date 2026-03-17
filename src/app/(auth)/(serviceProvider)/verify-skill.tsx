@@ -1,10 +1,13 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 import BackButton from "@/components/BackButton";
 import { Ionicons } from "@expo/vector-icons";
 import ProgressBar from "@/components/ProgressBar";
 import BottomSheet from "@/components/bottomSheet";
+import Toast from "react-native-toast-message";
+import { apiRequest } from "@/lib/api";
 
 const JOB_TITLES = ["Electrician", "Plumber", "Cleaner", "Painter", "Mechanic", "Carpenter"];
 const SERVICES = ["Installation", "Repairs", "Maintenance", "Deep cleaning", "Consultation"];
@@ -17,6 +20,18 @@ export default function VerifySkill() {
   const [isServiceSheetVisible, setIsServiceSheetVisible] = useState(false);
   const [jobSearch, setJobSearch] = useState("");
   const [serviceSearch, setServiceSearch] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsJobSheetVisible(false);
+      setIsServiceSheetVisible(false);
+      return () => {
+        setIsJobSheetVisible(false);
+        setIsServiceSheetVisible(false);
+      };
+    }, [])
+  );
 
   const filteredJobs = useMemo(
     () => JOB_TITLES.filter((item) => item.toLowerCase().includes(jobSearch.toLowerCase())),
@@ -45,6 +60,55 @@ export default function VerifySkill() {
   const closeServiceSheet = () => {
     setIsServiceSheetVisible(false);
     setServiceSearch("");
+  };
+
+  const handleSubmit = async () => {
+    if (!jobTitle || !service) {
+      Toast.show({
+        type: "error",
+        text1: "Missing details",
+        text2: "Please select a job title and a service.",
+      });
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await apiRequest("/provider/job-service", {
+        method: "POST",
+        json: {
+          job: [
+            {
+              service,
+              title: jobTitle,
+              tagLine: "Experienced provider",
+              startingPrice: "0",
+            },
+          ],
+          service: [
+            {
+              serviceName: service,
+              pricingModel: "fixed",
+              price: "0",
+            },
+          ],
+        },
+      });
+      Toast.show({
+        type: "success",
+        text1: "Saved",
+        text2: "Job and service details updated.",
+      });
+      router.push("/(auth)/(serviceProvider)/bank-account");
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Update failed",
+        text2: err instanceof Error ? err.message : "Unable to save job/service details.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -87,12 +151,15 @@ export default function VerifySkill() {
           </View>
         </View>
 
-        <Pressable
-          className="mt-8 rounded-md bg-[#005823CC] py-4"
-          onPress={() => router.push("/(auth)/(serviceProvider)/bank-account")}
-        >
-          <Text className="text-center font-semibold text-white">Next</Text>
-        </Pressable>
+      <Pressable
+        className={`mt-8 rounded-md bg-[#005823CC] py-4 ${submitting ? "opacity-70" : ""}`}
+        onPress={handleSubmit}
+        disabled={submitting}
+      >
+        <Text className="text-center font-semibold text-white">
+          {submitting ? "Saving..." : "Next"}
+        </Text>
+      </Pressable>
       </ScrollView>
 
       <BottomSheet isVisible={isJobSheetVisible} onClose={closeJobSheet} snapPoints={[0, 45, 80]}>
