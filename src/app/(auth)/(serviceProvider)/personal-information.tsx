@@ -4,6 +4,8 @@ import { useRouter } from "expo-router";
 import BackButton from "@/components/BackButton";
 import { Ionicons } from "@expo/vector-icons";
 import ProgressBar from "@/components/ProgressBar";
+import Toast from "react-native-toast-message";
+import { apiRequest } from "@/lib/api";
 
 const RADIUS_OPTIONS = ["3km", "5km", "10km", "15km", "20km", "Custom"];
 const GENDER_OPTIONS = ["Female", "Male", "Other", "Prefer not to say"];
@@ -16,6 +18,9 @@ export default function PersonalInformation() {
   const [gender, setGender] = useState<string>("");
   const [showGenderOptions, setShowGenderOptions] = useState(false);
   const [trackWidth, setTrackWidth] = useState(0);
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const numericOptions = useMemo(
     () => RADIUS_OPTIONS.filter((option) => option !== "Custom").map((option) => parseInt(option, 10)),
@@ -57,6 +62,45 @@ export default function PersonalInformation() {
       }),
     [thumbLeft, trackWidth]
   );
+
+  const handleSubmit = async () => {
+    if (!gender || !address.trim() || !city.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Missing details",
+        text2: "Please complete gender, address, and city.",
+      });
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await apiRequest("/provider", {
+        method: "POST",
+        json: {
+          gender: gender.toLowerCase(),
+          city: city.trim(),
+          address: address.trim(),
+          allowOutside,
+          coverageRadiusKm: radiusValue,
+        },
+      });
+      Toast.show({
+        type: "success",
+        text1: "Saved",
+        text2: "Personal information updated.",
+      });
+      router.push("/(auth)/(serviceProvider)/account-type");
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Update failed",
+        text2: err instanceof Error ? err.message : "Unable to save details. Please try again.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <ScrollView className="flex-1 bg-white" contentContainerStyle={{ padding: 24 }}>
@@ -102,6 +146,8 @@ export default function PersonalInformation() {
           <Text className="mb-2 text-sm font-medium text-gray-700">Address</Text>
           <TextInput
             placeholder="Your address"
+            value={address}
+            onChangeText={setAddress}
             className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4"
           />
         </View>
@@ -109,6 +155,8 @@ export default function PersonalInformation() {
           <Text className="mb-2 text-sm font-medium text-gray-700">City of residence</Text>
           <TextInput
             placeholder="Lagos"
+            value={city}
+            onChangeText={setCity}
             className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4"
           />
         </View>
@@ -187,10 +235,13 @@ export default function PersonalInformation() {
       </Pressable>
 
       <Pressable
-        className="mt-8 rounded-md bg-[#005823CC] py-4"
-        onPress={() => router.push("/(auth)/(serviceProvider)/account-type")}
+        className={`mt-8 rounded-md bg-[#005823CC] py-4 ${submitting ? "opacity-70" : ""}`}
+        onPress={handleSubmit}
+        disabled={submitting}
       >
-        <Text className="text-center font-semibold text-white">Next</Text>
+        <Text className="text-center font-semibold text-white">
+          {submitting ? "Saving..." : "Next"}
+        </Text>
       </Pressable>
     </ScrollView>
   );
