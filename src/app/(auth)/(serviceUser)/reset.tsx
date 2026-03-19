@@ -21,8 +21,8 @@ export default function ResetPassword() {
 
   const canContinue = useMemo(
     () =>
-      password.length >= 6 &&
-      confirmPassword.length >= 6 &&
+      password.length >= 8 &&
+      confirmPassword.length >= 8 &&
       password === confirmPassword,
     [password, confirmPassword],
   );

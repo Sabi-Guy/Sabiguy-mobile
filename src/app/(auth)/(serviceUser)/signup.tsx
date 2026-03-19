@@ -130,7 +130,7 @@ export default function signup() {
           </Text>
           <View className="relative">
             <TextInput
-              placeholder="Use a minimum of 6 characters"
+              placeholder="Use a minimum of 8 characters"
               secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}
