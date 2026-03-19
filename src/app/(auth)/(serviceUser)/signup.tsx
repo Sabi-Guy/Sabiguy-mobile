@@ -130,13 +130,13 @@ export default function signup() {
           </Text>
           <View className="relative">
             <TextInput
-              placeholder="Use a minimum of 6 characters"
+              placeholder="Use a minimum of 8 characters"
               secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}
               className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
               placeholderTextColor="#9CA3AF"
-            />{" "}
+            />
             <Pressable
               className="absolute right-4 top-1/2 -translate-y-1/2"
               onPress={() => setShowPassword((previous) => !previous)}
