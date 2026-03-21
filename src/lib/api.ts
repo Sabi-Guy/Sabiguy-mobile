@@ -5,10 +5,14 @@ type ApiOptions = RequestInit & { json?: unknown };
 
 export async function apiRequest<T = unknown>(path: string, options: ApiOptions = {}) {
   const { json, headers, ...rest } = options;
+  const { getAuthToken } = await import("./token");
+  const token = await getAuthToken();
+  const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...rest,
     headers: {
       "Content-Type": "application/json",
+      ...authHeader,
       ...(headers ?? {}),
     },
     body: json !== undefined ? JSON.stringify(json) : rest.body,

@@ -1,22 +1,120 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import BackButton from "@/components/BackButton";
 import { Ionicons } from "@expo/vector-icons";
 import ProgressBar from "@/components/ProgressBar";
 import BottomSheet from "@/components/bottomSheet";
+import Toast from "react-native-toast-message";
+import { apiRequest } from "@/lib/api";
 
-const BANKS = ["Access Bank", "GTBank", "First Bank", "UBA", "Zenith Bank", "Union Bank"];
+const BANKS = [
+  { name: "Access Bank", code: "044" },
+  { name: "GTBank", code: "058" },
+  { name: "First Bank", code: "011" },
+  { name: "UBA", code: "033" },
+  { name: "Zenith Bank", code: "057" },
+  { name: "Union Bank", code: "032" },
+];
 
 export default function BankAccount() {
   const router = useRouter();
   const [bank, setBank] = useState("");
+  const [bankCode, setBankCode] = useState("");
   const [isBankSheetVisible, setIsBankSheetVisible] = useState(false);
   const [bankSearch, setBankSearch] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [resolving, setResolving] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [allowManualName, setAllowManualName] = useState(true);
+  const lastResolveKey = useRef<string>("");
   const filteredBanks = useMemo(
-    () => BANKS.filter((item) => item.toLowerCase().includes(bankSearch.toLowerCase())),
+    () =>
+      BANKS.filter((item) => item.name.toLowerCase().includes(bankSearch.toLowerCase())),
     [bankSearch]
   );
+
+  const resolveAccount = async (numberOverride?: string, codeOverride?: string) => {
+    const numberToUse = (numberOverride ?? accountNumber).trim();
+    const codeToUse = codeOverride ?? bankCode;
+    if (!bankCode || accountNumber.trim().length < 10) {
+      return;
+    }
+    const key = `${codeToUse}:${numberToUse}`;
+    if (lastResolveKey.current === key) return;
+    lastResolveKey.current = key;
+    try {
+      setResolving(true);
+      const result = await apiRequest<{
+        data?: { account_name?: string; account_number?: string; bank_name?: string };
+        account_name?: string;
+      }>("/provider/bank-account/verify", {
+        method: "POST",
+        json: {
+          accountNumber: numberToUse,
+          bankCode: codeToUse,
+        },
+      });
+      const resolvedName = result?.data?.account_name ?? result?.account_name ?? "";
+      if (!resolvedName) {
+        Toast.show({
+          type: "error",
+          text1: "Not found",
+          text2: "Unable to resolve account name. Please confirm details.",
+        });
+        setAllowManualName(true);
+        return;
+      }
+      setAccountName(resolvedName);
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Resolve failed",
+        text2: err instanceof Error ? err.message : "Unable to resolve account.",
+      });
+      setAllowManualName(true);
+    } finally {
+      setResolving(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!bank || !bankCode || !accountNumber.trim() || !accountName.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Missing details",
+        text2: "Please complete your bank details.",
+      });
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await apiRequest("/provider/bank-info", {
+        method: "PUT",
+        json: {
+          accountName: accountName.trim(),
+          accountNumber: accountNumber.trim(),
+          bankName: bank,
+          bankCode,
+        },
+      });
+      Toast.show({
+        type: "success",
+        text1: "Saved",
+        text2: "Bank details updated.",
+      });
+      router.push("/(auth)/(serviceProvider)/profile-setup-complete");
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Update failed",
+        text2: err instanceof Error ? err.message : "Unable to save bank details.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <View className="flex-1 bg-white">
@@ -48,22 +146,33 @@ export default function BankAccount() {
               <Ionicons name="chevron-down" size={18} color="#6B7280" />
             </Pressable>
           </View>
-          <TextInput
-            placeholder="Account Number"
-            keyboardType="number-pad"
-            className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4"
-          />
+            <TextInput
+              placeholder="Account Number"
+              keyboardType="number-pad"
+              value={accountNumber}
+              onChangeText={setAccountNumber}
+              className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4"
+            />
           <TextInput
             placeholder="Account Name"
-            className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4"
+            value={accountName}
+            editable={allowManualName}
+            onChangeText={setAccountName}
+            className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-gray-700"
           />
+          <Text className="text-xs text-gray-500">
+            Enter account name manually for now.
+          </Text>
         </View>
 
         <Pressable
-          className="mt-8 rounded-md bg-[#005823CC] py-4"
-          onPress={() => router.push("/(auth)/(serviceProvider)/profile-setup-complete")}
+          className={`mt-8 rounded-md bg-[#005823CC] py-4 ${submitting ? "opacity-70" : ""}`}
+          onPress={handleSubmit}
+          disabled={submitting}
         >
-          <Text className="text-center font-semibold text-white">Next</Text>
+          <Text className="text-center font-semibold text-white">
+            {submitting ? "Saving..." : "Next"}
+          </Text>
         </Pressable>
       </ScrollView>
 
@@ -94,15 +203,16 @@ export default function BankAccount() {
             ) : (
               filteredBanks.map((item) => (
                 <Pressable
-                  key={item}
+                  key={item.code}
                   className="border-b border-gray-100 px-2 py-3"
                   onPress={() => {
-                    setBank(item);
+                    setBank(item.name);
+                    setBankCode(item.code);
                     setIsBankSheetVisible(false);
                     setBankSearch("");
                   }}
                 >
-                  <Text className="text-sm text-gray-700">{item}</Text>
+                  <Text className="text-sm text-gray-700">{item.name}</Text>
                 </Pressable>
               ))
             )}

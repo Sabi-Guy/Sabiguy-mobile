@@ -9,6 +9,7 @@ export default function ServiceProviderLayout() {
       <Stack.Screen name="account-type" options={{ headerShown: false }} />
       <Stack.Screen name="face-capture" options={{ headerShown: false }} />
       <Stack.Screen name="verify-skill" options={{ headerShown: false }} />
+      <Stack.Screen name="vehicle-information" options={{ headerShown: false }} />
       <Stack.Screen name="upload-documents" options={{ headerShown: false }} />
       <Stack.Screen name="bank-account" options={{ headerShown: false }} />
       <Stack.Screen name="profile-setup-complete" options={{ headerShown: false }} />

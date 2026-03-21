@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import BackButton from "@/components/BackButton";
 import { Ionicons } from "@expo/vector-icons";
 import ProgressBar from "@/components/ProgressBar";
 import * as DocumentPicker from "expo-document-picker";
+import Toast from "react-native-toast-message";
+import { apiRequest } from "@/lib/api";
 
 type AccountKind = "individual" | "business";
 type UploadDoc = { title: string; subtitle: string };
@@ -106,6 +108,23 @@ export default function AccountType() {
   const router = useRouter();
   const [accountType, setAccountType] = useState<AccountKind>("individual");
   const [uploadedDocs, setUploadedDocs] = useState<Record<string, PickedDoc | undefined>>({});
+  const [businessName, setBusinessName] = useState("");
+  const [regNumber, setRegNumber] = useState("");
+  const [businessAddress, setBusinessAddress] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const ninSlip = useMemo(
+    () => uploadedDocs["individual-NIN Slip"]?.uri,
+    [uploadedDocs]
+  );
+  const businessCac = useMemo(
+    () => uploadedDocs["business-CAC Certificate"]?.uri,
+    [uploadedDocs]
+  );
+  const businessNin = useMemo(
+    () => uploadedDocs["business-NIN Slip"]?.uri,
+    [uploadedDocs]
+  );
 
   const pickDoc = async (key: string) => {
     const result = await DocumentPicker.getDocumentAsync({
@@ -127,6 +146,81 @@ export default function AccountType() {
         size: file.size,
       },
     }));
+  };
+
+  const handleSubmit = async () => {
+    if (accountType === "individual") {
+      if (!ninSlip) {
+        Toast.show({
+          type: "error",
+          text1: "Missing document",
+          text2: "Please upload your NIN slip.",
+        });
+        return;
+      }
+      try {
+        setSubmitting(true);
+        await apiRequest("/provider", {
+          method: "POST",
+          json: {
+            accountType: "Personal",
+            ninSlip,
+          },
+        });
+        Toast.show({
+          type: "success",
+          text1: "Saved",
+          text2: "Account type updated.",
+        });
+        router.push("/(auth)/(serviceProvider)/face-capture");
+      } catch (err) {
+        Toast.show({
+          type: "error",
+          text1: "Update failed",
+          text2: err instanceof Error ? err.message : "Unable to save details.",
+        });
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
+
+    if (!businessName.trim() || !regNumber.trim() || !businessAddress.trim() || !businessCac) {
+      Toast.show({
+        type: "error",
+        text1: "Missing details",
+        text2: "Please complete business info and upload CAC certificate.",
+      });
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await apiRequest("/provider/business", {
+        method: "POST",
+        json: {
+          BusinessName: businessName.trim(),
+          regNumber: regNumber.trim(),
+          BusinessAddress: businessAddress.trim(),
+          cacFile: businessCac,
+          ninSlip: businessNin,
+        },
+      });
+      Toast.show({
+        type: "success",
+        text1: "Saved",
+        text2: "Business details updated.",
+      });
+      router.push("/(auth)/(serviceProvider)/face-capture");
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Update failed",
+        text2: err instanceof Error ? err.message : "Unable to save details.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -176,6 +270,22 @@ export default function AccountType() {
               <Text className="mb-2 text-sm font-medium text-gray-700">{field.label}</Text>
               <TextInput
                 placeholder={field.placeholder}
+                value={
+                  field.label === "Registered Business Name"
+                    ? businessName
+                    : field.label === "CAC Registration Number"
+                    ? regNumber
+                    : businessAddress
+                }
+                onChangeText={(value) => {
+                  if (field.label === "Registered Business Name") {
+                    setBusinessName(value);
+                  } else if (field.label === "CAC Registration Number") {
+                    setRegNumber(value);
+                  } else {
+                    setBusinessAddress(value);
+                  }
+                }}
                 className="rounded-lg border border-gray-200 bg-gray-100 px-4 py-3 text-sm"
               />
             </View>
@@ -197,10 +307,13 @@ export default function AccountType() {
       )}
 
       <Pressable
-        className="mt-8 rounded-md bg-[#005823CC] py-4"
-        onPress={() => router.push("/(auth)/(serviceProvider)/face-capture")}
+        className={`mt-8 rounded-md bg-[#005823CC] py-4 ${submitting ? "opacity-70" : ""}`}
+        onPress={handleSubmit}
+        disabled={submitting}
       >
-        <Text className="text-center font-semibold text-white">Next</Text>
+        <Text className="text-center font-semibold text-white">
+          {submitting ? "Saving..." : "Next"}
+        </Text>
       </Pressable>
     </ScrollView>
   );
