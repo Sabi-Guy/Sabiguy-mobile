@@ -12,6 +12,7 @@ import BackButton from "@/components/BackButton";
 
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import Toast from "react-native-toast-message";
 
 import { registerBuyer } from "@/lib/auth";
 
@@ -46,8 +47,22 @@ export default function signup() {
         address: address.trim(),
       });
 
-      (console.log(res), router.push("/(auth)/(serviceUser)/verify"));
+      //  router.push("/(auth)/(serviceUser)/verify");
+      router.push({
+        pathname: "/(auth)/(serviceUser)/verify",
+        params: { email: email.trim() },
+      });
+       Toast.show({
+        type: "success",
+        text1: "Registration successful",
+        text2: "Please verify your email to continue.",
+      });
     } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Registration failed",
+        text2: error instanceof Error ? error.message : "Unable to register. Please try again.",
+      });
       console.error(error);
     } finally {
       setIsSubmitting(false);
