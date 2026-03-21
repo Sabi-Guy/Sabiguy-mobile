@@ -1,7 +1,7 @@
 import {Tabs} from 'expo-router'
 export default function userTabsLayout(){
     return(
-        <Tabs>
+        <Tabs initialRouteName="(home)">
             <Tabs.Screen name='(home)'
             options={{
                 title: "Home"
