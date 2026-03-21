@@ -41,7 +41,7 @@ export default function login() {
         text1: "Login Successful",
         text2: "Welcome back!",
       });
-      router.push("/(protected)/(tabs)");
+      router.push("/(protected)/serviceUser/(tabs)/");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Unable to login. Please try again.";
