@@ -36,15 +36,24 @@ export default function ServiceProviderLogin() {
       const result = await apiRequest<{
         token?: string;
         refreshToken?: string;
+        accessToken?: string;
+        data?: { token?: string; accessToken?: string; refreshToken?: string };
       }>("/auth", {
         method: "POST",
         json: { email, password },
       });
-      if (result?.token) {
-        await setAuthToken(result.token);
+      const token =
+        result?.token ||
+        result?.accessToken ||
+        result?.data?.token ||
+        result?.data?.accessToken;
+      const refresh =
+        result?.refreshToken || result?.data?.refreshToken;
+      if (token) {
+        await setAuthToken(token);
       }
-      if (result?.refreshToken) {
-        await setRefreshToken(result.refreshToken);
+      if (refresh) {
+        await setRefreshToken(refresh);
       }
       await setUserEmail(email.trim());
       Toast.show({

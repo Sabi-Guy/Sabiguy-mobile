@@ -47,7 +47,7 @@ export async function uploadFile(category: UploadCategory, file: UploadFile) {
   );
 
   const response = await fetch(
-    `${API_BASE_URL}/upload/${encodeURIComponent(email)}/${category}`,
+    `${API_BASE_URL}/file/${encodeURIComponent(email)}/${category}`,
     {
       method: "POST",
       headers: {
@@ -57,10 +57,21 @@ export async function uploadFile(category: UploadCategory, file: UploadFile) {
     }
   );
 
-  const data = (await response.json().catch(() => null)) as UploadResponse | null;
+  const rawText = await response.text().catch(() => "");
+  let data: UploadResponse | null = null;
+  if (rawText) {
+    try {
+      data = JSON.parse(rawText) as UploadResponse;
+    } catch {
+      data = null;
+    }
+  }
   if (!response.ok) {
-    const message = data?.message ?? "Upload failed.";
+    const message =
+      data?.message ||
+      rawText ||
+      `Upload failed (status ${response.status}).`;
     throw new Error(message);
   }
-  return data;
+  return (data ?? { success: true }) as UploadResponse;
 }
