@@ -60,7 +60,7 @@ export default function ServiceProviderLogin() {
         type: "success",
         text1: "Login successful",
       });
-      router.push("/(auth)/(serviceProvider)/personal-information");
+      router.push("/(protected)/(tabs)");
     } catch (err) {
       Toast.show({
         type: "error",
