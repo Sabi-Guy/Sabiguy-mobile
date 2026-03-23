@@ -36,7 +36,7 @@ export default function verify() {
       setIsSubmitting(true);
       setHasError(false);
       await verifyEmailOtp({ otp });
-      router.push("/auth/serviceUser/accountReady");
+      router.push("/(auth)/(serviceUser)/accountReady");
     } catch (error) {
       setHasError(true);
       console.error(error);
