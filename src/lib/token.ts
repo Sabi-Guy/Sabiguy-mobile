@@ -2,6 +2,7 @@ import * as SecureStore from "expo-secure-store";
 
 const TOKEN_KEY = "auth_token";
 const REFRESH_TOKEN_KEY = "refresh_token";
+const EMAIL_KEY = "user_email";
 
 export async function setAuthToken(token: string) {
   if (!token) return;
@@ -27,4 +28,17 @@ export async function getRefreshToken() {
 
 export async function clearRefreshToken() {
   await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+}
+
+export async function setUserEmail(email: string) {
+  if (!email) return;
+  await SecureStore.setItemAsync(EMAIL_KEY, email);
+}
+
+export async function getUserEmail() {
+  return SecureStore.getItemAsync(EMAIL_KEY);
+}
+
+export async function clearUserEmail() {
+  await SecureStore.deleteItemAsync(EMAIL_KEY);
 }
