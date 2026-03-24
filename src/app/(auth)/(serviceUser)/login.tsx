@@ -58,13 +58,15 @@ export default function login() {
       <View className="mt-8 gap-5">
         <View>
           <Text className="mb-2 text-sm font-medium text-gray-800">
-            Email or phone
+            Email
           </Text>
           <TextInput
-            placeholder="Enter your email or phone"
+            placeholder="Enter your email"
             className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
             value={email}
             onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
             placeholderTextColor="#9CA3AF"
           />
         </View>

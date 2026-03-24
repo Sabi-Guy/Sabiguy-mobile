@@ -74,10 +74,11 @@ export default function ServiceProviderLogin() {
 
       <View className="mt-8 gap-5">
         <View>
-          <Text className="mb-2 text-sm font-medium text-gray-800">Email or phone</Text>
+          <Text className="mb-2 text-sm font-medium text-gray-800">Email</Text>
           <TextInput
-            placeholder="Enter your email or phone"
+            placeholder="Enter your email"
             autoCapitalize="none"
+            keyboardType="email-address"
             value={email}
             onChangeText={setEmail}
             className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
