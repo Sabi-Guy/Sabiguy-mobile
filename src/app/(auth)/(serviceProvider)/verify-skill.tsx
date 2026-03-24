@@ -6,6 +6,9 @@ import { Ionicons } from "@expo/vector-icons";
 import ProgressBar from "@/components/ProgressBar";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
+import Toast from "react-native-toast-message";
+import { apiRequest } from "@/lib/api";
+import { uploadFile } from "@/lib/upload";
 
 const CATEGORIES = [
   "Emergency Services",
@@ -16,8 +19,8 @@ const CATEGORIES = [
   "Freelance & Creative Services",
 ];
 const ROLES = ["Car driver", "Motorbike driver"];
-type PickedDoc = { name: string; uri: string; mimeType?: string; size?: number };
-type PickedImage = { name: string; uri: string; mimeType?: string; size?: number };
+type PickedDoc = { name: string; uri: string; mimeType?: string; size?: number; remoteUrl?: string };
+type PickedImage = { name: string; uri: string; mimeType?: string; size?: number; remoteUrl?: string };
 
 function UploadBlock({
   title,
@@ -68,6 +71,7 @@ export default function VerifySkill() {
   const [profilePhoto, setProfilePhoto] = useState<PickedImage | null>(null);
   const [driverLicense, setDriverLicense] = useState<PickedDoc | null>(null);
   const [ninSlip, setNinSlip] = useState<PickedDoc | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const filteredCategories = useMemo(
     () => CATEGORIES.filter((item) => item.toLowerCase().includes(categoryQuery.toLowerCase())),
@@ -78,7 +82,10 @@ export default function VerifySkill() {
     [roleQuery]
   );
 
-  const pickDoc = async (setter: (doc: PickedDoc) => void) => {
+  const pickDoc = async (
+    categoryKey: "certificates" | "identity_docs",
+    setter: (doc: PickedDoc) => void
+  ) => {
     const result = await DocumentPicker.getDocumentAsync({
       type: "*/*",
       copyToCacheDirectory: true,
@@ -89,17 +96,37 @@ export default function VerifySkill() {
     const file = result.assets?.[0];
     if (!file) return;
 
-    setter({
+    const picked = {
       name: file.name,
       uri: file.uri,
       mimeType: file.mimeType,
       size: file.size,
-    });
+    };
+    setter(picked);
+
+    try {
+      const response = await uploadFile(categoryKey, picked);
+      setter({ ...picked, remoteUrl: response?.file?.url });
+      Toast.show({ type: "success", text1: "Upload complete" });
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Upload failed",
+        text2: err instanceof Error ? err.message : "Unable to upload file.",
+      });
+    }
   };
 
-  const pickImage = async () => {
+  const pickImage = async (categoryKey: "profile_pictures") => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) return;
+    if (!permission.granted) {
+      Toast.show({
+        type: "error",
+        text1: "Permission required",
+        text2: "Please allow access to your photos.",
+      });
+      return;
+    }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -111,18 +138,135 @@ export default function VerifySkill() {
     const asset = result.assets?.[0];
     if (!asset) return;
 
-    setProfilePhoto({
+    const picked = {
       name: asset.fileName ?? "profile-photo",
       uri: asset.uri,
       mimeType: asset.mimeType,
       size: asset.fileSize,
-    });
+    };
+    setProfilePhoto(picked);
+
+    try {
+      const response = await uploadFile(categoryKey, picked);
+      setProfilePhoto({ ...picked, remoteUrl: response?.file?.url });
+      Toast.show({ type: "success", text1: "Upload complete" });
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Upload failed",
+        text2: err instanceof Error ? err.message : "Unable to upload image.",
+      });
+    }
+  };
+
+  const buildJobPayload = () => {
+    const serviceName = role || category;
+    if (!serviceName) return null;
+    return {
+      job: [
+        {
+          service: serviceName,
+          title: category,
+          tagLine: role ? `${role} service` : "Experienced provider",
+          startingPrice: "0",
+        },
+      ],
+      service: [
+        {
+          serviceName,
+          pricingModel: "fixed",
+          price: "0",
+        },
+      ],
+      ...(licenseNumber ? { driverLicenseNumber: licenseNumber.trim() } : {}),
+    };
+  };
+
+  const handleNext = async () => {
+    if (!category) {
+      Toast.show({
+        type: "error",
+        text1: "Missing details",
+        text2: "Please select a job title.",
+      });
+      return;
+    }
+
+    if (category === "Transport & Logistics") {
+      if (!role) {
+        Toast.show({
+          type: "error",
+          text1: "Missing details",
+          text2: "Please select a role to continue.",
+        });
+        return;
+      }
+      if (!licenseNumber.trim()) {
+        Toast.show({
+          type: "error",
+          text1: "Missing details",
+          text2: "Please enter your driver's license number.",
+        });
+        return;
+      }
+      if (!profilePhoto?.remoteUrl || !driverLicense?.remoteUrl || !ninSlip?.remoteUrl) {
+        Toast.show({
+          type: "error",
+          text1: "Missing uploads",
+          text2: "Please upload your profile photo, license, and NIN slip.",
+        });
+        return;
+      }
+      router.push({
+        pathname: "/(auth)/(serviceProvider)/vehicle-information",
+        params: {
+          category,
+          role,
+          driverLicenseNumber: licenseNumber.trim(),
+        },
+      });
+      return;
+    }
+
+    if (!profilePhoto?.remoteUrl || !driverLicense?.remoteUrl || !ninSlip?.remoteUrl) {
+      Toast.show({
+        type: "error",
+        text1: "Missing uploads",
+        text2: "Please upload your profile photo, license, and NIN slip.",
+      });
+      return;
+    }
+
+    const payload = buildJobPayload();
+    if (!payload) return;
+
+    try {
+      setSubmitting(true);
+      await apiRequest("/provider/job-service", {
+        method: "POST",
+        json: payload,
+      });
+      Toast.show({
+        type: "success",
+        text1: "Saved",
+        text2: "Job and service details updated.",
+      });
+      router.push("/(auth)/(serviceProvider)/bank-account");
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Update failed",
+        text2: err instanceof Error ? err.message : "Unable to save details.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <ScrollView className="flex-1 bg-white" contentContainerStyle={{ padding: 24 }}>
-        <BackButton />
-        <View className="mt-8">
+      <BackButton />
+      <View className="mt-8">
         <View className="mb-6">
           <ProgressBar step={4} total={5} />
         </View>
@@ -237,7 +381,7 @@ export default function VerifySkill() {
           subtitle="Please provide a clear portrait picture of yourself. It should show your full face, front view, with eyes open. No filters, sunglasses or masks."
           selected={!!profilePhoto}
           fileName={profilePhoto?.name}
-          onPress={pickImage}
+          onPress={() => pickImage("profile_pictures")}
         />
 
         <UploadBlock
@@ -245,7 +389,7 @@ export default function VerifySkill() {
           subtitle="Please provide a clear driver's license showing the license number, your name, and date of birth."
           selected={!!driverLicense}
           fileName={driverLicense?.name}
-          onPress={() => pickDoc(setDriverLicense)}
+          onPress={() => pickDoc("certificates", setDriverLicense)}
         />
 
         <UploadBlock
@@ -253,22 +397,19 @@ export default function VerifySkill() {
           subtitle="Kindly upload a picture of your NIN slip. Ensure all details are readable."
           selected={!!ninSlip}
           fileName={ninSlip?.name}
-          onPress={() => pickDoc(setNinSlip)}
+          onPress={() => pickDoc("identity_docs", setNinSlip)}
         />
       </View>
 
-        <Pressable
-          className="mt-8 rounded-md bg-[#005823CC] py-4"
-          onPress={() => {
-            if (category === "Transport & Logistics") {
-              router.push("/(auth)/(serviceProvider)/vehicle-information");
-              return;
-            }
-            router.push("/(auth)/(serviceProvider)/bank-account");
-          }}
-        >
-          <Text className="text-center font-semibold text-white">Next</Text>
-        </Pressable>
+      <Pressable
+        className={`mt-8 rounded-md bg-[#005823CC] py-4 ${submitting ? "opacity-70" : ""}`}
+        onPress={handleNext}
+        disabled={submitting}
+      >
+        <Text className="text-center font-semibold text-white">
+          {submitting ? "Saving..." : "Next"}
+        </Text>
+      </Pressable>
     </ScrollView>
   );
 }
