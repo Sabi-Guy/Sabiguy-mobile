@@ -24,7 +24,6 @@ export default function login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // () => router.push("/(auth)/(serviceUser)/signup")
   const handleLogin = async () => {
     if (isSubmitting) {
       return;
