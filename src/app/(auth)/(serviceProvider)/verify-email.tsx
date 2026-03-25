@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import BackButton from "@/components/BackButton";
 import OTP from "@/components/OTP";
 import { apiRequest } from "@/lib/api";
+import { setAuthToken, setRefreshToken, setUserEmail } from "@/lib/token";
 
 export default function VerifyEmail() {
   const router = useRouter();
@@ -31,11 +32,34 @@ export default function VerifyEmail() {
     setErrorMessage(null);
     try {
       setSubmitting(true);
-      await apiRequest("/auth/email", {
+      const result = await apiRequest<{
+        token?: string;
+        refreshToken?: string;
+        accessToken?: string;
+        data?: { token?: string; accessToken?: string; refreshToken?: string };
+      }>("/auth/email", {
         method: "POST",
         json: { otp: code },
       });
-      router.push("/(auth)/(serviceProvider)/account-setup");
+      const token =
+        result?.token ||
+        result?.accessToken ||
+        result?.data?.token ||
+        result?.data?.accessToken;
+      const refresh =
+        result?.refreshToken || result?.data?.refreshToken;
+
+      if (token) {
+        await setAuthToken(token);
+        if (refresh) await setRefreshToken(refresh);
+        if (email) await setUserEmail(email);
+        router.push("/(auth)/(serviceProvider)/account-setup");
+      } else {
+        router.push({
+          pathname: "/(auth)/(serviceProvider)/login",
+          params: { email },
+        });
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Invalid or expired OTP.";
       setHasError(true);

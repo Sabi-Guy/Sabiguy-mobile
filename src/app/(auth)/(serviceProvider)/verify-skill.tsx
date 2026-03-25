@@ -83,7 +83,7 @@ export default function VerifySkill() {
   );
 
   const pickDoc = async (
-    category: "certificates" | "identity_docs",
+    categoryKey: "certificates" | "identity_docs",
     setter: (doc: PickedDoc) => void
   ) => {
     const result = await DocumentPicker.getDocumentAsync({
@@ -105,7 +105,7 @@ export default function VerifySkill() {
     setter(picked);
 
     try {
-      const response = await uploadFile(category, picked);
+      const response = await uploadFile(categoryKey, picked);
       setter({ ...picked, remoteUrl: response?.file?.url });
       Toast.show({ type: "success", text1: "Upload complete" });
     } catch (err) {
@@ -117,7 +117,7 @@ export default function VerifySkill() {
     }
   };
 
-  const pickImage = async (category: "profile_pictures") => {
+  const pickImage = async (categoryKey: "profile_pictures") => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
       Toast.show({
@@ -147,7 +147,7 @@ export default function VerifySkill() {
     setProfilePhoto(picked);
 
     try {
-      const response = await uploadFile(category, picked);
+      const response = await uploadFile(categoryKey, picked);
       setProfilePhoto({ ...picked, remoteUrl: response?.file?.url });
       Toast.show({ type: "success", text1: "Upload complete" });
     } catch (err) {
@@ -265,8 +265,8 @@ export default function VerifySkill() {
 
   return (
     <ScrollView className="flex-1 bg-white" contentContainerStyle={{ padding: 24 }}>
-        <BackButton />
-        <View className="mt-8">
+      <BackButton />
+      <View className="mt-8">
         <View className="mb-6">
           <ProgressBar step={4} total={5} />
         </View>
@@ -401,15 +401,15 @@ export default function VerifySkill() {
         />
       </View>
 
-        <Pressable
-          className={`mt-8 rounded-md bg-[#005823CC] py-4 ${submitting ? "opacity-70" : ""}`}
-          onPress={handleNext}
-          disabled={submitting}
-        >
-          <Text className="text-center font-semibold text-white">
-            {submitting ? "Saving..." : "Next"}
-          </Text>
-        </Pressable>
+      <Pressable
+        className={`mt-8 rounded-md bg-[#005823CC] py-4 ${submitting ? "opacity-70" : ""}`}
+        onPress={handleNext}
+        disabled={submitting}
+      >
+        <Text className="text-center font-semibold text-white">
+          {submitting ? "Saving..." : "Next"}
+        </Text>
+      </Pressable>
     </ScrollView>
   );
 }
