@@ -3,6 +3,7 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import BackButton from "@/components/BackButton";
 import { forgotPassword } from "@/lib/auth";
+import Toast from "react-native-toast-message";
 
 export default function forgot() {
   const router = useRouter();
@@ -22,7 +23,17 @@ export default function forgot() {
         pathname: "/(auth)/(serviceUser)/forgotOtp",
         params: { email: trimmedEmail },
       });
+      Toast.show({
+        type: "success",
+        text1: "Reset email sent",
+        text2: "Please check your inbox for the OTP to reset your password.",
+      })
     } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Failed to send reset email",
+        text2: err instanceof Error ? err.message : "Please try again.",
+      });
       console.error(err);
     } finally {
       setSubmitting(false);

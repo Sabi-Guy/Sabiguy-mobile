@@ -81,6 +81,31 @@ export const verifyEmailOtp = async (data: VerifyEmailPayload) => {
   return result;
 };
 
+// resend email verification otp
+export interface ResendOtpPayload {
+  email: string;
+}
+
+export const resendOtp = async (data: ResendOtpPayload) => {
+  const response = await fetch(`${BASE_URL}/auth/resend-otp`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    const message =
+      typeof result?.message === "string" ? result.message : "Resend OTP failed";
+    throw new Error(message);
+  }
+
+  return result;
+};
+
 // forgot password
 export interface ForgotPasswordPayload {
   email: string;

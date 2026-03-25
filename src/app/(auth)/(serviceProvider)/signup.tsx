@@ -5,6 +5,7 @@ import BackButton from "@/components/BackButton";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { apiRequest } from "@/lib/api";
+import { setUserEmail } from "@/lib/token";
 import Toast from "react-native-toast-message";
 
 const PASSWORD_RULE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
@@ -56,6 +57,7 @@ export default function ServiceProviderSignup() {
         method: "POST",
         json: { name, email, password, phoneNumber },
       });
+      await setUserEmail(email.trim());
 
       Toast.show({
         type: "success",

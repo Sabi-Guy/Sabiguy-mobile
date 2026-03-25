@@ -15,10 +15,10 @@ export default function accountReady() {
       <Text className="mt-2 mb-32 text-center text-base text-gray-600">
        Explore our services, connect with professionals, and start getting things done with ease.
       </Text>
-      <Pressable className="mt-10 w-full rounded-md bg-[#005823CC] py-4" onPress={() => router.push("/(protected)/(tabs)/index")}>
+      <Pressable className="mt-10 w-full rounded-md bg-[#005823CC] py-4" onPress={() => router.replace("/(protected)/(serviceUser)/(tabs)/(home)")}>
         <Text className="text-center font-semibold text-white">Go to Dashboard</Text>
       </Pressable>
-      <Pressable className="mt-2 w-full rounded-md py-4" onPress={() => router.push("/(protected)/(tabs)/index")}>
+      <Pressable className="mt-2 w-full rounded-md py-4" onPress={() => router.replace("/(protected)/(serviceUser)/(tabs)/(home)")}>
         <Text className="text-center font-semibold text-black">Browse Services</Text>
       </Pressable>
     </View>
