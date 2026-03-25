@@ -19,6 +19,12 @@ export default function chooseRole() {
 
   return (
     <View className="flex-1 justify-center px-6 bg-white">
+      <Pressable
+        className="absolute right-6 top-12"
+        onPress={() => router.push("/(auth)/(serviceUser)/login")}
+      >
+        <Text className="text-sm font-semibold text-[#005823CC]">Login</Text>
+      </Pressable>
       <Text className="text-2xl font-bold text-gray-900 mb-6 text-center">
         How do you want to use SabiGUY
       </Text>
