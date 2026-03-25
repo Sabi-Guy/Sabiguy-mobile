@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react'
-import { FlatList, ImageSourcePropType, useWindowDimensions, View } from 'react-native'
+import { FlatList, ImageSourcePropType, Pressable, Text, useWindowDimensions, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import OnboardingSlide from './OnboardingSlide'
 
@@ -86,14 +86,33 @@ export default function OnboardingCarousel() {
             title={item.title}
             description={item.description}
             image={item.image}
-            buttonText={item.buttonText}
-            currentSlideIndex={currentSlideIndex}
-            totalSlides={slides.length}
-            isLastSlide={index === slides.length - 1}
-            onPress={index === slides.length - 1 ? handleGetStarted : handleContinue}
           />
         )}
       />
+      <View className="px-8 pb-28">
+        <View className="my-6 flex-row items-center justify-center">
+          {Array.from({ length: slides.length }).map((_, index) => (
+            <View
+              key={index}
+              className={`mx-1 h-2 rounded-full ${
+                index === currentSlideIndex ? 'w-6 bg-[#005823CC]' : 'w-2 bg-gray-300'
+              }`}
+            />
+          ))}
+        </View>
+        <Pressable
+          className="rounded-md bg-[#005823CC] py-4"
+          onPress={
+            currentSlideIndex === slides.length - 1
+              ? handleGetStarted
+              : handleContinue
+          }
+        >
+          <Text className="text-center text-white">
+            {slides[currentSlideIndex]?.buttonText ?? 'Continue'}
+          </Text>
+        </Pressable>
+      </View>
     </View>
   )
 }
