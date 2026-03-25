@@ -90,7 +90,7 @@ export default function signup() {
             Full Name
           </Text>
           <TextInput
-            placeholder="Enter your name"
+            placeholder="Enter your first and last name"
             value={fullName}
             onChangeText={setFullName}
             className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
@@ -130,7 +130,7 @@ export default function signup() {
             Phone Number
           </Text>
           <TextInput
-            placeholder="Enter your number"
+            placeholder="Enter your phone number"
             keyboardType="phone-pad"
             value={phoneNumber}
             onChangeText={setPhoneNumber}

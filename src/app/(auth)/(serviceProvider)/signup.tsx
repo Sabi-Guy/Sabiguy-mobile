@@ -15,6 +15,7 @@ export default function ServiceProviderSignup() {
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -26,14 +27,15 @@ export default function ServiceProviderSignup() {
       agreed &&
       name.trim().length > 0 &&
       email.trim().length > 0 &&
+      address.trim().length > 0 &&
       phoneNumber.trim().length > 0 &&
       password.length > 0 &&
       !submitting,
-    [agreed, name, email, phoneNumber, password, submitting]
+    [agreed, name, email, address, phoneNumber, password, submitting]
   );
 
   const handleSubmit = async () => {
-    if (!name.trim() || !email.trim() || !phoneNumber.trim() || !password) {
+    if (!name.trim() || !email.trim() || !address.trim() || !phoneNumber.trim() || !password) {
       Toast.show({
         type: "error",
         text1: "Missing details",
@@ -55,7 +57,7 @@ export default function ServiceProviderSignup() {
       setSubmitting(true);
       await apiRequest("/auth/provider", {
         method: "POST",
-        json: { name, email, password, phoneNumber },
+        json: { name, email, password, phoneNumber, address: address.trim() },
       });
       await setUserEmail(email.trim());
 
@@ -93,7 +95,7 @@ export default function ServiceProviderSignup() {
         <View>
           <Text className="mb-2 text-sm font-medium text-gray-800">Full Name</Text>
           <TextInput
-            placeholder="Enter your name"
+            placeholder="Enter your first and last name"
             value={name}
             onChangeText={setName}
             className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
@@ -115,9 +117,21 @@ export default function ServiceProviderSignup() {
         </View>
 
         <View>
+          <Text className="mb-2 text-sm font-medium text-gray-800">Address</Text>
+          <TextInput
+            placeholder="Enter your address"
+            autoCapitalize="none"
+            value={address}
+            onChangeText={setAddress}
+            className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
+            placeholderTextColor="#9CA3AF"
+          />
+        </View>
+
+        <View>
           <Text className="mb-2 text-sm font-medium text-gray-800">Phone Number</Text>
           <TextInput
-            placeholder="Enter your number"
+            placeholder="Enter your phone number"
             keyboardType="phone-pad"
             value={phoneNumber}
             onChangeText={setPhoneNumber}

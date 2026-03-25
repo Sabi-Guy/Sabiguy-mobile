@@ -35,11 +35,10 @@ export default function FaceCapture() {
       return url;
     } catch (err) {
       setRemoteUrl(null);
-      const message = err instanceof Error ? err.message : "Unable to upload image.";
       Toast.show({
         type: "error",
         text1: "Upload failed",
-        text2: message,
+        text2: err instanceof Error ? err.message : "Unable to upload image.",
       });
       return null;
     } finally {

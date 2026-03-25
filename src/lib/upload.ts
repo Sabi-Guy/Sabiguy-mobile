@@ -66,11 +66,9 @@ export async function uploadFile(category: UploadCategory, file: UploadFile) {
       data = null;
     }
   }
+
   if (!response.ok) {
-    const message =
-      data?.message ||
-      rawText ||
-      `Upload failed (status ${response.status}).`;
+    const message = data?.message || rawText || `Upload failed (status ${response.status}).`;
     throw new Error(message);
   }
   return (data ?? { success: true }) as UploadResponse;
