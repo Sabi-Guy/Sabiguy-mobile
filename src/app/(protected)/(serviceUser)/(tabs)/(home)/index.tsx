@@ -16,6 +16,7 @@ import siren from "../../../../../../assets/siren.png";
 import truck from "../../../../../../assets/truck.png";
 
 import PopularCard from "../../../../../components/popularCard";
+import ProviderCards from "@/components/ProviderCards";
 
 export default function App() {
   return (
@@ -58,22 +59,37 @@ export default function App() {
       <View className="m-5 ">
         {/* popular */}
         <View>
-          <Text>Popular Services</Text>
+          <Text className="text-2xl font-semibold">Popular Services</Text>
         </View>
         {/* categories */}
         <View className="">
-          <Text>Categories</Text>
-          <View className="flex-row space-x-4">
-            <PopularCard image={siren} text_one="Emergency" text_two="24/7 Support" />
-            <PopularCard image={truck} text_one="Transport" text_two="& Logistics" />
-            <PopularCard image={tool} text_one="Home" text_two="& Repair" />
-            <PopularCard image={family} text_one="Domestic " text_two="& Lifestyle" />
+          <View className="flex-row justify-between items-center mb-3">
+            <Text className="text-2xl font-semibold">Categories</Text>
+            <Text className="font-bold text-[#005823]">See more</Text>
+          </View>
 
+          <View className="flex-row space-x-4">
+            <PopularCard image={siren} text_one="Emergency" text_two="" />
+            <PopularCard
+              image={truck}
+              text_one="Transport"
+              text_two="& Logistics"
+            />
+            <PopularCard image={tool} text_one="Home" text_two="& Repair" />
+            <PopularCard
+              image={family}
+              text_one="Domestic "
+              text_two="& Lifestyle"
+            />
           </View>
         </View>
         {/* popular providers */}
         <View>
-          <Text>Popular Providers</Text>
+          <Text className="text-2xl font-semibold">Popular Providers</Text>
+          <View className="gap-3">
+            <ProviderCards />
+            <ProviderCards />
+          </View>
         </View>
       </View>
     </ScrollView>
