@@ -1,8 +1,21 @@
-import { Text, View, ScrollView, Image } from "react-native";
+import {
+  Text,
+  View,
+  ScrollView,
+  Image,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import bell from "../../../../../../assets/bell.png";
 import location from "../../../../../../assets/location.png";
 import bgimage from "../../../../../../assets/bgimage.png";
 import SearchBar from "../../../../../components/SearchBar";
+import family from "../../../../../../assets/family.png";
+import tool from "../../../../../../assets/hand-tools.png";
+import siren from "../../../../../../assets/siren.png";
+import truck from "../../../../../../assets/truck.png";
+
+import PopularCard from "../../../../../components/popularCard";
 
 export default function App() {
   return (
@@ -18,10 +31,15 @@ export default function App() {
         {/* top */}
         <View className="flex-row items-start justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-white text-lg font-semibold">Hello, Kuks 👋</Text>
+            <Text className="text-white text-lg font-semibold">
+              Hello, Kuks 👋
+            </Text>
             <View className="mt-2 flex-row items-center py-1.5 rounded-full self-start">
-              <Image source={location} className="h-5 w-5"/>
-              <Text className="text-white text-xs"> 24, Ipaja, Lagos, Nigeria </Text>
+              <Image source={location} className="h-5 w-5" />
+              <Text className="text-white text-xs">
+                {" "}
+                24, Ipaja, Lagos, Nigeria{" "}
+              </Text>
             </View>
           </View>
 
@@ -43,8 +61,15 @@ export default function App() {
           <Text>Popular Services</Text>
         </View>
         {/* categories */}
-        <View>
+        <View className="">
           <Text>Categories</Text>
+          <View className="flex-row space-x-4">
+            <PopularCard image={siren} text_one="Emergency" text_two="24/7 Support" />
+            <PopularCard image={truck} text_one="Transport" text_two="& Logistics" />
+            <PopularCard image={tool} text_one="Home" text_two="& Repair" />
+            <PopularCard image={family} text_one="Domestic " text_two="& Lifestyle" />
+
+          </View>
         </View>
         {/* popular providers */}
         <View>
