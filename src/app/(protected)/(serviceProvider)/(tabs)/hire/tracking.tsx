@@ -1,7 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
+﻿import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+
 
 const routeStops = [
   { label: "Pickup", value: "15 Victoria Island, Lagos" },
@@ -40,6 +41,22 @@ export default function TrackingDetails() {
     <View className="flex-1 bg-[#F6F7F3]">
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 24 }}>
         <View className="h-56 bg-[#E6E8E2]">
+          <View className="absolute inset-0 opacity-70">
+            <View className="absolute left-6 top-8 h-16 w-16 rounded-xl bg-white/60" />
+            <View className="absolute right-8 top-12 h-10 w-10 rounded-lg bg-white/60" />
+            <View className="absolute left-16 bottom-12 h-12 w-12 rounded-lg bg-white/60" />
+          </View>
+          <View className="absolute left-10 top-10 h-20 w-20 rounded-full border-2 border-[#B7C4B8]" />
+          <View className="absolute right-10 top-16 h-24 w-24 rounded-full border-2 border-[#B7C4B8]" />
+          <View className="absolute left-10 top-20 h-1 w-32 rounded-full bg-[#0F7A3A]" />
+          <View className="absolute left-36 top-20 h-24 w-1 rounded-full bg-[#0F7A3A]" />
+          <View className="absolute left-36 top-44 h-1 w-28 rounded-full bg-[#0F7A3A]" />
+          <View className="absolute left-8 top-18 h-3 w-3 rounded-full bg-white">
+            <View className="h-2 w-2 rounded-full bg-[#0F7A3A]" />
+          </View>
+          <View className="absolute left-60 top-44 h-3 w-3 rounded-full bg-white">
+            <View className="h-2 w-2 rounded-full bg-[#0F7A3A]" />
+          </View>
           <View className="absolute inset-0 items-center pt-4">
             <Text className="text-xs font-semibold text-[#231F20]">Tracking Details</Text>
           </View>
@@ -57,7 +74,10 @@ export default function TrackingDetails() {
           </View>
         </View>
 
-        <View className="mx-4 -mt-8 rounded-2xl bg-white p-4 shadow-sm">
+        <View
+          className="mx-4 -mt-8 bg-white p-4 shadow-sm"
+          style={{ width: 393, height: 500, borderTopLeftRadius: 16, borderTopRightRadius: 16, alignSelf: "center" }}
+        >
           <Text className="text-[10px] font-semibold text-[#231F2099]">Arriving in 12 min</Text>
           <View className="mt-3 flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
@@ -107,7 +127,7 @@ export default function TrackingDetails() {
 
           <View className="mt-4">
             <Text className="text-xs font-semibold text-[#231F2099]">Fare</Text>
-            <Text className="mt-2 text-sm font-semibold text-[#0F7A3A]">₦5,000</Text>
+            <Text className="mt-2 text-sm font-semibold text-[#0F7A3A]">â‚¦5,000</Text>
           </View>
 
           <View className="mt-4">
@@ -157,3 +177,5 @@ export default function TrackingDetails() {
     </View>
   );
 }
+
+

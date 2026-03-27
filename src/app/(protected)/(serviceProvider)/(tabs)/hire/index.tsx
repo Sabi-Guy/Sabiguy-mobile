@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 
+
 const hireAlerts = [
   {
     id: "1",
@@ -41,10 +42,16 @@ export default function Hire() {
   const [activeTab, setActiveTab] = useState<"alerts" | "jobs">("alerts");
 
   return (
-    <ScrollView className="flex-1 bg-[#F6F7F3]" contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
+    <ScrollView
+      className="flex-1 bg-[#F6F7F3]"
+      contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 40 }}
+    >
       <Text className="text-base font-semibold text-center text-[#231F20]">Hire Alerts</Text>
 
-      <View className="mt-4 flex-row rounded-full bg-[#F2F3EE] p-1">
+      <View
+        className="mt-4 flex-row bg-[#F2F3EE] p-1"
+        style={{ width: 344, height: 42, borderRadius: 8, alignSelf: "center" }}
+      >
         <Pressable
           onPress={() => setActiveTab("alerts")}
           className={`flex-1 rounded-full px-4 py-2 ${
@@ -74,9 +81,13 @@ export default function Hire() {
       </View>
 
       {activeTab === "alerts" ? (
-        <View className="mt-4 gap-4">
+        <View className="mt-4" style={{ width: 345, height: 785, alignSelf: "center", gap: 16 }}>
           {hireAlerts.map((alert) => (
-            <View key={alert.id} className="rounded-2xl bg-white p-4 shadow-sm">
+            <View
+              key={alert.id}
+              className="rounded-2xl bg-white p-4 shadow-sm"
+              style={{ width: 345, alignSelf: "center" }}
+            >
               <View className="flex-row items-center justify-between">
                 <Text className="text-sm font-semibold text-[#231F20]">{alert.title}</Text>
                 {alert.isNew && (
@@ -100,24 +111,25 @@ export default function Hire() {
                   <Text className="text-xs text-[#231F2099]">Dropoff</Text>
                   <Text className="text-xs text-[#231F20]">{alert.dropoff}</Text>
                 </View>
-                <View className="flex-row items-start gap-2">
-                  <View className="mt-1 h-2 w-2 rounded-full bg-[#0F7A3A]" />
-                  <Text className="text-xs text-[#231F2099]">{alert.distance}</Text>
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-start gap-2">
+                    <View className="mt-1 h-2 w-2 rounded-full bg-[#0F7A3A]" />
+                    <Text className="text-xs text-[#231F2099]">{alert.distance}</Text>
+                  </View>
+                  <Text className="text-xs font-semibold text-[#0F7A3A]">{alert.price}</Text>
                 </View>
               </View>
 
-              <View className="mt-4 flex-row items-center justify-between">
-                <View className="flex-row gap-2">
-                  <Pressable className="rounded-full border border-[#E6E6E6] px-4 py-2">
-                    <Text className="text-xs font-semibold text-[#231F20]">Decline</Text>
-                  </Pressable>
-                  <Pressable
-                    className="rounded-full bg-[#0F7A3A] px-4 py-2"
-                    onPress={() => router.push("/(protected)/(serviceProvider)/(tabs)/hire/tracking")}
-                  >
-                    <Text className="text-xs font-semibold text-white">Accept {alert.price}</Text>
-                  </Pressable>
-                </View>
+              <View className="mt-3 flex-row gap-2">
+                <Pressable className="flex-1 rounded-full border border-[#E6E6E6] py-2">
+                  <Text className="text-center text-xs font-semibold text-[#231F20]">Decline</Text>
+                </Pressable>
+                <Pressable
+                  className="flex-1 rounded-full bg-[#0F7A3A] py-2"
+                  onPress={() => router.push("/(protected)/(serviceProvider)/(tabs)/hire/tracking")}
+                >
+                  <Text className="text-center text-xs font-semibold text-white">Accept</Text>
+                </Pressable>
               </View>
             </View>
           ))}
@@ -132,5 +144,10 @@ export default function Hire() {
     </ScrollView>
   );
 }
+
+
+
+
+
 
 

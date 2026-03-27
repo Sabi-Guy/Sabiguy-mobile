@@ -50,7 +50,7 @@ export default function ServiceProviderHome() {
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="text-xs text-[#231F2099]">Hello</Text>
-            <Text className="mt-1 text-lg font-semibold text-[#231F20]">Phil Crook</Text>
+            <Text className="mt-1 text-lg font-semibold text-[#231F20]">Phil Crook 👋</Text>
           </View>
           <View className="flex-row items-center gap-3">
             <View className="flex-row items-center rounded-full bg-white px-2 py-1 shadow-sm">
@@ -92,14 +92,14 @@ export default function ServiceProviderHome() {
                   item.tone === "success" ? "border-[#0F7A3A]" : "border-[#E6E6E6]"
                 }`}
               >
-                <Text className="text-xs text-[#231F2099]">{item.label}</Text>
                 <Text
-                  className={`mt-2 text-sm font-semibold ${
+                  className={`text-sm font-semibold ${
                     item.tone === "success" ? "text-[#0F7A3A]" : "text-[#231F20]"
                   }`}
                 >
                   {item.value}
                 </Text>
+                <Text className="mt-2 text-xs text-[#231F2099]">{item.label}</Text>
               </View>
             ))}
           </View>
