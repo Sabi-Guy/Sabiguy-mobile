@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, Text, View,TouchableOpacity } from "react-native";
+import { Image, Text, View,Pressable } from "react-native";
 import rider from "../../../assets/rider.png";
 
 type ServicesCardProps = {
@@ -14,26 +14,32 @@ export default function ServicesCard({
   cta 
 }: ServicesCardProps) {
   return ( 
-    <View className="flex-row w- h-36 rounded-2xl overflow-hidden shadow-sm">
+    <View className="flex-row w-80 h-40 rounded-3xl overflow-hidden shadow-md">
       <View
-        className="flex-1 px-4 py-4"
+        className="w-48 px-5 py-5 justify-between"
         style={{ backgroundColor: "#28A745" }}
       >
-        <Text className="text-white text-lg font-semibold">{title}</Text>
-        <Text className="text-white font-light text-xs mt-2">{subtitle}</Text>
-        <TouchableOpacity
-          className="mt-4 self-start rounded-full px-4 py-2"
-          style={{ backgroundColor: "rgba(255, 255, 255, 0.3)" }}
+        <View>
+          <Text className="text-white text-lg font-bold">{title}</Text>
+          <Text className="text-white/85 text-xs mt-2 leading-4">{subtitle}</Text>
+        </View>
+        <Pressable
+          className="self-start rounded-full px-3 py-1.5"
+          style={{ backgroundColor: "rgba(255, 255, 255, 0.25)" }}
+          //  style={({ pressed }) => [
+          //   { backgroundColor: pressed ? "rgba(255, 255, 255, 0.4)" : "rgba(255, 255, 255, 0.25)" },
+          //   { borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, opacity: pressed ? 0.8 : 1 }
+          // ]}
         >
-          <Text className="text-white text-xs">{cta} →</Text>
-        </TouchableOpacity>
+          <Text className="text-white text-xs font-medium">{cta} →</Text>
+        </Pressable>
       </View>
 
       <View
-        className="w-28 h-full items-center justify-center px-5"
-        style={{ backgroundColor: "rgba(35, 93, 58, 0.75)" }}
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor: "rgba(35, 93, 58, 0.8)" }}
       >
-        <Image source={rider} className="h-20 w-20" resizeMode="contain" />
+        <Image source={rider} className="h-28 w-28" resizeMode="contain" />
 
       </View>
     </View>

@@ -78,7 +78,9 @@ export default function Home() {
         <View className="mt-6">
           <View className="flex-row justify-between items-center mb-3">
             <Text className="text-base font-semibold text-gray-900">Categories</Text>
-            <Text className="text-xs font-semibold text-[#005823]">See more</Text>
+            <TouchableOpacity onPress={()=> router.push("/(protected)/(serviceUser)/(tabs)/(home)/categories")}>
+              <Text className="text-xs font-semibold text-[#005823]">See more</Text>
+            </TouchableOpacity>
           </View>
 
           <View className="flex-row space-x-4 justify-between">
