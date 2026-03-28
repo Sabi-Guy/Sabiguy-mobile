@@ -1,4 +1,4 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image ,TouchableOpacity} from "react-native";
 import React from "react";
 
 import avatar from "../../assets/avatar.png";
@@ -6,7 +6,7 @@ import heart from "../../assets/heart.png";
 
 export default function ProviderCards() {
   return (
-    <View className="bg-white rounded-2xl px-4 py-3 flex-row items-center shadow-sm relative">
+    <TouchableOpacity className="bg-white rounded-2xl px-4 py-3 flex-row items-center shadow-sm relative">
       <Image source={avatar} className="h-12 w-12 rounded-md" />
 
       <View className="flex-1 ml-3">
@@ -24,7 +24,7 @@ export default function ProviderCards() {
         <Text className="text-[10px] text-gray-400">Starting</Text>
         <Text className="text-sm text-green-700 font-semibold">₦40,000</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

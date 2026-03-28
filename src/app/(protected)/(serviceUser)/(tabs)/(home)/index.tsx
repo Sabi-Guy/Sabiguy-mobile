@@ -14,6 +14,7 @@ import family from "../../../../../../assets/family.png";
 import tool from "../../../../../../assets/hand-tools.png";
 import siren from "../../../../../../assets/siren.png";
 import truck from "../../../../../../assets/truck.png";
+import book from "../../../../../../assets/book.png";
 
 import PopularCard from "../../../../../components/popularCard";
 import ProviderCards from "@/components/ProviderCards";
@@ -60,6 +61,9 @@ export default function App() {
         {/* popular */}
         <View>
           <Text className="text-2xl font-semibold">Popular Services</Text>
+          <TouchableOpacity>
+            <Image source={book} className="h-16 w-16" />
+          </TouchableOpacity>
         </View>
         {/* categories */}
         <View className="">
@@ -68,14 +72,16 @@ export default function App() {
             <Text className="font-bold text-[#005823]">See more</Text>
           </View>
 
-          <View className="flex-row space-x-4">
+          <View className="flex-row space-x-4 justify-between">
             <PopularCard image={siren} text_one="Emergency" text_two="" />
+
             <PopularCard
               image={truck}
               text_one="Transport"
               text_two="& Logistics"
             />
             <PopularCard image={tool} text_one="Home" text_two="& Repair" />
+
             <PopularCard
               image={family}
               text_one="Domestic "
