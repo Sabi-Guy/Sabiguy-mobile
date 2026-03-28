@@ -1,8 +1,8 @@
 import { View, Text, Image ,TouchableOpacity} from "react-native";
 import React from "react";
 
-import avatar from "../../assets/avatar.png";
-import heart from "../../assets/heart.png";
+import avatar from "../../../assets/avatar.png";
+import heart from "../../../assets/heart.png";
 
 export default function ProviderCards() {
   return (
@@ -20,7 +20,9 @@ export default function ProviderCards() {
       </View>
 
       <View className="items-end ">
-        <Image source={heart} className="w-4 h-4 mb-6" />
+        <TouchableOpacity>
+          <Image source={heart} className="w-4 h-4 mb-6" />
+        </TouchableOpacity>
         <Text className="text-[10px] text-gray-400">Starting</Text>
         <Text className="text-sm text-green-700 font-semibold">₦40,000</Text>
       </View>
