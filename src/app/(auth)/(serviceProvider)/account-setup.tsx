@@ -31,7 +31,7 @@ export default function ServiceProviderAccountSetup() {
           <Text className="text-center font-semibold text-white">Continue</Text>
         </Pressable>
 
-        <Pressable className="mt-6" onPress={() => router.push("/(protected)/(tabs)/")}>
+        <Pressable className="mt-6" onPress={() => router.push("/(protected)/(serviceProvider)/(tabs)")}>
           <Text className="text-center font-semibold text-gray-600">Skip</Text>
         </Pressable>
       </View>

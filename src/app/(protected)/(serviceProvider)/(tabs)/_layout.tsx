@@ -7,30 +7,35 @@ export default function ProviderTabsLayout() {
         name="index"
         options={{
           title: "Home",
+          headerShown: false,
         }}
       />
       <Tabs.Screen
         name="hire"
         options={{
           title: "Hire",
+          headerShown: false,
         }}
       />
       <Tabs.Screen
         name="message"
         options={{
           title: "Messages",
+          headerShown: false,
         }}
       />
       <Tabs.Screen
         name="activity"
         options={{
           title: "Activity",
+          headerShown: false,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
+          headerShown: false,
         }}
       />
     </Tabs>
