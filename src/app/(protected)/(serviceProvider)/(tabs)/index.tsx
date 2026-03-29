@@ -1,4 +1,4 @@
-﻿import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, ScrollView, Switch, Text, View } from "react-native";
 
@@ -46,7 +46,7 @@ export default function ServiceProviderHome() {
 
   return (
     <View className="flex-1 bg-[#F6F7F3]">
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
+      <ScrollView className="flex-1" contentContainerStyle={{ padding: 20, paddingTop: 20, paddingBottom: 40 }}>
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="text-xs text-[#231F2099]">Hello</Text>

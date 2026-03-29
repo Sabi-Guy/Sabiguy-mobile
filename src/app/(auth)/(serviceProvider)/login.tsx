@@ -59,8 +59,9 @@ export default function ServiceProviderLogin() {
       Toast.show({
         type: "success",
         text1: "Login successful",
+        text2: "Welcome back! 👋",
       });
-      router.push("/(protected)/(tabs)");
+      router.push("/(protected)/(serviceProvider)/(tabs)");
     } catch (err) {
       Toast.show({
         type: "error",
