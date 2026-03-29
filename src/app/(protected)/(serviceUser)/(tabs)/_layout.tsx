@@ -4,23 +4,28 @@ export default function userTabsLayout(){
         <Tabs initialRouteName="(home)">
             <Tabs.Screen name='(home)'
             options={{
-                title: "Home"
+                title: "Home",
+                headerShown: false
             }}/>
             <Tabs.Screen name='(hire)'
             options={{
-                title: "Bookings"
+                title: "Bookings",
+                headerShown: false
             }}/>
             <Tabs.Screen name='(message)'
             options={{
-                title: "Messages"
+                title: "Messages",
+                headerShown: false
             }}/>
             <Tabs.Screen name='activity'
             options={{
-                title: "Activity"
+                title: "Activity",
+                headerShown: false
             }}/>
             <Tabs.Screen name='(profile)'
             options={{
-                title: "Profile"
+                title: "Profile",
+                headerShown: false
             }}/>
         </Tabs>
     )
