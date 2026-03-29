@@ -30,7 +30,7 @@ export default function ProfileSetupComplete() {
 
       <Pressable
         className="mt-10 w-full rounded-md bg-[#005823CC] py-4"
-        onPress={() => router.push("/(protected)/(tabs)/")}
+        onPress={() => router.push("/(protected)/(serviceProvider)/(tabs)")}
       >
         <Text className="text-center font-semibold text-white">Continue</Text>
       </Pressable>
