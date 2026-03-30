@@ -24,9 +24,24 @@
       },
       "predictiveBackGestureEnabled": false
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router"
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "acc82682-5973-479c-a8a8-4a07c2a14a22"
+      }
+    },
+    "owner": "misturadev",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/acc82682-5973-479c-a8a8-4a07c2a14a22"
     }
   }
 }
