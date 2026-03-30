@@ -16,10 +16,14 @@ import siren from "../../../../../../assets/siren.png";
 import truck from "../../../../../../assets/truck.png";
 import book from "../../../../../../assets/book.png";
 
-import PopularCard from "../../../../../components/popularCard";
-import ProviderCards from "@/components/ProviderCards";
+import PopularCard from "../../../../../components/Cards/popularCard";
+import ProviderCards from "@/components/Cards/ProviderCards";
+import ServicesCard from "@/components/Cards/servicesCard";
+import { useRouter } from "expo-router";
 
-export default function App() {
+
+export default function Home() {
+  const router = useRouter();
   return (
     <ScrollView>
       {/* top view */}
@@ -36,12 +40,14 @@ export default function App() {
             <Text className="text-white text-lg font-semibold">
               Hello, Kuks 👋
             </Text>
-            <View className="mt-2 flex-row items-center py-1.5 rounded-full self-start">
+            <View className="mt-2 flex-row items-center py-1 rounded-full self-start">
               <Image source={location} className="h-5 w-5" />
-              <Text className="text-white text-xs">
-                {" "}
-                24, Ipaja, Lagos, Nigeria{" "}
-              </Text>
+              <TouchableOpacity onPress={() => router.push("/(protected)/(serviceUser)/location")}>
+                <Text className="text-white text-xs">
+                  {" "}
+                  24, Ipaja, Lagos, Nigeria{" "}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -57,19 +63,24 @@ export default function App() {
       </View>
 
       {/* main content */}
-      <View className="m-5 ">
+      <View className="px-5 pb-8">
         {/* popular */}
-        <View>
-          <Text className="text-2xl font-semibold">Popular Services</Text>
-          <TouchableOpacity>
-            <Image source={book} className="h-16 w-16" />
-          </TouchableOpacity>
+        <View className="mt-6">
+          <View className="flex-row items-center justify-between">
+            <Text className="text-base font-semibold text-gray-900">Popular Services</Text>
+            <Text className="text-xs font-semibold text-[#005823]">See more</Text>
+          </View>
+          <View className="mt-3">
+            <ServicesCard title="Package Delivery" subtitle="Your items delivered quickly and safely" cta="Book now"/>
+          </View>
         </View>
         {/* categories */}
-        <View className="">
+        <View className="mt-6">
           <View className="flex-row justify-between items-center mb-3">
-            <Text className="text-2xl font-semibold">Categories</Text>
-            <Text className="font-bold text-[#005823]">See more</Text>
+            <Text className="text-base font-semibold text-gray-900">Categories</Text>
+            <TouchableOpacity onPress={()=> router.push("/(protected)/(serviceUser)/(tabs)/(home)/categories")}>
+              <Text className="text-xs font-semibold text-[#005823]">See more</Text>
+            </TouchableOpacity>
           </View>
 
           <View className="flex-row space-x-4 justify-between">
@@ -83,16 +94,16 @@ export default function App() {
             <PopularCard image={tool} text_one="Home" text_two="& Repair" />
 
             <PopularCard
-              image={family}
+              image={family} 
               text_one="Domestic "
               text_two="& Lifestyle"
             />
           </View>
         </View>
         {/* popular providers */}
-        <View>
-          <Text className="text-2xl font-semibold">Popular Providers</Text>
-          <View className="gap-3">
+        <View className="mt-6">
+          <Text className="text-base font-semibold text-gray-900">Popular Providers</Text>
+          <View className="gap-3 mt-3">
             <ProviderCards />
             <ProviderCards />
           </View>

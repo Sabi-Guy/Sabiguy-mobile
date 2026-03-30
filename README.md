@@ -43,3 +43,7 @@ Other Services
 Cloudinary (media storage)
 Socket.IO (real-time messaging)
 JWT Authentication
+
+
+git fetch origin
+git merge origin/main
