@@ -32,6 +32,7 @@ export default function ProviderTabsLayout() {
           ),
         }}
       />
+      
       <Tabs.Screen
         name="message"
         options={{
