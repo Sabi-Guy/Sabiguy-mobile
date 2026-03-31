@@ -5,14 +5,14 @@ import { Image, Pressable, ScrollView, Text, TextInput, View } from "react-nativ
 const messages = [
   {
     id: "1",
-    text: "I’d like to confirm your availability before booking",
+    text: "I’d like to confirm your availability\nbefore booking",
     time: "4:30 AM",
     inbound: false,
-    initial: "A",
+    initial: "M",
   },
   {
     id: "2",
-    text: "I’d like to confirm your availability before booking",
+    text: "I’d like to confirm your availability\nbefore booking",
     time: "4:30 AM",
     inbound: true,
     initial: "W",
@@ -22,7 +22,7 @@ const messages = [
     text: "Thanks for the great work!",
     time: "4:30 AM",
     inbound: false,
-    initial: "A",
+    initial: "M",
   },
 ];
 
@@ -37,7 +37,7 @@ export default function MessageThread() {
             <Ionicons name="chevron-back" size={16} color="#231F20" />
           </Pressable>
           <View className="h-9 w-9 items-center justify-center rounded-full bg-[#E6F4EA]">
-            <Text className="text-sm font-semibold text-[#0F7A3A]">A</Text>
+            <Text className="text-sm font-semibold text-[#0F7A3A]">M</Text>
           </View>
           <View>
             <Text className="text-sm font-semibold text-[#231F20]">Mistura</Text>
@@ -57,14 +57,14 @@ export default function MessageThread() {
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingTop: 24, paddingBottom: 24 }}>
+      <ScrollView className="flex-1 px-4" contentContainerStyle={{ paddingTop: 32, paddingBottom: 24 }}>
         <View className="items-center">
           <View className="rounded-full bg-[#E6F4EA] px-3 py-1">
             <Text className="text-[10px] font-semibold text-[#0F7A3A]">Today</Text>
           </View>
         </View>
 
-        <View className="mt-6 gap-4">
+        <View className="mt-6" style={{ width: 345, height: 171, gap: 20, alignSelf: "center" }}>
           {messages.map((message) => (
             <View key={message.id} className={message.inbound ? "items-start" : "items-end"}>
               <View className={`flex-row items-center gap-2 ${message.inbound ? "" : "flex-row-reverse"}`}>

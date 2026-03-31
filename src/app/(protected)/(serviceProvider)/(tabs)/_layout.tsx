@@ -52,7 +52,7 @@ export default function ProviderTabsLayout() {
           title: "Activity",
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "time" : "time-outline"} size={18} color={color} />
+            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={18} color={color} />
           ),
         }}
       />

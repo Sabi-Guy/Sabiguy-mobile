@@ -32,11 +32,12 @@ export default function MessageList() {
         </View>
       </View>
 
-      <ScrollView className="mt-4 flex-1">
+      <ScrollView className="mt-4 flex-1 px-6">
         {threads.map((thread) => (
           <Pressable
             key={thread.id}
-            className="flex-row items-center justify-between px-5 py-3"
+            className="flex-row items-center justify-between rounded-lg px-4"
+            style={{ width: 345, height: 72, borderTopWidth: 0.5, borderBottomWidth: 0.5, borderColor: "#E6E6E6" }}
             onPress={() => router.push(`/(protected)/(serviceProvider)/(tabs)/message/${thread.id}`)}
           >
             <View className="flex-row items-center gap-3">
