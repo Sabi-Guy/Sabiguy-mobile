@@ -7,12 +7,14 @@ interface BackButtonProps {
   onPress?: () => void;
   color?: string;
   size?: number;
+  variant?: "floating" | "inline";
 }
 
 export default function BackButton({
   onPress,
   color = "#000000",
   size = 24,
+  variant = "floating",
 }: BackButtonProps) {
   const router = useRouter();
 
@@ -24,11 +26,16 @@ export default function BackButton({
     }
   };
 
+  const buttonClassName =
+    variant === "inline"
+      ? "rounded-full p-2"
+      : "absolute top-4 left-4 z-10 rounded-full p-2 bg-[#231F200D] shadow-md";
+
   return (
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
-      className="absolute top-4 left-4 z-10 rounded-full p-2 bg-[#231F200D] shadow-md"
+      className={buttonClassName}
     >
       <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
         <Path
