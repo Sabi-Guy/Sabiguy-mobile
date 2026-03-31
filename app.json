@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "SabiGuy-Mobile",
+    "slug": "SabiGuy-Mobile",
+    "scheme": "sabiguymobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#005823CC"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.misturadev.SabiGuyMobile"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "acc82682-5973-479c-a8a8-4a07c2a14a22"
+      }
+    },
+    "owner": "misturadev",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/acc82682-5973-479c-a8a8-4a07c2a14a22"
+    }
+  }
+}
