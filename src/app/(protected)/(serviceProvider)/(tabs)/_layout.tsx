@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-
 export default function ProviderTabsLayout() {
   return (
     <Tabs
@@ -32,6 +31,7 @@ export default function ProviderTabsLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="message"
         options={{

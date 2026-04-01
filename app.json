@@ -26,7 +26,8 @@
       "package": "com.misturadev.SabiGuyMobile"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-secure-store"
     ],
     "web": {
       "favicon": "./assets/favicon.png"
