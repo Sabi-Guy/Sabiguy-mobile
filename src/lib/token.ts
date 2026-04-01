@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 
 const TOKEN_KEY = "auth_token";
@@ -5,54 +6,91 @@ const REFRESH_TOKEN_KEY = "refresh_token";
 const EMAIL_KEY = "user_email";
 const ROLE_KEY = "user_role";
 
+let secureStoreAvailable: boolean | null = null;
+
+async function canUseSecureStore() {
+  if (secureStoreAvailable !== null) return secureStoreAvailable;
+  try {
+    secureStoreAvailable = await SecureStore.isAvailableAsync();
+  } catch {
+    secureStoreAvailable = false;
+  }
+
+  return secureStoreAvailable;
+}
+
+async function setStoredItem(key: string, value: string) {
+  if (await canUseSecureStore()) {
+    await SecureStore.setItemAsync(key, value);
+  } else {
+    await AsyncStorage.setItem(key, value);
+  }
+}
+
+async function getStoredItem(key: string) {
+  if (await canUseSecureStore()) {
+    return SecureStore.getItemAsync(key);
+  }
+
+  return AsyncStorage.getItem(key);
+}
+
+async function deleteStoredItem(key: string) {
+  if (await canUseSecureStore()) {
+    await SecureStore.deleteItemAsync(key);
+  } else {
+    await AsyncStorage.removeItem(key);
+  }
+}
+
 export async function setAuthToken(token: string) {
   if (!token) return;
-  await SecureStore.setItemAsync(TOKEN_KEY, token);
+  await setStoredItem(TOKEN_KEY, token);
 }
 
 export async function getAuthToken() {
-  return SecureStore.getItemAsync(TOKEN_KEY);
+  return getStoredItem(TOKEN_KEY);
 }
 
 export async function clearAuthToken() {
-  await SecureStore.deleteItemAsync(TOKEN_KEY);
+  await deleteStoredItem(TOKEN_KEY);
 }
 
 export async function setRefreshToken(token: string) {
   if (!token) return;
-  await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, token);
+  await setStoredItem(REFRESH_TOKEN_KEY, token);
 }
 
 export async function getRefreshToken() {
-  return SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+  return getStoredItem(REFRESH_TOKEN_KEY);
 }
 
 export async function clearRefreshToken() {
-  await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+  await deleteStoredItem(REFRESH_TOKEN_KEY);
 }
 
 export async function setUserEmail(email: string) {
   if (!email) return;
-  await SecureStore.setItemAsync(EMAIL_KEY, email);
+  await setStoredItem(EMAIL_KEY, email);
 }
 
 export async function getUserEmail() {
-  return SecureStore.getItemAsync(EMAIL_KEY);
+  return getStoredItem(EMAIL_KEY);
 }
 
 export async function clearUserEmail() {
-  await SecureStore.deleteItemAsync(EMAIL_KEY);
+  await deleteStoredItem(EMAIL_KEY);
 }
 
 export async function setUserRole(role: string) {
   if (!role) return;
-  await SecureStore.setItemAsync(ROLE_KEY, role);
+  await setStoredItem(ROLE_KEY, role);
 }
 
 export async function getUserRole() {
-  return SecureStore.getItemAsync(ROLE_KEY);
+  return getStoredItem(ROLE_KEY);
 }
 
 export async function clearUserRole() {
-  await SecureStore.deleteItemAsync(ROLE_KEY);
+  await deleteStoredItem(ROLE_KEY);
 }
