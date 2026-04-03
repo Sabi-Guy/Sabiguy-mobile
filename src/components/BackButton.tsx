@@ -1,7 +1,8 @@
 import React from "react";
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import Svg, { Path } from "react-native-svg";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
 interface BackButtonProps {
   onPress?: () => void;
@@ -17,12 +18,17 @@ export default function BackButton({
   variant = "floating",
 }: BackButtonProps) {
   const router = useRouter();
+  const navigation = useNavigation();
 
   const handlePress = () => {
     if (onPress) {
       onPress();
     } else {
-      router.back();
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      } else {
+        router.replace("/(auth)/login");
+      }
     }
   };
 
@@ -37,15 +43,7 @@ export default function BackButton({
       activeOpacity={0.7}
       className={buttonClassName}
     >
-      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <Path
-          d="M15 18L9 12L15 6"
-          stroke={color}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </Svg>
+      <Ionicons name="chevron-back" size={size} color={color} />
     </TouchableOpacity>
   );
 }
