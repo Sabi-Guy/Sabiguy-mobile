@@ -13,14 +13,18 @@ type LoginResponse = {
   refreshToken?: string;
   accessToken?: string;
   email?: string;
+  name?: string;
   role?: string;
   data?: {
     token?: string;
     accessToken?: string;
     refreshToken?: string;
     email?: string;
+    name?: string;
+    user?: { name?: string };
     role?: string;
   };
+  user?: { name?: string };
 };
 
 export default function Login() {
@@ -63,11 +67,17 @@ export default function Login() {
       const refresh = result?.refreshToken || result?.data?.refreshToken;
       const role = (result?.role || result?.data?.role || "").toLowerCase();
       const resolvedEmail = result?.email || result?.data?.email || email.trim();
+      const fullName =
+        result?.name ||
+        result?.data?.name ||
+        result?.user?.name ||
+        result?.data?.user?.name;
 
       await setSession({
         token,
         refreshToken: refresh,
         email: resolvedEmail,
+        name: fullName,
         role,
       });
 

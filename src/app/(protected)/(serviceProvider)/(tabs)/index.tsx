@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, Switch, Text, View } from "react-native";
 import { useAuthStore } from "@/store/auth";
-import { toDisplayName } from "@/lib/display-name";
+import { toFirstName } from "@/lib/display-name";
 
 const statCards = [
   { label: "New Requests", value: "3", color: "#E7F3EC", icon: "time-outline" as const, iconColor: "#0F7A3A" },
@@ -28,7 +28,8 @@ export default function ServiceProviderHome() {
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [nextOnlineState, setNextOnlineState] = useState<boolean | null>(null);
   const email = useAuthStore((state) => state.email);
-  const displayName = useMemo(() => toDisplayName(email), [email]);
+  const name = useAuthStore((state) => state.name);
+  const displayName = useMemo(() => toFirstName(name, email), [name, email]);
 
   const openStatusModal = () => {
     const targetState = !isOnline;
