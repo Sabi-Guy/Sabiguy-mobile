@@ -26,7 +26,7 @@ export default function chooseRole() {
         <Text className="text-sm font-semibold text-[#005823CC]">Login</Text>
       </Pressable>
       <Text className="text-2xl font-bold text-gray-900 mb-6 text-center">
-        How do you want to use SabiGUY
+        How do you want to use SabiGuy?
       </Text>
       <View className="space-y-4">
         <Pressable
