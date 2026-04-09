@@ -30,7 +30,7 @@ Tech Stack
 Frontend (Mobile)
 React Native / Expo
 TypeScript
-React Navigation
+Expo router
 Zustand (State Management)
 
 Backend
