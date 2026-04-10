@@ -11,7 +11,7 @@ const statCards = [
   {
     label: "New Requests",
     value: "3",
-    bg: "#E8F4ED",
+    bg: "#EAF3EE",
     icon: "briefcase-outline" as const,
     iconBg: "#0F6C37",
     iconColor: "#FFFFFF",
@@ -19,7 +19,7 @@ const statCards = [
   {
     label: "Scheduled",
     value: "4",
-    bg: "#F0F8E6",
+    bg: "#EDF6E2",
     icon: "calendar-outline" as const,
     iconBg: "#8BC63F",
     iconColor: "#FFFFFF",
@@ -27,7 +27,7 @@ const statCards = [
   {
     label: "In Progress",
     value: "1",
-    bg: "#FFF7EF",
+    bg: "#FFF6EF",
     icon: "time-outline" as const,
     iconBg: "#F28B1A",
     iconColor: "#FFFFFF",
@@ -35,7 +35,7 @@ const statCards = [
   {
     label: "Awaiting Payment",
     value: "2",
-    bg: "#F7F3FF",
+    bg: "#F8F6FF",
     icon: "information-circle-outline" as const,
     iconBg: "#7B61FF",
     iconColor: "#FFFFFF",
@@ -47,7 +47,7 @@ const earnings = [
   { label: "Pending", value: "\u20A625,000", tone: "neutral" as const },
 ];
 
-const revenueBars = [48, 26, 14, 26, 18, 44];
+const revenueBars = [80, 40, 20, 36, 28, 80];
 
 const recentTransactions = [
   {
@@ -58,7 +58,8 @@ const recentTransactions = [
     amount: "+\u20A664,000",
     subAmount: "Platform fee: \u20A64,000",
     color: "#0F7A3A",
-    icon: "arrow-down-outline" as const,
+    icon: "arrow-down" as const,
+    rotate: "45deg",
     iconBg: "#E7F3EC",
     iconColor: "#0F7A3A",
   },
@@ -70,7 +71,8 @@ const recentTransactions = [
     amount: "-\u20A650,000",
     subAmount: "Completed",
     color: "#E53935",
-    icon: "arrow-up-outline" as const,
+    icon: "arrow-up" as const,
+    rotate: "45deg",
     iconBg: "#FCE8E8",
     iconColor: "#E53935",
   },
@@ -82,7 +84,8 @@ const recentTransactions = [
     amount: "+\u20A6500",
     subAmount: "",
     color: "#0F7A3A",
-    icon: "arrow-down-outline" as const,
+    icon: "arrow-down" as const,
+    rotate: "45deg",
     iconBg: "#E7F3EC",
     iconColor: "#0F7A3A",
   },
@@ -160,7 +163,7 @@ export default function ServiceProviderHome() {
                   item.tone === "success" ? "border-[#0F7A3A] bg-[#0F7A3A]" : "border-[#E6E6E6] bg-[#F7F7F7]"
                 }`}
               >
-                <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center">
                   <View className="flex-row items-center gap-2">
                     {item.tone === "success" && (
                       <View className="h-6 w-6 items-center justify-center rounded-lg bg-white/20">
@@ -171,9 +174,15 @@ export default function ServiceProviderHome() {
                       {item.value}
                     </Text>
                   </View>
-                  {item.tone === "success" && <Ionicons name="chevron-forward" size={14} color="#FFFFFF" />}
+                  {item.tone === "success" && (
+                    <View className="ml-auto mt-4">
+                      <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
+                    </View>
+                  )}
                 </View>
-                <Text className={`mt-2 text-xs ${item.tone === "success" ? "text-white/80" : "text-[#231F2099]"}`}>
+                <Text
+                  className={`mt-2 text-xs ${item.tone === "success" ? "text-white/80 ml-8" : "text-[#231F2099]"}`}
+                >
                   {item.label}
                 </Text>
               </View>
@@ -183,25 +192,35 @@ export default function ServiceProviderHome() {
 
         <View className="mt-6 rounded-2xl bg-white p-4 shadow-sm">
           <View className="flex-row items-center justify-between">
-            <Text className="text-xs font-semibold text-[#231F2099]">Revenue Overview</Text>
+            <Text className="text-sm font-semibold text-[#231F20]">Revenue Overview</Text>
             <View className="flex-row items-center gap-1 rounded-full bg-[#F2F3EE] px-3 py-1">
               <Text className="text-[10px] text-[#231F2099]">Last 6 months</Text>
               <Ionicons name="chevron-down" size={12} color="#231F2099" />
             </View>
           </View>
           <View className="mt-4 flex-row">
-            <View className="mr-3 h-28 justify-between">
-              {["60K", "40K", "20K", "0K"].map((label) => (
-                <Text key={label} className="text-[10px] text-[#231F2099]">
+            <View className="mr-3 h-[120px] justify-between">
+              {["60K", "40K", "20K", "10K", "0K"].map((label) => (
+                <Text key={label} className="text-[10px] font-semibold text-[#231F2099]">
                   {label}
                 </Text>
               ))}
             </View>
             <View className="flex-1">
-              <View className="h-28 flex-row items-end justify-between">
+              <View className="relative h-[120px] flex-row items-end justify-between">
+                <View className="absolute inset-0 z-10">
+                  <View className="absolute left-0 right-0 top-0 h-px bg-[#ECECEC]" />
+                  <View className="absolute left-0 right-0 top-[40px] h-px bg-[#ECECEC]" />
+                  <View className="absolute left-0 right-0 top-[80px] h-px bg-[#ECECEC]" />
+                  <View className="absolute left-0 right-0 bottom-0 h-px bg-[#ECECEC]" />
+                </View>
                 {revenueBars.map((height, index) => (
                   <View key={`${height}-${index}`} className="w-[12%] items-center">
-                    <View className="w-3 rounded-full bg-[#0F7A3A]" style={{ height }} />
+                    <View className="h-[120px] w-5 bg-[#F1F2ED] opacity-70" />
+                    <View
+                      className="absolute bottom-0 w-5 bg-[#0F7A3A] z-20"
+                      style={{ height }}
+                    />
                   </View>
                 ))}
               </View>
@@ -233,11 +252,19 @@ export default function ServiceProviderHome() {
             </Pressable>
           </View>
           <View className="mt-3 gap-3">
-            {recentTransactions.map((item) => (
-              <View key={item.id} className="flex-row items-center justify-between">
+            {recentTransactions.map((item, index) => (
+              <View
+                key={item.id}
+                className={`flex-row items-center justify-between ${index < recentTransactions.length - 1 ? "border-b border-[#ECECEC] pb-3" : ""}`}
+              >
                 <View className="flex-row items-center gap-2">
                   <View className="h-8 w-8 items-center justify-center rounded-full" style={{ backgroundColor: item.iconBg }}>
-                    <Ionicons name={item.icon} size={14} color={item.iconColor} />
+                    <Ionicons
+                      name={item.icon}
+                      size={14}
+                      color={item.iconColor}
+                      style={item.rotate ? { transform: [{ rotate: item.rotate }] } : undefined}
+                    />
                   </View>
                   <View>
                     <Text className="text-xs font-semibold text-[#231F20]">{item.title}</Text>
