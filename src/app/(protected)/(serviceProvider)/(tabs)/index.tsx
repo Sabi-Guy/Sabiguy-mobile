@@ -3,49 +3,51 @@ import { useMemo, useState } from "react";
 import { Image, Pressable, ScrollView, Switch, Text, View } from "react-native";
 import { useAuthStore } from "@/store/auth";
 import { toFirstName } from "@/lib/display-name";
-import bell from "../../../../../assets/bell.png";
+import bell from "../../../../../assets/bell-notification.png";
+import availabilityToggle from "../../../../../assets/available-toggle.png";
+import availabilityToggleOff from "../../../../../assets/available-toggle-off.png";
 
 const statCards = [
   {
     label: "New Requests",
     value: "3",
-    bg: "#E7F3EC",
+    bg: "#E8F4ED",
     icon: "briefcase-outline" as const,
-    iconBg: "#DCEFE3",
-    iconColor: "#0F7A3A",
+    iconBg: "#0F6C37",
+    iconColor: "#FFFFFF",
   },
   {
     label: "Scheduled",
     value: "4",
-    bg: "#E9F2D5",
+    bg: "#F0F8E6",
     icon: "calendar-outline" as const,
-    iconBg: "#DDEBC1",
-    iconColor: "#6BA62E",
+    iconBg: "#8BC63F",
+    iconColor: "#FFFFFF",
   },
   {
     label: "In Progress",
     value: "1",
-    bg: "#FFF1E3",
+    bg: "#FFF7EF",
     icon: "time-outline" as const,
-    iconBg: "#FFE3C7",
-    iconColor: "#F0810F",
+    iconBg: "#F28B1A",
+    iconColor: "#FFFFFF",
   },
   {
     label: "Awaiting Payment",
     value: "2",
-    bg: "#F2ECFF",
-    icon: "card-outline" as const,
-    iconBg: "#E5DBFF",
-    iconColor: "#6C4EEA",
+    bg: "#F7F3FF",
+    icon: "information-circle-outline" as const,
+    iconBg: "#7B61FF",
+    iconColor: "#FFFFFF",
   },
 ];
 
 const earnings = [
-  { label: "Available", value: "?94,000", tone: "success" as const },
-  { label: "Pending", value: "?25,000", tone: "neutral" as const },
+  { label: "Available", value: "\u20A694,000", tone: "success" as const },
+  { label: "Pending", value: "\u20A625,000", tone: "neutral" as const },
 ];
 
-const revenueBars = [46, 22, 32, 18, 28, 52];
+const revenueBars = [48, 26, 14, 26, 18, 44];
 
 const recentTransactions = [
   {
@@ -53,8 +55,8 @@ const recentTransactions = [
     title: "Kitchen Renovation",
     subtitle: "John Smith",
     meta: "Oct 28, 2025",
-    amount: "+?64,000",
-    subAmount: "Platform fee: ?4,000",
+    amount: "+\u20A664,000",
+    subAmount: "Platform fee: \u20A64,000",
     color: "#0F7A3A",
     icon: "arrow-down-outline" as const,
     iconBg: "#E7F3EC",
@@ -63,9 +65,9 @@ const recentTransactions = [
   {
     id: "2",
     title: "Kitchen Renovation",
-    subtitle: "**2334",
+    subtitle: "****1234",
     meta: "Nov 13, 2025",
-    amount: "-?50,000",
+    amount: "-\u20A650,000",
     subAmount: "Completed",
     color: "#E53935",
     icon: "arrow-up-outline" as const,
@@ -77,7 +79,7 @@ const recentTransactions = [
     title: "Tip from John Smith",
     subtitle: "Kitchen Renovation",
     meta: "Oct 28, 2025",
-    amount: "+?500",
+    amount: "+\u20A6500",
     subAmount: "",
     color: "#0F7A3A",
     icon: "arrow-down-outline" as const,
@@ -118,20 +120,18 @@ export default function ServiceProviderHome() {
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="text-xs text-[#231F2099]">Hello</Text>
-            <Text className="mt-1 text-lg font-semibold text-[#231F20]">{displayName} ??</Text>
+            <Text className="mt-1 text-lg font-semibold text-[#231F20]">{displayName} 👋</Text>
           </View>
           <View className="flex-row items-center gap-3">
-            <View className="flex-row items-center rounded-full bg-white px-2 py-1 shadow-sm">
-              <Text className="mr-2 text-xs text-[#231F2099]">Available</Text>
-              <Switch
-                value={isOnline}
-                onValueChange={openStatusModal}
-                trackColor={{ false: "#D7DBD1", true: "#0F7A3A" }}
-                thumbColor="#FFFFFF"
+            <Pressable onPress={openStatusModal} className="rounded-full">
+              <Image
+                source={isOnline ? availabilityToggle : availabilityToggleOff}
+                className="h-7 w-[86px]"
+                resizeMode="contain"
               />
-            </View>
-            <Pressable className="h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
-              <Image source={bell} className="h-4 w-4" resizeMode="contain" />
+            </Pressable>
+            <Pressable className="h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
+              <Image source={bell} className="h-6 w-6" resizeMode="contain" />
             </Pressable>
           </View>
         </View>
@@ -189,18 +189,37 @@ export default function ServiceProviderHome() {
               <Ionicons name="chevron-down" size={12} color="#231F2099" />
             </View>
           </View>
-          <View className="mt-4 h-28 flex-row items-end justify-between">
-            {revenueBars.map((height, index) => (
-              <View key={`${height}-${index}`} className="w-[12%] items-center">
-                <View className="w-3 rounded-full bg-[#0F7A3A]" style={{ height }} />
+          <View className="mt-4 flex-row">
+            <View className="mr-3 h-28 justify-between">
+              {["60K", "40K", "20K", "0K"].map((label) => (
+                <Text key={label} className="text-[10px] text-[#231F2099]">
+                  {label}
+                </Text>
+              ))}
+            </View>
+            <View className="flex-1">
+              <View className="h-28 flex-row items-end justify-between">
+                {revenueBars.map((height, index) => (
+                  <View key={`${height}-${index}`} className="w-[12%] items-center">
+                    <View className="w-3 rounded-full bg-[#0F7A3A]" style={{ height }} />
+                  </View>
+                ))}
               </View>
-            ))}
+              <View className="mt-2 flex-row justify-between px-1">
+                {["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((label) => (
+                  <Text key={label} className="text-[10px] text-[#231F2099]">
+                    {label}
+                  </Text>
+                ))}
+              </View>
+            </View>
           </View>
-          <View className="mt-2 flex-row justify-between px-1">
-            {["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((label) => (
-              <Text key={label} className="text-[10px] text-[#231F2099]">
-                {label}
-              </Text>
+          <View className="mt-3 flex-row items-center justify-center gap-2">
+            {[0, 1, 2, 3, 4].map((dot) => (
+              <View
+                key={dot}
+                className={`h-2 w-2 rounded-full ${dot === 0 ? "bg-[#0F7A3A]" : "bg-[#D7DBD1]"}`}
+              />
             ))}
           </View>
         </View>
@@ -208,8 +227,9 @@ export default function ServiceProviderHome() {
         <View className="mt-6 rounded-2xl bg-white p-4 shadow-sm">
           <View className="flex-row items-center justify-between">
             <Text className="text-xs font-semibold text-[#231F2099]">Recent Transaction</Text>
-            <Pressable>
+            <Pressable className="flex-row items-center gap-1">
               <Text className="text-[10px] font-semibold text-[#231F2099]">See all</Text>
+              <Ionicons name="chevron-forward" size={12} color="#231F2099" />
             </Pressable>
           </View>
           <View className="mt-3 gap-3">
