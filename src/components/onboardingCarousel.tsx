@@ -21,7 +21,7 @@ export default function OnboardingCarousel() {
     () => [
       {
         id: '1',
-        title: 'Welcome to SabiGUY',
+        title: 'Welcome to SabiGuy',
         description: 'Get things done easily, connect with verified service experts near you',
         image: require('../../assets/slide_one.png'),
       buttonText: 'Continue'  

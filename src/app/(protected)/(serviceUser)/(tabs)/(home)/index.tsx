@@ -10,6 +10,8 @@ import bell from "../../../../../../assets/bell.png";
 import location from "../../../../../../assets/location.png";
 import bgimage from "../../../../../../assets/bgimage.png";
 import SearchBar from "../../../../../components/SearchBar";
+import { useAuthStore } from "@/store/auth";
+import { toFirstName } from "@/lib/display-name";
 import family from "../../../../../../assets/family.png";
 import tool from "../../../../../../assets/hand-tools.png";
 import siren from "../../../../../../assets/siren.png";
@@ -24,6 +26,9 @@ import { useRouter } from "expo-router";
 
 export default function Home() {
   const router = useRouter();
+  const name = useAuthStore((state) => state.name);
+  const email = useAuthStore((state) => state.email);
+  const firstName = toFirstName(name, email);
   return (
     <ScrollView>
       {/* top view */}
@@ -38,7 +43,7 @@ export default function Home() {
         <View className="flex-row items-start justify-between">
           <View className="flex-1 pr-4">
             <Text className="text-white text-lg font-semibold">
-              Hello, Kuks 👋
+              Hello, {firstName} 👋
             </Text>
             <View className="mt-2 flex-row items-center py-1 rounded-full self-start">
               <Image source={location} className="h-5 w-5" />

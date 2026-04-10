@@ -25,9 +25,12 @@ export default function chooseRole() {
       >
         <Text className="text-sm font-semibold text-[#005823CC]">Login</Text>
       </Pressable>
-      <Text className="text-2xl font-bold text-gray-900 mb-6 text-center">
-        How do you want to use SabiGUY
-      </Text>
+      <View className="mb-6 items-center">
+        <Text className="text-2xl font-bold text-gray-900">Welcome to SabiGuy</Text>
+        <Text className="mt-2 text-base text-gray-600">
+          How do you want to use SabiGuy?
+        </Text>
+      </View>
       <View className="space-y-4">
         <Pressable
           onPress={() => {
