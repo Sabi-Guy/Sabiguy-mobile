@@ -27,6 +27,11 @@ export default function signup() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
+  const handlePhoneChange = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, "").slice(0, 11);
+    setPhoneNumber(digitsOnly);
+  };
+
   const handleRegister = async () => {
     if (isSubmitting) {
       return;
@@ -132,11 +137,13 @@ export default function signup() {
           <TextInput
             placeholder="Enter your phone number"
             keyboardType="phone-pad"
+            maxLength={11}
             value={phoneNumber}
-            onChangeText={setPhoneNumber}
+            onChangeText={handlePhoneChange}
             className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
             placeholderTextColor="#9CA3AF"
           />
+          
         </View>
 
         <View>
