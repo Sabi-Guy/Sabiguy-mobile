@@ -1,26 +1,89 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
-import { Pressable, ScrollView, Switch, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, Switch, Text, View } from "react-native";
 import { useAuthStore } from "@/store/auth";
 import { toFirstName } from "@/lib/display-name";
+import bell from "../../../../../assets/bell.png";
 
 const statCards = [
-  { label: "New Requests", value: "3", color: "#E7F3EC", icon: "time-outline" as const, iconColor: "#0F7A3A" },
-  { label: "Scheduled", value: "4", color: "#E7F3EC", icon: "calendar-outline" as const, iconColor: "#0F7A3A" },
-  { label: "In Progress", value: "1", color: "#FFF2E5", icon: "briefcase-outline" as const, iconColor: "#F0810F" },
-  { label: "Awaiting Payment", value: "2", color: "#F2ECFF", icon: "cash-outline" as const, iconColor: "#6C4EEA" },
+  {
+    label: "New Requests",
+    value: "3",
+    bg: "#E7F3EC",
+    icon: "briefcase-outline" as const,
+    iconBg: "#DCEFE3",
+    iconColor: "#0F7A3A",
+  },
+  {
+    label: "Scheduled",
+    value: "4",
+    bg: "#E9F2D5",
+    icon: "calendar-outline" as const,
+    iconBg: "#DDEBC1",
+    iconColor: "#6BA62E",
+  },
+  {
+    label: "In Progress",
+    value: "1",
+    bg: "#FFF1E3",
+    icon: "time-outline" as const,
+    iconBg: "#FFE3C7",
+    iconColor: "#F0810F",
+  },
+  {
+    label: "Awaiting Payment",
+    value: "2",
+    bg: "#F2ECFF",
+    icon: "card-outline" as const,
+    iconBg: "#E5DBFF",
+    iconColor: "#6C4EEA",
+  },
 ];
 
 const earnings = [
-  { label: "Available", value: "₦94,000", tone: "success" as const },
-  { label: "Pending", value: "₦25,000", tone: "neutral" as const },
+  { label: "Available", value: "?94,000", tone: "success" as const },
+  { label: "Pending", value: "?25,000", tone: "neutral" as const },
 ];
 
-const revenueBars = [28, 64, 34, 52, 40, 70];
+const revenueBars = [46, 22, 32, 18, 28, 52];
+
 const recentTransactions = [
-  { id: "1", title: "Kitchen Renovation", subtitle: "Paid by Jimee", amount: "+₦64,000", color: "#0F7A3A" },
-  { id: "2", title: "Kitchen Renovation", subtitle: "Paid by Jimee", amount: "-₦4,000", color: "#E53935" },
-  { id: "3", title: "Tip from John Smith", subtitle: "Oct 28, 2025", amount: "+₦500", color: "#0F7A3A" },
+  {
+    id: "1",
+    title: "Kitchen Renovation",
+    subtitle: "John Smith",
+    meta: "Oct 28, 2025",
+    amount: "+?64,000",
+    subAmount: "Platform fee: ?4,000",
+    color: "#0F7A3A",
+    icon: "arrow-down-outline" as const,
+    iconBg: "#E7F3EC",
+    iconColor: "#0F7A3A",
+  },
+  {
+    id: "2",
+    title: "Kitchen Renovation",
+    subtitle: "**2334",
+    meta: "Nov 13, 2025",
+    amount: "-?50,000",
+    subAmount: "Completed",
+    color: "#E53935",
+    icon: "arrow-up-outline" as const,
+    iconBg: "#FCE8E8",
+    iconColor: "#E53935",
+  },
+  {
+    id: "3",
+    title: "Tip from John Smith",
+    subtitle: "Kitchen Renovation",
+    meta: "Oct 28, 2025",
+    amount: "+?500",
+    subAmount: "",
+    color: "#0F7A3A",
+    icon: "arrow-down-outline" as const,
+    iconBg: "#E7F3EC",
+    iconColor: "#0F7A3A",
+  },
 ];
 
 export default function ServiceProviderHome() {
@@ -51,11 +114,11 @@ export default function ServiceProviderHome() {
 
   return (
     <View className="flex-1 bg-[#F6F7F3]">
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 20, paddingTop: 28, paddingBottom: 40 }}>
+      <ScrollView className="flex-1" contentContainerStyle={{ padding: 20, paddingTop: 20, paddingBottom: 40 }}>
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="text-xs text-[#231F2099]">Hello</Text>
-            <Text className="mt-1 text-lg font-semibold text-[#231F20]">{displayName} 👋</Text>
+            <Text className="mt-1 text-lg font-semibold text-[#231F20]">{displayName} ??</Text>
           </View>
           <View className="flex-row items-center gap-3">
             <View className="flex-row items-center rounded-full bg-white px-2 py-1 shadow-sm">
@@ -68,16 +131,16 @@ export default function ServiceProviderHome() {
               />
             </View>
             <Pressable className="h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
-              <Ionicons name="notifications-outline" size={16} color="#0F7A3A" />
+              <Image source={bell} className="h-4 w-4" resizeMode="contain" />
             </Pressable>
           </View>
         </View>
 
         <View className="mt-5 flex-row flex-wrap gap-3">
           {statCards.map((card) => (
-            <View key={card.label} className="w-[48%] rounded-2xl bg-white p-3 shadow-sm">
+            <View key={card.label} className="w-[48%] rounded-2xl p-3" style={{ backgroundColor: card.bg }}>
               <View className="flex-row items-center gap-2">
-                <View className="h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: card.color }}>
+                <View className="h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: card.iconBg }}>
                   <Ionicons name={card.icon} size={14} color={card.iconColor} />
                 </View>
                 <Text className="text-lg font-semibold text-[#231F20]">{card.value}</Text>
@@ -94,17 +157,25 @@ export default function ServiceProviderHome() {
               <View
                 key={item.label}
                 className={`flex-1 rounded-xl border px-3 py-3 ${
-                  item.tone === "success" ? "border-[#0F7A3A]" : "border-[#E6E6E6]"
+                  item.tone === "success" ? "border-[#0F7A3A] bg-[#0F7A3A]" : "border-[#E6E6E6] bg-[#F7F7F7]"
                 }`}
               >
-                <Text
-                  className={`text-sm font-semibold ${
-                    item.tone === "success" ? "text-[#0F7A3A]" : "text-[#231F20]"
-                  }`}
-                >
-                  {item.value}
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-2">
+                    {item.tone === "success" && (
+                      <View className="h-6 w-6 items-center justify-center rounded-lg bg-white/20">
+                        <Ionicons name="wallet-outline" size={14} color="#FFFFFF" />
+                      </View>
+                    )}
+                    <Text className={`text-sm font-semibold ${item.tone === "success" ? "text-white" : "text-[#231F20]"}`}>
+                      {item.value}
+                    </Text>
+                  </View>
+                  {item.tone === "success" && <Ionicons name="chevron-forward" size={14} color="#FFFFFF" />}
+                </View>
+                <Text className={`mt-2 text-xs ${item.tone === "success" ? "text-white/80" : "text-[#231F2099]"}`}>
+                  {item.label}
                 </Text>
-                <Text className="mt-2 text-xs text-[#231F2099]">{item.label}</Text>
               </View>
             ))}
           </View>
@@ -113,8 +184,9 @@ export default function ServiceProviderHome() {
         <View className="mt-6 rounded-2xl bg-white p-4 shadow-sm">
           <View className="flex-row items-center justify-between">
             <Text className="text-xs font-semibold text-[#231F2099]">Revenue Overview</Text>
-            <View className="rounded-full bg-[#F2F3EE] px-3 py-1">
+            <View className="flex-row items-center gap-1 rounded-full bg-[#F2F3EE] px-3 py-1">
               <Text className="text-[10px] text-[#231F2099]">Last 6 months</Text>
+              <Ionicons name="chevron-down" size={12} color="#231F2099" />
             </View>
           </View>
           <View className="mt-4 h-28 flex-row items-end justify-between">
@@ -137,24 +209,28 @@ export default function ServiceProviderHome() {
           <View className="flex-row items-center justify-between">
             <Text className="text-xs font-semibold text-[#231F2099]">Recent Transaction</Text>
             <Pressable>
-              <Text className="text-[10px] font-semibold text-[#0F7A3A]">See all</Text>
+              <Text className="text-[10px] font-semibold text-[#231F2099]">See all</Text>
             </Pressable>
           </View>
           <View className="mt-3 gap-3">
             {recentTransactions.map((item) => (
               <View key={item.id} className="flex-row items-center justify-between">
                 <View className="flex-row items-center gap-2">
-                  <View className="h-8 w-8 items-center justify-center rounded-full bg-[#F2F3EE]">
-                    <Ionicons name="hammer-outline" size={14} color="#0F7A3A" />
+                  <View className="h-8 w-8 items-center justify-center rounded-full" style={{ backgroundColor: item.iconBg }}>
+                    <Ionicons name={item.icon} size={14} color={item.iconColor} />
                   </View>
                   <View>
                     <Text className="text-xs font-semibold text-[#231F20]">{item.title}</Text>
                     <Text className="text-[10px] text-[#231F2099]">{item.subtitle}</Text>
+                    <Text className="text-[10px] text-[#231F2099]">{item.meta}</Text>
                   </View>
                 </View>
-                <Text className="text-xs font-semibold" style={{ color: item.color }}>
-                  {item.amount}
-                </Text>
+                <View className="items-end">
+                  <Text className="text-xs font-semibold" style={{ color: item.color }}>
+                    {item.amount}
+                  </Text>
+                  {!!item.subAmount && <Text className="text-[10px] text-[#231F2099]">{item.subAmount}</Text>}
+                </View>
               </View>
             ))}
           </View>
