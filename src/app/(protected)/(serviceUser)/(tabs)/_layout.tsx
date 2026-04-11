@@ -1,10 +1,10 @@
-import { Tabs, usePathname } from "expo-router";
+import { Tabs, useSegments } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 export default function userTabsLayout() {
-	const pathname = usePathname();
-	const isMessageDetail = Boolean(
-		pathname?.includes("/(message)/") && !pathname?.endsWith("/(message)")
-	);
+  const segments = useSegments();
+  const isMessageRoute = segments.includes("(message)") || segments.includes("message");
+  const lastSegment = segments[segments.length - 1];
+  const isMessageDetail = isMessageRoute && lastSegment !== "index" && lastSegment !== "(message)";
 	const baseTabBarStyle = { backgroundColor: "#FFFFFF", borderTopColor: "#E6E6E6" };
 	const tabBarStyle = isMessageDetail ? { display: "none" } : baseTabBarStyle;
 
@@ -49,7 +49,7 @@ export default function userTabsLayout() {
         name="(message)"
         options={{
           title: "Messages",
-          headerShown: !isMessageDetail,
+          headerShown: false,
           tabBarStyle,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
