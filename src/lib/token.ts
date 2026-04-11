@@ -5,6 +5,7 @@ const TOKEN_KEY = "auth_token";
 const REFRESH_TOKEN_KEY = "refresh_token";
 const EMAIL_KEY = "user_email";
 const ROLE_KEY = "user_role";
+const NAME_KEY = "user_name";
 
 let secureStoreAvailable: boolean | null = null;
 
@@ -93,4 +94,17 @@ export async function getUserRole() {
 
 export async function clearUserRole() {
   await deleteStoredItem(ROLE_KEY);
+}
+
+export async function setUserName(name: string) {
+  if (!name) return;
+  await setStoredItem(NAME_KEY, name);
+}
+
+export async function getUserName() {
+  return getStoredItem(NAME_KEY);
+}
+
+export async function clearUserName() {
+  await deleteStoredItem(NAME_KEY);
 }

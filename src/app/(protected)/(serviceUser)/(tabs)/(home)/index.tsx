@@ -12,6 +12,8 @@ import bell from "../../../../../../assets/bell.png";
 import location from "../../../../../../assets/location.png";
 import bgimage from "../../../../../../assets/bgimage.png";
 import SearchBar from "../../../../../components/SearchBar";
+import { useAuthStore } from "@/store/auth";
+import { toFirstName } from "@/lib/display-name";
 import family from "../../../../../../assets/family.png";
 import tool from "../../../../../../assets/hand-tools.png";
 import siren from "../../../../../../assets/siren.png";
@@ -27,8 +29,9 @@ import { toDisplayName } from "@/lib/display-name";
 
 export default function Home() {
   const router = useRouter();
+  const name = useAuthStore((state) => state.name);
   const email = useAuthStore((state) => state.email);
-  const displayName = useMemo(() => toDisplayName(email), [email]);
+  const firstName = toFirstName(name, email);
   return (
     <ScrollView>
       {/* top view */}
@@ -36,28 +39,21 @@ export default function Home() {
         <ImageBackground
           source={bgimage}
           resizeMode="cover"
-          imageStyle={{ opacity: 0.4 }}
-          className="bg-[#2E7D52] px-5 pt-12 pb-6"
-        >
-          {/* top */}
-          <View className="flex-row items-start justify-between">
-            <View className="flex-1 pr-4">
-              <Text className="text-white text-lg font-semibold">
-                Hello, {displayName} 👋
-              </Text>
-              <View className="mt-2 flex-row items-center py-1 rounded-full self-start">
-                <Image source={location} className="h-5 w-5" />
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push("/(protected)/(serviceUser)/location")
-                  }
-                >
-                  <Text className="text-white text-xs">
-                    {" "}
-                    24, Ipaja, Lagos, Nigeria{" "}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+        />
+        {/* top */}
+        <View className="flex-row items-start justify-between">
+          <View className="flex-1 pr-4">
+            <Text className="text-white text-lg font-semibold">
+              Hello, {firstName} 👋
+            </Text>
+            <View className="mt-2 flex-row items-center py-1 rounded-full self-start">
+              <Image source={location} className="h-5 w-5" />
+              <TouchableOpacity onPress={() => router.push("/(protected)/(serviceUser)/location")}>
+                <Text className="text-white text-xs">
+                  {" "}
+                  24, Ipaja, Lagos, Nigeria{" "}
+                </Text>
+              </TouchableOpacity>
             </View>
 
             <View className="h-10 w-10 rounded-full items-center justify-center">

@@ -3,14 +3,17 @@ import {
   clearAuthToken,
   clearRefreshToken,
   clearUserEmail,
+  clearUserName,
   clearUserRole,
   getAuthToken,
   getRefreshToken,
   getUserEmail,
+  getUserName,
   getUserRole,
   setAuthToken,
   setRefreshToken,
   setUserEmail,
+  setUserName,
   setUserRole,
 } from "@/lib/token";
 
@@ -20,6 +23,7 @@ type SessionPayload = {
   token?: string | null;
   refreshToken?: string | null;
   email?: string | null;
+  name?: string | null;
   role?: string | null;
 };
 
@@ -28,6 +32,7 @@ type AuthState = {
   token: string | null;
   refreshToken: string | null;
   email: string | null;
+  name: string | null;
   role: AuthRole;
   isAuthenticated: boolean;
   initializeAuth: () => Promise<void>;
@@ -52,11 +57,12 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
 
   initializeAuth: async () => {
-    const [token, refreshToken, email, role] = await Promise.all([
+    const [token, refreshToken, email, role, name] = await Promise.all([
       getAuthToken(),
       getRefreshToken(),
       getUserEmail(),
       getUserRole(),
+      getUserName(),
     ]);
 
     const normalizedRole = normalizeRole(role);
@@ -66,12 +72,13 @@ export const useAuthStore = create<AuthState>((set) => ({
       token,
       refreshToken,
       email,
+      name,
       role: normalizedRole,
       isAuthenticated: Boolean(token),
     });
   },
 
-  setSession: async ({ token, refreshToken, email, role }) => {
+  setSession: async ({ token, refreshToken, email, name, role }) => {
     const normalizedRole = normalizeRole(role);
 
     if (token) {
@@ -83,6 +90,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (email) {
       await setUserEmail(email);
     }
+    if (name) {
+      await setUserName(name);
+    }
     if (normalizedRole) {
       await setUserRole(normalizedRole);
     }
@@ -91,6 +101,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       token: token ?? state.token,
       refreshToken: refreshToken ?? state.refreshToken,
       email: email ?? state.email,
+      name: name ?? state.name,
       role: normalizedRole ?? state.role,
       isAuthenticated: Boolean(token ?? state.token),
     }));
@@ -101,6 +112,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       clearAuthToken(),
       clearRefreshToken(),
       clearUserEmail(),
+      clearUserName(),
       clearUserRole(),
     ]);
 
@@ -108,6 +120,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       token: null,
       refreshToken: null,
       email: null,
+      name: null,
       role: null,
       isAuthenticated: false,
     });
