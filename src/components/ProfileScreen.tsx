@@ -127,6 +127,7 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
         snapPoints={[0, 28, 34]}
         initialSnapPoint={28}
         contentContainerStyle={{ flex: 0, paddingBottom: 28 }}
+        showBackdropShadow={true}
       >
         <View className="px-2 pt-2">
           <Text className="text-center text-lg font-semibold text-gray-900">Logout</Text>

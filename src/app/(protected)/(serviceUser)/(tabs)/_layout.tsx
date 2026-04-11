@@ -1,8 +1,22 @@
-import { Tabs } from "expo-router";
+import { Tabs, useSegments } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 export default function userTabsLayout() {
+  const segments = useSegments();
+  const isMessageRoute = segments.includes("(message)") || segments.includes("message");
+  const lastSegment = segments[segments.length - 1];
+  const isMessageDetail = isMessageRoute && lastSegment !== "index" && lastSegment !== "(message)";
+	const baseTabBarStyle = { backgroundColor: "#FFFFFF", borderTopColor: "#E6E6E6" };
+	const tabBarStyle = isMessageDetail ? { display: "none" } : baseTabBarStyle;
+
   return (
-    <Tabs initialRouteName="(home)">
+    <Tabs initialRouteName="(home)"
+      screenOptions={{
+        tabBarActiveTintColor: "#0F7A3A",
+        tabBarInactiveTintColor: "#9CA3AF",
+		tabBarStyle,
+        tabBarLabelStyle: { fontSize: 10, marginTop: -2 },
+        headerTitleAlign: "center",
+      }}>
       <Tabs.Screen
         name="(home)"
         options={{
@@ -36,6 +50,7 @@ export default function userTabsLayout() {
         options={{
           title: "Messages",
           headerShown: false,
+          tabBarStyle,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={
@@ -51,7 +66,7 @@ export default function userTabsLayout() {
         name="activity"
         options={{
           title: "Activity",
-          headerShown: false,
+          
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "calendar" : "calendar-outline"}
