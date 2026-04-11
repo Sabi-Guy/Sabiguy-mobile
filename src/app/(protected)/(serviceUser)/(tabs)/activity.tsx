@@ -75,8 +75,8 @@ const Activity = () => {
   }, [activeFilter, data]);
 
   return (
-    <View className="flex-1 bg-white">
-      <View className="mt-4 flex-row gap-2 px-5">
+    <View className="flex-1 bg-white pt-4">
+      <View className="mt-3 flex-row gap-2 px-5">
         {FILTERS.map((filter) => {
           const isActive = filter === activeFilter;
           return (
@@ -89,7 +89,7 @@ const Activity = () => {
                   : "rounded-md border border-gray-200 px-3 py-1"
               }
             >
-              <Text className={isActive ? "text-xs text-white" : "text-xs text-gray-600"}>
+              <Text className={isActive ? "text-ssm font-semibold text-white" : "text-sm font-medium text-black"}>
                 {filter}
               </Text>
             </TouchableOpacity>
@@ -97,7 +97,7 @@ const Activity = () => {
         })}
       </View>
       <ScrollView className="flex-1 px-5 pb-6 pt-4">
-        <View className="gap-4">
+        <View className="gap-5">
           {filtered.map((item) => (
             <ActivityItem
               key={item.id}

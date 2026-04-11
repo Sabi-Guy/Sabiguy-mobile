@@ -41,19 +41,19 @@ export default function ActivityItem({
 
   return (
     <View className="flex-row items-start gap-3">
-      <Image source={styles.icon} className="h-8 w-8" resizeMode="contain" />
+      <Image source={styles.icon} className="mt-0.5 h-7 w-7" resizeMode="contain" />
       <View className="flex-1">
         <View className="flex-row items-center justify-between">
           <Text className="text-sm font-semibold text-gray-900">{title}</Text>
           <Text className="text-[10px] text-gray-400">{time}</Text>
         </View>
-        <Text className="mt-1 text-xs text-gray-500">{description}</Text>
+        <Text className="mt-1 text-xs leading-4 text-gray-500">{description}</Text>
         {ctaLabel && (
           <Pressable
             onPress={onPress}
             className="mt-2 self-start rounded-md border border-gray-200 bg-white px-2 py-1"
           >
-            <Text className="text-[10px] text-gray-600">{ctaLabel}</Text>
+            <Text className="text-[10px] font-medium text-gray-600">{ctaLabel}</Text>
           </Pressable>
         )}
       </View>
