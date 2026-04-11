@@ -2,7 +2,13 @@ import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 export default function userTabsLayout() {
   return (
-    <Tabs initialRouteName="(home)">
+    <Tabs initialRouteName="(home)"
+      screenOptions={{
+        tabBarActiveTintColor: "#0F7A3A",
+        tabBarInactiveTintColor: "#9CA3AF",
+        tabBarStyle: { backgroundColor: "#FFFFFF", borderTopColor: "#E6E6E6" },
+        tabBarLabelStyle: { fontSize: 10, marginTop: -2 },
+      }}>
       <Tabs.Screen
         name="(home)"
         options={{

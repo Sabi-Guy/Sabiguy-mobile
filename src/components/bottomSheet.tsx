@@ -21,6 +21,7 @@ type BottomSheetProps = {
 	topContent?: React.ReactNode;
 	showHandle?: boolean;
 	enableBackdropClose?: boolean;
+	showBackdropShadow?: boolean;
 	sheetStyle?: StyleProp<ViewStyle>;
 	contentContainerStyle?: StyleProp<ViewStyle>;
 };
@@ -66,6 +67,7 @@ export default function BottomSheet({
 	topContent,
 	showHandle = true,
 	enableBackdropClose = true,
+	showBackdropShadow = true,
 	sheetStyle,
 	contentContainerStyle,
 }: BottomSheetProps) {
@@ -185,12 +187,14 @@ export default function BottomSheet({
 	return (
 		<Modal transparent animationType="none" visible={isVisible} onRequestClose={closeSheet}>
 			<View style={styles.root}>
-				<Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
-					<Pressable
-						style={StyleSheet.absoluteFill}
-						onPress={enableBackdropClose && isBackdropInteractive ? closeSheet : undefined}
-					/>
-				</Animated.View>
+				{showBackdropShadow && (
+					<Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
+						<Pressable
+							style={StyleSheet.absoluteFill}
+							onPress={enableBackdropClose && isBackdropInteractive ? closeSheet : undefined}
+						/>
+					</Animated.View>
+				)}
 
 				<Animated.View
 					style={[styles.sheet, { height: windowHeight, transform: [{ translateY }] }, sheetStyle]}
