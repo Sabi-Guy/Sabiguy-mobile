@@ -1,10 +1,11 @@
 import { View, ScrollView } from "react-native";
 import React, { useMemo, useState } from "react";
-import BackButton from "@/components/BackButton";
 import siren from "../../../../../../assets/siren.png";
 import tool from "../../../../../../assets/hand-tools.png";
 import truck from "../../../../../../assets/truck.png";
 import family from "../../../../../../assets/family.png";
+import palette from "../../../../../../assets/palette.png";
+import suitcase from "../../../../../../assets/suitcase.png";
 import CartegoriesCard from "@/components/Cards/CartegoriesCard";
 import CategoryDetailSheet from "@/components/CategoryDetailSheet";
 import { useRouter } from "expo-router";
@@ -13,15 +14,55 @@ export default function categories() {
   const categories = useMemo(
     () => [
       {
-        id: "emergency",
-        title: "Emergency",
+        id: "professional-services",
+        title: "Professional Services",
+        text_one: "Professional",
+        text_two: "Services",
+        image: suitcase,
+        items: [
+          { id: "legal-financial", label: "Legal & Financial" },
+          { id: "real-estate-construction", label: "Real Estate & Construction" },
+          { id: "healthcare-technology", label: "Healthcare & Technology" },
+        ],
+      },
+      {
+        id: "transport-logistics",
+        title: "Transport & Logistics",
+        text_one: "Transport &",
+        text_two: "Logistics",
+        image: truck,
+        items: [
+          { id: "car-hire", label: "Car hire" },
+          { id: "bus-hire", label: "Bus hire" },
+          { id: "truck-hire", label: "Truck hire" },
+          { id: "dispatch-riders", label: "Dispatch Riders" },
+          { id: "freelance-driver", label: "Freelance Driver" },
+          { id: "passenger-rider", label: "Passenger Rider" },
+        ],
+      },
+      {
+        id: "freelance-creative",
+        title: "Freelance & Creative Services",
+        text_one: "Freelance &",
+        text_two: "Creative Services",
+        image: palette,
+        items: [
+          { id: "digital-design", label: "Digital Design" },
+          { id: "content-creation", label: "Content Creation" },
+          { id: "media-production", label: "Media Production" },
+        ],
+      },
+      {
+        id: "emergency-services",
+        title: "Emergency Services",
         text_one: "Emergency",
+        text_two: "Services",
         image: siren,
         items: [
-          { id: "ambulance", label: "Ambulance" },
-          { id: "fire-service", label: "Fire service" },
-          { id: "security", label: "Security" },
-          { id: "first-aid", label: "First aid" },
+          { id: "ambulance-services", label: "Ambulance Services" },
+          { id: "towing-roadside", label: "Towing & Roadside" },
+          { id: "locksmiths", label: "Locksmiths" },
+          { id: "security-services", label: "Security Services" },
         ],
       },
       {
@@ -32,22 +73,9 @@ export default function categories() {
         image: tool,
         items: [
           { id: "plumbing", label: "Plumbing" },
-          { id: "electrical", label: "Electrical" },
-          { id: "cleaning", label: "Cleaning" },
+          { id: "electrical-services", label: "Electrical Services" },
           { id: "carpentry", label: "Carpentry" },
-        ],
-      },
-      {
-        id: "transport-logistics",
-        title: "Transport & Logistics",
-        text_one: "Transport &",
-        text_two: "Logistics",
-        image: truck,
-        items: [
-          { id: "vehicle-hire", label: "Vehicle hire" },
-          { id: "package-delivery", label: "Package delivery" },
-          { id: "freelance-driver", label: "Freelance driver" },
-          { id: "book-a-trip", label: "Book a trip" },
+          { id: "finishing-aesthetics", label: "Finishing & Aesthetics" },
         ],
       },
       {
@@ -57,10 +85,9 @@ export default function categories() {
         text_two: "Lifestyle",
         image: family,
         items: [
-          { id: "babysitting", label: "Babysitting" },
-          { id: "errands", label: "Errands" },
-          { id: "personal-care", label: "Personal care" },
-          { id: "catering", label: "Catering" },
+          { id: "household-support", label: "Household Support" },
+          { id: "childcare-education", label: "Childcare & Education" },
+          { id: "personal-beauty-services", label: "Personal & Beauty Services" },
         ],
       },
     ],
