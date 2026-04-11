@@ -66,7 +66,7 @@ export default function userTabsLayout() {
         name="activity"
         options={{
           title: "Activity",
-          headerShown: false,
+          
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "calendar" : "calendar-outline"}
