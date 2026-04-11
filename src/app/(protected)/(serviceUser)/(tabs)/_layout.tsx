@@ -8,6 +8,7 @@ export default function userTabsLayout() {
         tabBarInactiveTintColor: "#9CA3AF",
         tabBarStyle: { backgroundColor: "#FFFFFF", borderTopColor: "#E6E6E6" },
         tabBarLabelStyle: { fontSize: 10, marginTop: -2 },
+        headerTitleAlign: "center",
       }}>
       <Tabs.Screen
         name="(home)"
@@ -41,7 +42,7 @@ export default function userTabsLayout() {
         name="(message)"
         options={{
           title: "Messages",
-          headerShown: false,
+          
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={

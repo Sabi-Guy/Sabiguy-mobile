@@ -45,11 +45,11 @@ export default function Home() {
             <Text className="text-white text-lg font-semibold">
               Hello, {firstName} 👋
             </Text>
-            <View className="mt-2 space-x-3 flex-row items-center py-1 rounded-full self-start">
-              <Image source={location} className="h-5 w-5 " />
+            <View className="mt-2 flex-row items-center gap-2 py-1 rounded-full self-start">
+              <Image source={location} className="h-5 w-5" />
               <TouchableOpacity onPress={() => router.push("/(protected)/(serviceUser)/location")}>
                 <Text className="text-white text-xs">
-                Add your location
+                  Add your location
                 </Text>
               </TouchableOpacity>
             </View>

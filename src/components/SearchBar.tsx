@@ -13,7 +13,7 @@ export default function SearchBar({
   onChangeText,
 }: SearchBarProps) {
   return (
-    <View className="bg-white rounded-2xl px-4 py-3 flex-row items-center">
+    <View className="bg-gray-100 rounded-2xl px-4 py-3 flex-row items-center">
       <Image source={search} className="h-4 w-4 mr-2" />
       <TextInput
         placeholder={placeholder}
