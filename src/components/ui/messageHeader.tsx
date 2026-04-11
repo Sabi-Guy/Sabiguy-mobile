@@ -20,7 +20,7 @@ export default function MessageHeader({
 }: MessageHeaderProps) {
   return (
     <View className="flex-row items-center px-4 pb-3 pt-10">
-      <BackButton />
+      <BackButton variant="inline" />
       <Image source={avatar} className="ml-2 h-10 w-10 rounded-full" />
       <View className="ml-3 flex-1">
         <Text className="text-base font-semibold text-gray-900">{name}</Text>
