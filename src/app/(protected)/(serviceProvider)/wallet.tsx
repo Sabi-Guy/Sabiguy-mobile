@@ -74,7 +74,10 @@ export default function WalletScreen() {
               </View>
             </View>
 
-            <Pressable className="mt-3 h-8 items-center justify-center rounded-full bg-white">
+            <Pressable
+              className="mt-3 h-8 items-center justify-center rounded-full bg-white"
+              onPress={() => router.push("/(protected)/(serviceProvider)/withdraw")}
+            >
               <Text className="text-[11px] font-semibold text-[#2E7B4F]">Withdraw</Text>
             </Pressable>
           </View>
@@ -101,7 +104,10 @@ export default function WalletScreen() {
                   index < transactions.length - 1 ? "border-b border-[#F0F0F0]" : ""
                 }`}
               >
-                <View className="mr-2 mt-0.5 h-8 w-8 items-center justify-center rounded-full" style={{ backgroundColor: item.iconBg }}>
+                <View
+                  className="mr-2 mt-0.5 h-8 w-8 items-center justify-center rounded-full"
+                  style={{ backgroundColor: item.iconBg }}
+                >
                   <Ionicons
                     name={item.icon}
                     size={14}
