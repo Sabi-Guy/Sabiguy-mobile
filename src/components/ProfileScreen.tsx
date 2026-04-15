@@ -38,7 +38,15 @@ const moreItems: MenuItem[] = [
   { label: "Help", icon: "help-circle-outline" },
 ];
 
-function MenuSection({ title, items }: { title: string; items: MenuItem[] }) {
+function MenuSection({
+  title,
+  items,
+  onItemPress,
+}: {
+  title: string;
+  items: MenuItem[];
+  onItemPress?: (item: MenuItem) => void;
+}) {
   return (
     <View className="mt-4">
       <Text className="mb-2 text-[10px] font-semibold uppercase tracking-[0.8px] text-[#9CA3AF]">{title}</Text>
@@ -46,6 +54,7 @@ function MenuSection({ title, items }: { title: string; items: MenuItem[] }) {
         {items.map((item, index) => (
           <Pressable
             key={item.label}
+            onPress={() => onItemPress?.(item)}
             className={`flex-row items-center px-3 py-3 ${
               index < items.length - 1 ? "border-b border-[#F1F1F1]" : ""
             }`}
@@ -65,9 +74,11 @@ function MenuSection({ title, items }: { title: string; items: MenuItem[] }) {
 function ProviderProfileView({
   displayName,
   onPressLogout,
+  onAccountItemPress,
 }: {
   displayName: string;
   onPressLogout: () => void;
+  onAccountItemPress: (item: MenuItem) => void;
 }) {
   return (
     <ScrollView
@@ -85,7 +96,7 @@ function ProviderProfileView({
         </View>
       </View>
 
-      <MenuSection title="Account" items={accountItemsByVariant.provider} />
+      <MenuSection title="Account" items={accountItemsByVariant.provider} onItemPress={onAccountItemPress} />
       <MenuSection title="More" items={moreItems} />
 
       <Pressable
@@ -163,6 +174,13 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
     await clearSession();
   };
 
+  const handleAccountItemPress = (item: MenuItem) => {
+    if (variant !== "provider") return;
+    if (item.label === "Manage Profile") {
+      router.push("/(protected)/(serviceProvider)/manage-profile");
+    }
+  };
+
   return (
     <View className="flex-1 bg-[#F6F7F3]">
       <View className="border-b border-[#EFEFEF] bg-white px-6 pb-3 pt-6">
@@ -170,7 +188,11 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
       </View>
 
       {variant === "provider" ? (
-        <ProviderProfileView displayName={displayName} onPressLogout={() => setShowLogoutSheet(true)} />
+        <ProviderProfileView
+          displayName={displayName}
+          onPressLogout={() => setShowLogoutSheet(true)}
+          onAccountItemPress={handleAccountItemPress}
+        />
       ) : (
         <UserProfileView
           displayName={displayName}

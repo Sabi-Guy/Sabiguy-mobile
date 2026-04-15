@@ -17,6 +17,7 @@ export default function ServiceProviderProtectedLayout() {
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="manage-profile" options={{ headerShown: false }} />
     </Stack>
   );
 }
