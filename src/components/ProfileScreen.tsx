@@ -178,6 +178,10 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
     if (variant !== "provider") return;
     if (item.label === "Manage Profile") {
       router.push("/(protected)/(serviceProvider)/manage-profile");
+      return;
+    }
+    if (item.label === "Wallet") {
+      router.push("/(protected)/(serviceProvider)/wallet");
     }
   };
 
