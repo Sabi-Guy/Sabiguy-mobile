@@ -32,7 +32,7 @@ const accountItemsByVariant: Record<ProfileScreenProps["variant"], MenuItem[]> =
   ],
 };
 
-const moreItems: MenuItem[] = [
+const   moreItems: MenuItem[] = [
   { label: "Refer & Earn", icon: "gift-outline" },
   { label: "About us", icon: "information-circle-outline" },
   { label: "Help", icon: "help-circle-outline" },
@@ -116,10 +116,12 @@ function UserProfileView({
   displayName,
   items,
   onPressLogout,
+  onAccountItemPress,
 }: {
   displayName: string;
   items: MenuItem[];
   onPressLogout: () => void;
+  onAccountItemPress?: (item: MenuItem) => void;
 }) {
   return (
     <ScrollView
@@ -142,7 +144,7 @@ function UserProfileView({
         </View>
       </View>
 
-      <MenuSection title="Account" items={items} />
+      <MenuSection title="Account" items={items} onItemPress={onAccountItemPress} />
       <MenuSection title="More" items={moreItems} />
 
       <Pressable className="mt-6 flex-row items-center rounded-2xl bg-white px-4 py-4" onPress={onPressLogout}>
@@ -175,13 +177,27 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
   };
 
   const handleAccountItemPress = (item: MenuItem) => {
-    if (variant !== "provider") return;
+    if (variant === "provider") {
+      if (item.label === "Manage Profile") {
+        router.push("/(protected)/(serviceProvider)/manage-profile");
+        return;
+      }
+      if (item.label === "Wallet") {
+        router.push("/(protected)/(serviceProvider)/wallet");
+      }
+      return;
+    }
+
     if (item.label === "Manage Profile") {
-      router.push("/(protected)/(serviceProvider)/manage-profile");
+      router.push("/(protected)/(serviceUser)/(tabs)/(profile)/editUserProfile");
       return;
     }
     if (item.label === "Wallet") {
-      router.push("/(protected)/(serviceProvider)/wallet");
+      router.push("/(protected)/(serviceUser)/(tabs)/(profile)/userWallet");
+      return;
+    }
+    if (item.label === "Password") {
+      router.push("/(protected)/(serviceUser)/(tabs)/(profile)/userPassword");
     }
   };
 
@@ -202,6 +218,7 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
           displayName={displayName}
           items={accountItems}
           onPressLogout={() => setShowLogoutSheet(true)}
+          onAccountItemPress={handleAccountItemPress}
         />
       )}
 
