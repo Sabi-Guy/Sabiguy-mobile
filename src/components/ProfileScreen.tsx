@@ -182,6 +182,10 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
     }
     if (item.label === "Wallet") {
       router.push("/(protected)/(serviceProvider)/wallet");
+      return;
+    }
+    if (item.label === "Service Profile") {
+      router.push("/(protected)/(serviceProvider)/service-profile");
     }
   };
 

@@ -18,6 +18,7 @@ export default function ServiceProviderProtectedLayout() {
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="manage-profile" options={{ headerShown: false }} />
+      <Stack.Screen name="service-profile" options={{ headerShown: false }} />
       <Stack.Screen name="wallet" options={{ headerShown: false }} />
       <Stack.Screen name="transaction-history" options={{ headerShown: false }} />
       <Stack.Screen name="withdraw" options={{ headerShown: false }} />
