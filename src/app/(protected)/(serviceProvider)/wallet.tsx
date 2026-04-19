@@ -90,7 +90,7 @@ export default function WalletScreen() {
 
           <View className="mt-4 flex-row items-center justify-between">
             <Text className="text-[11px] font-semibold text-[#3D434C]">Transaction History</Text>
-            <Pressable className="flex-row items-center">
+            <Pressable className="flex-row items-center" onPress={() => router.push("/(protected)/(serviceProvider)/transaction-history")}>
               <Text className="text-[10px] text-[#69707A]">See all</Text>
               <Ionicons name="chevron-forward" size={12} color="#69707A" />
             </Pressable>
