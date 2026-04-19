@@ -75,10 +75,12 @@ function ProviderProfileView({
   displayName,
   onPressLogout,
   onAccountItemPress,
+  onMoreItemPress,
 }: {
   displayName: string;
   onPressLogout: () => void;
   onAccountItemPress: (item: MenuItem) => void;
+  onMoreItemPress: (item: MenuItem) => void;
 }) {
   return (
     <ScrollView
@@ -97,7 +99,7 @@ function ProviderProfileView({
       </View>
 
       <MenuSection title="Account" items={accountItemsByVariant.provider} onItemPress={onAccountItemPress} />
-      <MenuSection title="More" items={moreItems} />
+      <MenuSection title="More" items={moreItems} onItemPress={onMoreItemPress} />
 
       <Pressable
         className="mt-4 flex-row items-center rounded-xl border border-[#F4F4F4] bg-white px-3 py-3"
@@ -198,6 +200,34 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
     }
     if (item.label === "Password") {
       router.push("/(protected)/(serviceUser)/(tabs)/(profile)/userPassword");
+      router.push("/(protected)/(serviceProvider)/wallet");
+      return;
+    }
+    if (item.label === "Service Profile") {
+      router.push("/(protected)/(serviceProvider)/service-profile");
+      return;
+    }
+    if (item.label === "Password") {
+      router.push("/(protected)/(serviceProvider)/password");
+      return;
+    }
+    if (item.label === "Notifications") {
+      router.push("/(protected)/(serviceProvider)/notifications");
+    }
+  };
+
+  const handleMoreItemPress = (item: MenuItem) => {
+    if (variant !== "provider") return;
+    if (item.label === "Refer & Earn") {
+      router.push("/(protected)/(serviceProvider)/refer-earn");
+      return;
+    }
+    if (item.label === "About us") {
+      router.push("/(protected)/(serviceProvider)/about-us");
+      return;
+    }
+    if (item.label === "Help") {
+      router.push("/(protected)/(serviceProvider)/help");
     }
   };
 
@@ -212,6 +242,7 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
           displayName={displayName}
           onPressLogout={() => setShowLogoutSheet(true)}
           onAccountItemPress={handleAccountItemPress}
+          onMoreItemPress={handleMoreItemPress}
         />
       ) : (
         <UserProfileView
