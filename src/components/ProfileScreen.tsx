@@ -32,7 +32,7 @@ const accountItemsByVariant: Record<ProfileScreenProps["variant"], MenuItem[]> =
   ],
 };
 
-const   moreItems: MenuItem[] = [
+const moreItems: MenuItem[] = [
   { label: "Refer & Earn", icon: "gift-outline" },
   { label: "About us", icon: "information-circle-outline" },
   { label: "Help", icon: "help-circle-outline" },
@@ -119,11 +119,13 @@ function UserProfileView({
   items,
   onPressLogout,
   onAccountItemPress,
+  onMoreItemPress,
 }: {
   displayName: string;
   items: MenuItem[];
   onPressLogout: () => void;
   onAccountItemPress?: (item: MenuItem) => void;
+  onMoreItemPress?: (item: MenuItem) => void;
 }) {
   return (
     <ScrollView
@@ -147,7 +149,7 @@ function UserProfileView({
       </View>
 
       <MenuSection title="Account" items={items} onItemPress={onAccountItemPress} />
-      <MenuSection title="More" items={moreItems} />
+      <MenuSection title="More" items={moreItems} onItemPress={onMoreItemPress} />
 
       <Pressable className="mt-6 flex-row items-center rounded-2xl bg-white px-4 py-4" onPress={onPressLogout}>
         <View className="mr-3 h-8 w-8 items-center justify-center rounded-full bg-[#FFF1F1]">
@@ -186,6 +188,18 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
       }
       if (item.label === "Wallet") {
         router.push("/(protected)/(serviceProvider)/wallet");
+        return;
+      }
+      if (item.label === "Service Profile") {
+        router.push("/(protected)/(serviceProvider)/service-profile");
+        return;
+      }
+      if (item.label === "Password") {
+        router.push("/(protected)/(serviceProvider)/password");
+        return;
+      }
+      if (item.label === "Notifications") {
+        router.push("/(protected)/(serviceProvider)/notifications");
       }
       return;
     }
@@ -198,36 +212,44 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
       router.push("/(protected)/(serviceUser)/(tabs)/(profile)/userWallet");
       return;
     }
+    if (item.label === "Bookings") {
+      router.push("/(protected)/(serviceUser)/(tabs)/(hire)");
+      return;
+    }
     if (item.label === "Password") {
       router.push("/(protected)/(serviceUser)/(tabs)/(profile)/userPassword");
-      router.push("/(protected)/(serviceProvider)/wallet");
-      return;
-    }
-    if (item.label === "Service Profile") {
-      router.push("/(protected)/(serviceProvider)/service-profile");
-      return;
-    }
-    if (item.label === "Password") {
-      router.push("/(protected)/(serviceProvider)/password");
       return;
     }
     if (item.label === "Notifications") {
-      router.push("/(protected)/(serviceProvider)/notifications");
+      router.push("/(protected)/(serviceUser)/(tabs)/(profile)/userNotifications");
     }
   };
 
   const handleMoreItemPress = (item: MenuItem) => {
-    if (variant !== "provider") return;
+    if (variant === "provider") {
+      if (item.label === "Refer & Earn") {
+        router.push("/(protected)/(serviceProvider)/refer-earn");
+        return;
+      }
+      if (item.label === "About us") {
+        router.push("/(protected)/(serviceProvider)/about-us");
+        return;
+      }
+      if (item.label === "Help") {
+        router.push("/(protected)/(serviceProvider)/help");
+      }
+      return;
+    }
     if (item.label === "Refer & Earn") {
-      router.push("/(protected)/(serviceProvider)/refer-earn");
+      router.push("/(protected)/(serviceUser)/(tabs)/(profile)/referEarn");
       return;
     }
     if (item.label === "About us") {
-      router.push("/(protected)/(serviceProvider)/about-us");
+      router.push("/(protected)/(serviceUser)/(tabs)/(profile)/aboutUs");
       return;
     }
     if (item.label === "Help") {
-      router.push("/(protected)/(serviceProvider)/help");
+      router.push("/(protected)/(serviceUser)/(tabs)/(profile)/help");
     }
   };
 
@@ -250,6 +272,7 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
           items={accountItems}
           onPressLogout={() => setShowLogoutSheet(true)}
           onAccountItemPress={handleAccountItemPress}
+          onMoreItemPress={handleMoreItemPress}
         />
       )}
 

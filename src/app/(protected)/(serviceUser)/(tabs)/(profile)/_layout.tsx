@@ -7,6 +7,11 @@ export default function ProfileStack() {
 		<Stack.Screen name="userPassword" />
 		<Stack.Screen name="userWallet" />
 		<Stack.Screen name="transactionScreen" />
+		<Stack.Screen name="userNotifications" />
+		<Stack.Screen name="referEarn" />
+		<Stack.Screen name="aboutUs" />
+		<Stack.Screen name="help" />
+		<Stack.Screen name="privacyScreen" />
 
 	</Stack>);
 }
