@@ -13,5 +13,5 @@
     "**/*.tsx",
     "**/*.d.ts",
     "nativewind-env.d.ts"
-  ]
+, "src/components/ui/Transactions.tsx"  ]
 }
