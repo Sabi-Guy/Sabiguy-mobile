@@ -144,7 +144,24 @@ export default function TransactionScreen() {
           </View>
 
           <Text className="mt-4 text-xs font-semibold text-gray-700">Filter By</Text>
-         
+          {/* <View className="mt-2 gap-2">
+            {FILTERS.map((item) => (
+              <Pressable
+                key={item}
+                onPress={() => setActiveFilter(item)}
+                className="flex-row items-center gap-2"
+              >
+                <View
+                  className={
+                    item === activeFilter
+                      ? "h-3 w-3 rounded-full border border-green-700 bg-green-700"
+                      : "h-3 w-3 rounded-full border border-gray-300"
+                  }
+                />
+                <Text className="text-xs text-gray-700">{item}</Text>
+              </Pressable>
+            ))}
+          </View> */}
 
           <Text className="mt-4 text-xs font-semibold text-gray-700">Custom Date Range</Text>
           <View className="mt-2 gap-2">
