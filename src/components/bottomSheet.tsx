@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-	Animated,
 	Modal,
 	PanResponder,
 	Pressable,
@@ -10,6 +9,15 @@ import {
 	View,
 	ViewStyle,
 } from "react-native";
+import Animated, {
+	Extrapolation,
+	interpolate,
+	runOnJS,
+	useAnimatedStyle,
+	useSharedValue,
+	withSpring,
+	withTiming,
+} from "react-native-reanimated";
 
 type BottomSheetProps = {
 	isVisible: boolean;
@@ -73,9 +81,11 @@ export default function BottomSheet({
 }: BottomSheetProps) {
 	const { height: windowHeight } = useWindowDimensions();
 	const [activeSnapPoint, setActiveSnapPoint] = useState(initialSnapPoint);
+	const [shouldRender, setShouldRender] = useState(isVisible);
 	const [isBackdropInteractive, setIsBackdropInteractive] = useState(false);
 	const dragStartY = useRef(0);
-	const translateY = useRef(new Animated.Value(windowHeight)).current;
+	const isClosingRef = useRef(false);
+	const translateY = useSharedValue(windowHeight);
 
 	const validSnapPoints = useMemo(() => normalizeSnapPoints(snapPoints), [snapPoints]);
 
@@ -89,33 +99,54 @@ export default function BottomSheet({
 
 	const animateToPoint = useCallback(
 		(point: number, onDone?: () => void) => {
-			Animated.spring(translateY, {
-				toValue: toTranslateY(point),
-				damping: 24,
-				stiffness: 240,
-				mass: 0.9,
-				useNativeDriver: true,
-			}).start(() => {
-				setActiveSnapPoint(point);
-				onSnapPointChange?.(point);
-				onDone?.();
-			});
+			translateY.value = withSpring(
+				toTranslateY(point),
+				{
+					damping: 24,
+					stiffness: 260,
+					mass: 0.85,
+				},
+				(finished) => {
+					if (!finished) {
+						return;
+					}
+
+					runOnJS(setActiveSnapPoint)(point);
+					if (onSnapPointChange) {
+						runOnJS(onSnapPointChange)(point);
+					}
+					if (onDone) {
+						runOnJS(onDone)();
+					}
+				}
+			);
 		},
 		[onSnapPointChange, toTranslateY, translateY]
 	);
 
 	const closeSheet = useCallback(() => {
-		onClose?.();
+		if (isClosingRef.current) {
+			return;
+		}
+
+		isClosingRef.current = true;
+		setIsBackdropInteractive(false);
+		animateToPoint(0, () => {
+			isClosingRef.current = false;
+			onClose?.();
+		});
 	}, [animateToPoint, onClose]);
 
 	useEffect(() => {
 		if (isVisible) {
+			setShouldRender(true);
+			isClosingRef.current = false;
 			setIsBackdropInteractive(false);
 			const startPoint = validSnapPoints.includes(initialSnapPoint)
 				? initialSnapPoint
 				: validSnapPoints[validSnapPoints.length - 1];
 
-			translateY.setValue(windowHeight);
+			translateY.value = windowHeight;
 			animateToPoint(startPoint);
 			const timer = setTimeout(() => {
 				setIsBackdropInteractive(true);
@@ -124,11 +155,18 @@ export default function BottomSheet({
 		}
 
 		setIsBackdropInteractive(false);
+		if (shouldRender) {
+			translateY.value = withTiming(windowHeight, { duration: 220 }, (finished) => {
+				if (finished) {
+					runOnJS(setShouldRender)(false);
+				}
+			});
+		}
 	}, [
 		animateToPoint,
-		closeSheet,
 		initialSnapPoint,
 		isVisible,
+		shouldRender,
 		translateY,
 		validSnapPoints,
 		windowHeight,
@@ -136,7 +174,7 @@ export default function BottomSheet({
 
 	useEffect(() => {
 		if (isVisible) {
-			translateY.setValue(toTranslateY(activeSnapPoint));
+			translateY.value = toTranslateY(activeSnapPoint);
 		}
 	}, [activeSnapPoint, isVisible, toTranslateY, translateY]);
 
@@ -145,13 +183,11 @@ export default function BottomSheet({
 			PanResponder.create({
 				onMoveShouldSetPanResponder: (_, gestureState) => Math.abs(gestureState.dy) > 3,
 				onPanResponderGrant: () => {
-					translateY.stopAnimation((value: number) => {
-						dragStartY.current = value;
-					});
+					dragStartY.current = translateY.value;
 				},
 				onPanResponderMove: (_, gestureState) => {
 					const nextY = clamp(dragStartY.current + gestureState.dy, 0, windowHeight);
-					translateY.setValue(nextY);
+					translateY.value = nextY;
 				},
 				onPanResponderRelease: (_, gestureState) => {
 					const projectedY = clamp(dragStartY.current + gestureState.dy, 0, windowHeight);
@@ -168,27 +204,25 @@ export default function BottomSheet({
 		[animateToPoint, closeSheet, translateY, validSnapPoints, windowHeight]
 	);
 
-	const backdropOpacity = useMemo(
-		() =>
-			translateY.interpolate({
-				inputRange: [0, windowHeight],
-				outputRange: [0.45, 0],
-				extrapolate: "clamp",
-			}),
-		[translateY, windowHeight]
-	);
+	const backdropStyle = useAnimatedStyle(() => ({
+		opacity: interpolate(translateY.value, [0, windowHeight], [0.45, 0], Extrapolation.CLAMP),
+	}));
 
-	if (!isVisible) {
+	const sheetAnimatedStyle = useAnimatedStyle(() => ({
+		transform: [{ translateY: translateY.value }],
+	}));
+
+	if (!shouldRender) {
 		return null;
 	}
 
 	const shouldRenderTopArea = Boolean(topContent || showHandle);
 
 	return (
-		<Modal transparent animationType="none" visible={isVisible} onRequestClose={closeSheet}>
+		<Modal transparent animationType="none" visible={shouldRender} onRequestClose={closeSheet}>
 			<View style={styles.root}>
 				{showBackdropShadow && (
-					<Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
+					<Animated.View style={[styles.backdrop, backdropStyle]}>
 						<Pressable
 							style={StyleSheet.absoluteFill}
 							onPress={enableBackdropClose && isBackdropInteractive ? closeSheet : undefined}
@@ -197,7 +231,7 @@ export default function BottomSheet({
 				)}
 
 				<Animated.View
-					style={[styles.sheet, { height: windowHeight, transform: [{ translateY }] }, sheetStyle]}
+					style={[styles.sheet, { height: windowHeight }, sheetAnimatedStyle, sheetStyle]}
 					{...(!shouldRenderTopArea ? panResponder.panHandlers : {})}
 				>
 					{shouldRenderTopArea && (
