@@ -30,6 +30,7 @@ type BottomSheetProps = {
 	showHandle?: boolean;
 	enableBackdropClose?: boolean;
 	showBackdropShadow?: boolean;
+	useModal?: boolean;
 	sheetStyle?: StyleProp<ViewStyle>;
 	contentContainerStyle?: StyleProp<ViewStyle>;
 };
@@ -76,6 +77,7 @@ export default function BottomSheet({
 	showHandle = true,
 	enableBackdropClose = true,
 	showBackdropShadow = true,
+	useModal = true,
 	sheetStyle,
 	contentContainerStyle,
 }: BottomSheetProps) {
@@ -219,31 +221,43 @@ export default function BottomSheet({
 	const shouldRenderTopArea = Boolean(topContent || showHandle);
 	const topAreaContent = topContent ?? (showHandle ? <View style={styles.handle} /> : null);
 
+	const sheetContent = (
+		<View style={styles.root} pointerEvents={useModal ? "auto" : "box-none"}>
+			{showBackdropShadow && (
+				<Animated.View
+					style={[styles.backdrop, backdropStyle]}
+					pointerEvents={enableBackdropClose ? "auto" : "none"}
+				>
+					<Pressable
+						style={StyleSheet.absoluteFill}
+						onPress={enableBackdropClose && isBackdropInteractive ? closeSheet : undefined}
+					/>
+				</Animated.View>
+			)}
+
+			<Animated.View
+				style={[styles.sheet, { height: windowHeight }, sheetAnimatedStyle, sheetStyle]}
+				pointerEvents="auto"
+			>
+				<View
+					style={shouldRenderTopArea ? styles.topArea : styles.topAreaHidden}
+					{...panResponder.panHandlers}
+				>
+					{topAreaContent}
+				</View>
+
+				<View style={[styles.content, contentContainerStyle]}>{children}</View>
+			</Animated.View>
+		</View>
+	);
+
+	if (!useModal) {
+		return <View style={styles.rootNonModal}>{sheetContent}</View>;
+	}
+
 	return (
 		<Modal transparent animationType="none" visible={shouldRender} onRequestClose={closeSheet}>
-			<View style={styles.root}>
-				{showBackdropShadow && (
-					<Animated.View style={[styles.backdrop, backdropStyle]}>
-						<Pressable
-							style={StyleSheet.absoluteFill}
-							onPress={enableBackdropClose && isBackdropInteractive ? closeSheet : undefined}
-						/>
-					</Animated.View>
-				)}
-
-				<Animated.View
-					style={[styles.sheet, { height: windowHeight }, sheetAnimatedStyle, sheetStyle]}
-				>
-					<View
-						style={shouldRenderTopArea ? styles.topArea : styles.topAreaHidden}
-						{...panResponder.panHandlers}
-					>
-						{topAreaContent}
-					</View>
-
-					<View style={[styles.content, contentContainerStyle]}>{children}</View>
-				</Animated.View>
-			</View>
+			{sheetContent}
 		</Modal>
 	);
 }
@@ -251,6 +265,10 @@ export default function BottomSheet({
 const styles = StyleSheet.create({
 	root: {
 		flex: 1,
+		justifyContent: "flex-end",
+	},
+	rootNonModal: {
+		...StyleSheet.absoluteFillObject,
 		justifyContent: "flex-end",
 	},
 	backdrop: {

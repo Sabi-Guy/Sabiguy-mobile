@@ -36,13 +36,6 @@ export default function Hire() {
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
           <View className="gap-3">
-            <BookingOfferCard
-              carName="Toyota Corolla"
-              price="N5,000"
-              rating="4.5"
-              reviews="82"
-              distance="2.3 miles"
-            />
             <View>
               <Text className="mb-1 text-xs text-[#374151]">Work Category</Text>
               <Pressable className="h-11 flex-row items-center justify-between rounded-md border border-[#E5E7EB] px-3">
@@ -166,7 +159,7 @@ export default function Hire() {
             </View>
 
             <Pressable className="mt-2 h-11 items-center justify-center rounded-md bg-[#2E7D45]"
-            onPress={() => router.push('/bookingSummary')}>
+            onPress={() => router.push('/booking')}>
               <Text className="text-sm font-semibold text-white">Post Request</Text>
             </Pressable>
           </View>
