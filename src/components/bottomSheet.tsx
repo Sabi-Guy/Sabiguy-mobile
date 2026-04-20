@@ -217,6 +217,7 @@ export default function BottomSheet({
 	}
 
 	const shouldRenderTopArea = Boolean(topContent || showHandle);
+	const topAreaContent = topContent ?? (showHandle ? <View style={styles.handle} /> : null);
 
 	return (
 		<Modal transparent animationType="none" visible={shouldRender} onRequestClose={closeSheet}>
@@ -232,13 +233,13 @@ export default function BottomSheet({
 
 				<Animated.View
 					style={[styles.sheet, { height: windowHeight }, sheetAnimatedStyle, sheetStyle]}
-					{...(!shouldRenderTopArea ? panResponder.panHandlers : {})}
 				>
-					{shouldRenderTopArea && (
-						<View style={styles.topArea} {...panResponder.panHandlers}>
-							{topContent ?? <View style={styles.handle} />}
-						</View>
-					)}
+					<View
+						style={shouldRenderTopArea ? styles.topArea : styles.topAreaHidden}
+						{...panResponder.panHandlers}
+					>
+						{topAreaContent}
+					</View>
 
 					<View style={[styles.content, contentContainerStyle]}>{children}</View>
 				</Animated.View>
@@ -266,6 +267,12 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		paddingTop: 10,
 		paddingBottom: 8,
+	},
+	topAreaHidden: {
+		alignItems: "center",
+		paddingTop: 6,
+		paddingBottom: 6,
+		opacity: 0,
 	},
 	handle: {
 		width: 56,
