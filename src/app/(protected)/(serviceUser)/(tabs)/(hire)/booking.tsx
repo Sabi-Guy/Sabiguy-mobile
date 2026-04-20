@@ -76,7 +76,7 @@ export default function Booking() {
       <BottomSheet
         isVisible={true}
         snapPoints={[20, 35, 50]}
-        initialSnapPoint={50}
+        initialSnapPoint={30}
         showBackdropShadow={false}
         useModal={false}
       >

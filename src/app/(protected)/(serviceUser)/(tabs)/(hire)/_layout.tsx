@@ -6,6 +6,8 @@ export default function HireStack() {
       <Stack.Screen name="index" />
       <Stack.Screen name="booking" />
       <Stack.Screen name="[id]" />
+      <Stack.Screen name="trackingDetails" />
+      <Stack.Screen name="rideRating" />
     </Stack>
   );
 }

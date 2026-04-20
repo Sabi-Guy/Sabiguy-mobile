@@ -9,12 +9,17 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function BookingSummary() {
-  const [paymentMethod, setPaymentMethod] = useState<"wallet" | "online">("wallet");
+  const [paymentMethod, setPaymentMethod] = useState<"wallet" | "online">(
+    "wallet",
+  );
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const router = useRouter();
 
   const JobItem = ({
     icon,
@@ -26,9 +31,15 @@ export default function BookingSummary() {
     value: string;
   }) => (
     <View className="flex-row items-start gap-2.5">
-      <Image source={icon} className="mt-0.5 h-3.5 w-3.5" resizeMode="contain" />
+      <Image
+        source={icon}
+        className="mt-0.5 h-3.5 w-3.5"
+        resizeMode="contain"
+      />
       <View className="flex-1">
-        <Text className="text-[10px] font-semibold text-[#111827]">{label}</Text>
+        <Text className="text-[10px] font-semibold text-[#111827]">
+          {label}
+        </Text>
         <Text className="mt-0.5 text-[9.5px] text-[#6B7280]">{value}</Text>
       </View>
     </View>
@@ -59,14 +70,19 @@ export default function BookingSummary() {
         selected ? "border-[#1F8A4C]" : "border-[#D1D5DB]"
       }`}
     >
-      {selected ? <View className="h-1.5 w-1.5 rounded-full bg-[#1F8A4C]" /> : null}
+      {selected ? (
+        <View className="h-1.5 w-1.5 rounded-full bg-[#1F8A4C]" />
+      ) : null}
     </View>
   );
 
   return (
     <View className="flex-1 bg-[#F5F5F5]">
       <View className="flex-row items-center px-3 pb-2 pt-11">
-        <TouchableOpacity className="h-7 w-7 items-center justify-center" activeOpacity={0.8}>
+        <TouchableOpacity
+          className="h-7 w-7 items-center justify-center"
+          activeOpacity={0.8}
+        >
           <Ionicons name="chevron-back" size={16} color="#111827" />
         </TouchableOpacity>
         <Text className="flex-1 pr-7 text-center text-[11px] font-semibold text-[#111827]">
@@ -96,14 +112,20 @@ export default function BookingSummary() {
               />
               <View>
                 <View className="flex-row items-center gap-1">
-                  <Text className="text-[9.5px] font-semibold text-[#111827]">Marcus Johnson</Text>
+                  <Text className="text-[9.5px] font-semibold text-[#111827]">
+                    Marcus Johnson
+                  </Text>
                   <MaterialIcons name="verified" size={11} color="#1F8A4C" />
                 </View>
-                <Text className="text-[8.5px] text-[#6B7280]">Toyota Corolla - KSF257NG</Text>
+                <Text className="text-[8.5px] text-[#6B7280]">
+                  Toyota Corolla - KSF257NG
+                </Text>
                 <View className="mt-0.5 flex-row items-center gap-1">
                   <Ionicons name="star" size={9} color="#F59E0B" />
                   <Text className="text-[8px] text-[#6B7280]">4.5(82)</Text>
-                  <Text className="text-[8px] text-[#9CA3AF]">- 5 min response</Text>
+                  <Text className="text-[8px] text-[#9CA3AF]">
+                    - 5 min response
+                  </Text>
                 </View>
               </View>
             </View>
@@ -119,7 +141,9 @@ export default function BookingSummary() {
           </View>
 
           <View className="mt-4">
-            <Text className="text-[11px] font-semibold text-[#111827]">Job Summary</Text>
+            <Text className="text-[11px] font-semibold text-[#111827]">
+              Job Summary
+            </Text>
 
             <View className="mt-2.5 gap-2.5">
               <JobItem
@@ -146,7 +170,9 @@ export default function BookingSummary() {
           </View>
 
           <View className="mt-4">
-            <Text className="text-[11px] font-semibold text-[#111827]">Fare Breakdown</Text>
+            <Text className="text-[11px] font-semibold text-[#111827]">
+              Fare Breakdown
+            </Text>
             <View className="mt-2 gap-1.5">
               <PriceRow label="Service Cost" value="N5,000" />
               <PriceRow label="Service Charge" value="N100" />
@@ -155,7 +181,9 @@ export default function BookingSummary() {
           </View>
 
           <View className="mt-4">
-            <Text className="text-[11px] font-semibold text-[#111827]">Payment Method</Text>
+            <Text className="text-[11px] font-semibold text-[#111827]">
+              Payment Method
+            </Text>
             <View className="mt-2 overflow-hidden rounded-lg border border-[#E5E7EB]">
               <Pressable
                 onPress={() => setPaymentMethod("wallet")}
@@ -204,7 +232,9 @@ export default function BookingSummary() {
             onPress={() => setShowSuccess(true)}
             className="mt-5 h-10 items-center justify-center rounded-md bg-[#2E7D45]"
           >
-            <Text className="text-[10px] font-semibold text-white">Confirm & Pay N5,100</Text>
+            <Text className="text-[10px] font-semibold text-white">
+              Confirm & Pay N5,100
+            </Text>
           </Pressable>
 
           <Text className="mt-2 text-center text-[8px] text-[#B1B5BD]">
@@ -226,7 +256,9 @@ export default function BookingSummary() {
                 <MaterialIcons name="check" size={22} color="#FFFFFF" />
               </View>
 
-              <Text className="mt-3 text-[12px] font-semibold text-[#111827]">Payment Successful</Text>
+              <Text className="mt-3 text-[12px] font-semibold text-[#111827]">
+                Payment Successful
+              </Text>
               <Text className="mt-1 text-center text-[9px] text-[#6B7280]">
                 Your Booking with PNCI rook has been confirmed
               </Text>
@@ -240,8 +272,13 @@ export default function BookingSummary() {
                 <Text className="text-[9px] text-[#6B7280]">Continue</Text>
               </Pressable>
 
-              <Pressable className="h-8 flex-1 items-center justify-center rounded bg-[#2E7D45]">
-                <Text className="text-[9px] font-semibold text-white">Track Provider</Text>
+              <Pressable
+                className="h-8 flex-1 items-center justify-center rounded bg-[#2E7D45]"
+                onPress={() => router.push("trackingDetails")}
+              >
+                <Text className="text-[9px] font-semibold text-white">
+                  Track Provider
+                </Text>
               </Pressable>
             </View>
           </View>

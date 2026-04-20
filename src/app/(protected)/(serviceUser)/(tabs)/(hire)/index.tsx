@@ -158,8 +158,10 @@ export default function Hire() {
               />
             </View>
 
-            <Pressable className="mt-2 h-11 items-center justify-center rounded-md bg-[#2E7D45]"
-            onPress={() => router.push('/booking')}>
+            <Pressable
+              className="mt-2 h-11 items-center justify-center rounded-md bg-[#2E7D45]"
+              onPress={() => router.push("booking")}
+            >
               <Text className="text-sm font-semibold text-white">Post Request</Text>
             </Pressable>
           </View>
