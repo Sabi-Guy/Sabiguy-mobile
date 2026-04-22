@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-import { Image, Pressable, ScrollView, Switch, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { useAuthStore } from "@/store/auth";
 import { toFirstName } from "@/lib/display-name";
-import bell from "../../../../../assets/bell-notification.png";
 import availabilityToggle from "../../../../../assets/available-toggle.png";
 import availabilityToggleOff from "../../../../../assets/available-toggle-off.png";
 
@@ -92,6 +92,7 @@ const recentTransactions = [
 ];
 
 export default function ServiceProviderHome() {
+  const router = useRouter();
   const [isOnline, setIsOnline] = useState(true);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [nextOnlineState, setNextOnlineState] = useState<boolean | null>(null);
@@ -118,11 +119,11 @@ export default function ServiceProviderHome() {
   };
 
   return (
-    <View className="flex-1 bg-[#F6F7F3]">
+    <View className="flex-1 bg-[#FFFFFF]">
       <ScrollView className="flex-1" contentContainerStyle={{ padding: 20, paddingTop: 20, paddingBottom: 40 }}>
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="text-xs text-[#231F2099]">Hello</Text>
+            <Text className="text-[13px] text-[#231F2099]">Hello</Text>
             <Text className="mt-1 text-lg font-semibold text-[#231F20]">{displayName} 👋</Text>
           </View>
           <View className="flex-row items-center gap-3">
@@ -133,8 +134,15 @@ export default function ServiceProviderHome() {
                 resizeMode="contain"
               />
             </Pressable>
-            <Pressable className="h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
-              <Image source={bell} className="h-6 w-6" resizeMode="contain" />
+            <Pressable
+              className="h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm"
+              onPress={() => router.push("/(protected)/(serviceProvider)/notifications")}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Open notifications"
+            >
+              <Ionicons name="notifications-outline" size={18} color="#231F20" />
+              <View className="absolute right-[9px] top-[9px] h-[6px] w-[6px] rounded-full bg-[#E53935]" />
             </Pressable>
           </View>
         </View>
@@ -246,7 +254,10 @@ export default function ServiceProviderHome() {
         <View className="mt-6 rounded-2xl bg-white p-4 shadow-sm">
           <View className="flex-row items-center justify-between">
             <Text className="text-xs font-semibold text-[#231F2099]">Recent Transaction</Text>
-            <Pressable className="flex-row items-center gap-1">
+            <Pressable
+              className="flex-row items-center gap-1"
+              onPress={() => router.push("/(protected)/(serviceProvider)/transaction-history")}
+            >
               <Text className="text-[10px] font-semibold text-[#231F2099]">See all</Text>
               <Ionicons name="chevron-forward" size={12} color="#231F2099" />
             </Pressable>
