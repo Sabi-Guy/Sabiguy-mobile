@@ -1,10 +1,5 @@
 import { Stack } from "expo-router";
 
 export default function HireLayout() {
-  return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="tracking" />
-    </Stack>
-  );
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   sheetArrivedPickup: {
-    top: 82,
+    top: 340,
     height: undefined,
   },
   sheetTripFlow: {

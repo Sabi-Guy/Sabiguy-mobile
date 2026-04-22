@@ -7,7 +7,7 @@ const summaryItems = [
   { label: "Dropoff Location", value: "24 Palm Avenue, Lekki Phase 1, Lagos", icon: "location" as const },
   { label: "Distance", value: "10.5 km", icon: "swap-horizontal-outline" as const },
   { label: "Date", value: "Oct 18, 2025 - 10 AM", icon: "calendar-outline" as const },
-  { label: "Fare", value: "₦5,000", icon: "cash-outline" as const },
+  { label: "Fare", value: "\u20A65,000", icon: "cash-outline" as const },
 ];
 
 export default function HireDetails() {
@@ -26,57 +26,64 @@ export default function HireDetails() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.providerCard}>
-          <View style={styles.providerTop}>
-            <View style={styles.avatar}>
-              <Image source={require("../../../../../../assets/avatar.png")} style={styles.avatarImage} />
-            </View>
-            <View style={styles.providerMeta}>
-              <View style={styles.providerNameRow}>
-                <Text style={styles.providerName}>Stephen Gerrad</Text>
-                <Ionicons name="checkmark-circle-outline" size={14} color="#2F8A57" />
+        <View style={styles.detailsFrame}>
+          <View style={styles.providerCard}>
+            <View style={styles.providerTop}>
+              <View style={styles.avatar}>
+                <Image source={require("../../../../../../assets/avatar.png")} style={styles.avatarImage} />
               </View>
-              <View style={styles.ratingInline}>
-                <Ionicons name="star" size={12} color="#F4B400" />
-                <Text style={styles.ratingText}>4.6</Text>
-              </View>
-              <Text style={styles.locationText}>Lekki Phase 1</Text>
-            </View>
-          </View>
-
-          <View style={styles.providerActions}>
-            <Pressable style={styles.providerActionBtn}>
-              <Ionicons name="call-outline" size={15} color="#7A818B" />
-              <Text style={styles.providerActionText}>Call</Text>
-            </Pressable>
-            <Pressable style={styles.providerActionBtn}>
-              <Ionicons name="chatbubble-ellipses-outline" size={15} color="#7A818B" />
-              <Text style={styles.providerActionText}>Message</Text>
-            </Pressable>
-          </View>
-        </View>
-
-        <View style={styles.summaryWrap}>
-          <Text style={styles.summaryTitle}>Job Summary</Text>
-          <View style={styles.summaryList}>
-            {summaryItems.map((item) => (
-              <View key={item.label} style={styles.summaryItem}>
-                <Ionicons name={item.icon} size={15} color="#2F8A57" />
-                <View style={styles.summaryTextWrap}>
-                  <Text style={styles.summaryLabel}>{item.label}</Text>
-                  <Text style={styles.summaryValue}>{item.value}</Text>
+              <View style={styles.providerMeta}>
+                <View style={styles.providerNameRow}>
+                  <Text style={styles.providerName}>Stephen Gerrad</Text>
+                  <Ionicons name="checkmark-circle-outline" size={14} color="#2F8A57" />
                 </View>
+                <View style={styles.ratingInline}>
+                  <Ionicons name="star" size={12} color="#F4B400" />
+                  <Text style={styles.ratingText}>4.6</Text>
+                </View>
+                <Text style={styles.locationText}>Lekki Phase 1</Text>
               </View>
-            ))}
+            </View>
+
+            <View style={styles.providerActions}>
+              <Pressable style={styles.providerActionBtn}>
+                <Ionicons name="call-outline" size={15} color="#7A818B" />
+                <Text style={styles.providerActionText}>Call</Text>
+              </Pressable>
+              <Pressable style={styles.providerActionBtn}>
+                <Ionicons name="chatbubble-ellipses-outline" size={15} color="#7A818B" />
+                <Text style={styles.providerActionText}>Message</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.noteCard}>
-          <Text style={styles.noteLabel}>Pickup note</Text>
-          <Text style={styles.noteValue}>Add extra instructions for the service provider...</Text>
-        </View>
+          <View>
+            <Text style={styles.summaryTitle}>Job Summary</Text>
+            <View style={styles.summaryList}>
+              {summaryItems.map((item, index) => (
+                <View key={item.label} style={styles.summaryItem}>
+                  <View style={styles.summaryIconCol}>
+                    <Ionicons name={item.icon} size={15} color="#2F8A57" />
+                    {index === 0 ? <View style={styles.summaryConnector} /> : null}
+                  </View>
+                  <View style={styles.summaryTextWrap}>
+                    <Text style={styles.summaryLabel}>{item.label}</Text>
+                    <Text style={styles.summaryValue}>{item.value}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
 
-        <Text style={styles.footerHint}>Update the job status to keep the customer informed</Text>
+          <View>
+            <Text style={styles.noteLabel}>Pickup note</Text>
+            <View style={styles.noteCard}>
+              <Text style={styles.noteValue}>Add extra instructions for the service provider...</Text>
+            </View>
+          </View>
+
+          <Text style={styles.footerHint}>Update the job status to keep the customer informed</Text>
+        </View>
       </ScrollView>
     </View>
   );
@@ -87,7 +94,7 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 48,
     paddingBottom: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
   },
   headerRow: {
     flexDirection: "row",
@@ -106,8 +113,14 @@ const styles = StyleSheet.create({
     color: "#231F20",
   },
   content: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
     paddingBottom: 20,
+    alignItems: "center",
+  },
+  detailsFrame: {
+    width: 345,
+    minHeight: 609,
+    gap: 24,
   },
   providerCard: {
     borderRadius: 10,
@@ -154,7 +167,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   providerActionText: { fontSize: 12, color: "#7A818B", fontWeight: "500" },
-  summaryWrap: { marginTop: 16 },
   summaryTitle: {
     fontSize: 18,
     fontWeight: "600",
@@ -162,11 +174,14 @@ const styles = StyleSheet.create({
   },
   summaryList: { marginTop: 10, gap: 10 },
   summaryItem: { flexDirection: "row", alignItems: "flex-start", gap: 8 },
+  summaryIconCol: { width: 16, alignItems: "center" },
+  summaryConnector: { width: 1, height: 18, backgroundColor: "#D9DDD8", marginTop: 2 },
   summaryTextWrap: { flex: 1 },
   summaryLabel: { fontSize: 14, color: "#3D434B", fontWeight: "600" },
   summaryValue: { marginTop: 2, fontSize: 14, color: "#6A727C" },
+  noteLabel: { fontSize: 13, color: "#6C7380", fontWeight: "500" },
   noteCard: {
-    marginTop: 14,
+    marginTop: 8,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#E8EBF0",
@@ -174,10 +189,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
-  noteLabel: { fontSize: 13, color: "#6C7380", fontWeight: "500" },
-  noteValue: { marginTop: 5, fontSize: 12, color: "#98A2B3" },
+  noteValue: { fontSize: 12, color: "#98A2B3" },
   footerHint: {
-    marginTop: 18,
     textAlign: "center",
     fontSize: 11,
     color: "#A8AFB9",
