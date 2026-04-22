@@ -1,5 +1,5 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useState } from "react";
+﻿import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useMemo, useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 
@@ -33,6 +33,8 @@ type JobItem = {
 };
 
 const filters: JobFilter[] = ["all", "active", "pending", "completed"];
+const COMPLETED_REVIEW_TEXT =
+  "Excellent work! Very professional and finished ahead of schedule.The kitchen looks amazing. Highly recommend! The attention to detail was outstanding and they cleaned up everything perfectly.";
 
 const alerts: AlertItem[] = [
   {
@@ -42,7 +44,7 @@ const alerts: AlertItem[] = [
     pickup: "15 Victoria Island, Lagos...",
     dropoff: "24 Palm Avenue, Lekki P...",
     distance: "10.5 km",
-    fare: "₦5,000",
+    fare: "\u20A65,000",
     isNew: true,
   },
   {
@@ -52,7 +54,7 @@ const alerts: AlertItem[] = [
     pickup: "15 Victoria Island, Lagos...",
     dropoff: "24 Palm Avenue, Lekki P...",
     distance: "10.5 km",
-    fare: "₦5,000",
+    fare: "\u20A65,000",
     isNew: true,
   },
   {
@@ -62,7 +64,7 @@ const alerts: AlertItem[] = [
     pickup: "15 Victoria Island, Lagos...",
     dropoff: "24 Palm Avenue, Lekki P...",
     distance: "10.5 km",
-    fare: "₦5,000",
+    fare: "\u20A65,000",
     isNew: true,
   },
 ];
@@ -76,7 +78,7 @@ const jobs: JobItem[] = [
     pickup: "15 Victoria Island, Lagos...",
     dropoff: "24 Palm Avenue, Lekki P...",
     distance: "10.5 km",
-    fare: "₦5,000",
+    fare: "\u20A65,000",
     status: "active",
   },
   {
@@ -87,7 +89,7 @@ const jobs: JobItem[] = [
     pickup: "15 Victoria Island, Lagos...",
     dropoff: "24 Palm Avenue, Lekki P...",
     distance: "13 km",
-    fare: "₦7,000",
+    fare: "\u20A67,000",
     status: "pending",
   },
   {
@@ -98,7 +100,7 @@ const jobs: JobItem[] = [
     pickup: "15 Victoria Island, Lagos...",
     dropoff: "24 Palm Avenue, Lekki P...",
     distance: "13 km",
-    fare: "₦7,000",
+    fare: "\u20A67,000",
     status: "completed",
     rating: 5,
     review: "Excellent work! Very professional and finished ahead of schedule.",
@@ -111,11 +113,10 @@ const jobs: JobItem[] = [
     pickup: "15 Victoria Island, Lagos...",
     dropoff: "24 Palm Avenue, Lekki P...",
     distance: "13 km",
-    fare: "₦7,000",
+    fare: "\u20A67,000",
     status: "completed",
     rating: 5,
-    review:
-      "Excellent work! Very professional and finished ahead of schedule. The kitchen looks amazing. Highly recommend!",
+    review: COMPLETED_REVIEW_TEXT,
   },
 ];
 
@@ -137,7 +138,7 @@ export default function HireScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabKey>("alerts");
   const [jobFilter, setJobFilter] = useState<JobFilter>("all");
-  const [expandedJobId, setExpandedJobId] = useState<string | null>("j1");
+  const [expandedJobId, setExpandedJobId] = useState<string | null>("j2");
   const [expandedReviewId, setExpandedReviewId] = useState<string | null>(null);
   const [cancelJobId, setCancelJobId] = useState<string | null>(null);
   const [otherReasonMode, setOtherReasonMode] = useState(false);
@@ -147,6 +148,14 @@ export default function HireScreen() {
   const filteredJobs = useMemo(() => {
     if (jobFilter === "all") return jobs;
     return jobs.filter((item) => item.status === jobFilter);
+  }, [jobFilter]);
+
+  useEffect(() => {
+    if (jobFilter === "pending" || jobFilter === "all") {
+      setExpandedJobId("j2");
+      return;
+    }
+    setExpandedJobId(null);
   }, [jobFilter]);
 
   const toggleReason = (reason: string) => {
@@ -275,14 +284,20 @@ export default function HireScreen() {
               })}
             </View>
 
-            <View style={styles.stack}>
+            <View
+              style={[
+                styles.stack,
+                jobFilter === "all" && styles.allJobsStack,
+                jobFilter === "active" && styles.activeJobsStack,
+              ]}
+            >
               {filteredJobs.map((job) => {
                 const badge = getStatusBadge(job.status);
                 const expanded = expandedJobId === job.id;
                 const reviewExpanded = expandedReviewId === job.id;
                 const reviewText = job.review ?? "";
                 const reviewPreview =
-                  reviewExpanded || reviewText.length <= 74 ? reviewText : `${reviewText.slice(0, 74)}...`;
+                  reviewText.length > 95 ? `${reviewText.slice(0, 95)}...` : reviewText;
 
                 return (
                   <View key={job.id} style={styles.card}>
@@ -379,7 +394,7 @@ export default function HireScreen() {
                           ))}
                           <Text style={styles.ratingValue}>{job.rating?.toFixed(1) ?? "5.0"}</Text>
                         </View>
-                        <Text style={styles.reviewText}>{reviewPreview}</Text>
+                        <Text style={styles.reviewText}>{reviewExpanded ? reviewText : reviewPreview}</Text>
                         <Pressable onPress={() => setExpandedReviewId((prev) => (prev === job.id ? null : job.id))}>
                           <Text style={styles.readMoreText}>{reviewExpanded ? "Read less" : "Read more"}</Text>
                         </Pressable>
@@ -443,7 +458,7 @@ export default function HireScreen() {
 
             <Pressable
               style={[
-                styles.primaryButton,
+                styles.modalSubmitButton,
                 {
                   marginTop: 16,
                   opacity: selectedReasons.length > 0 || otherReasonText.trim().length > 0 ? 1 : 0.55,
@@ -451,7 +466,7 @@ export default function HireScreen() {
               ]}
               onPress={closeCancelModal}
             >
-              <Text style={styles.primaryButtonText}>Submit</Text>
+              <Text style={styles.modalSubmitText}>Submit</Text>
             </Pressable>
           </View>
         </View>
@@ -505,15 +520,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   jobsWrap: {
-    marginTop: 28,
+    marginTop: 18,
     width: 345,
     alignSelf: "center",
   },
   filterRow: {
+    width: 289,
+    height: 30,
     flexDirection: "row",
-    gap: 8,
-    flexWrap: "wrap",
-    marginBottom: 22,
+    gap: 6,
+    flexWrap: "nowrap",
+    marginBottom: 10,
+    alignItems: "center",
   },
   filterChip: {
     borderRadius: 4,
@@ -521,15 +539,17 @@ const styles = StyleSheet.create({
     borderColor: "#E5E7EB",
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 12,
-    paddingVertical: 5,
+    minHeight: 28,
+    justifyContent: "center",
   },
   filterChipActive: {
     backgroundColor: "#2F8A57",
     borderColor: "#2F8A57",
   },
   filterChipText: {
-    fontSize: 11,
-    color: "#6B7280",
+    fontSize: 13,
+    lineHeight: 16,
+    color: "#4B5563",
     fontWeight: "500",
   },
   filterChipTextActive: {
@@ -539,7 +559,18 @@ const styles = StyleSheet.create({
     width: 345,
     alignSelf: "center",
     gap: 14,
-    marginTop: 16,
+    marginTop: 2,
+  },
+  allJobsStack: {
+    minHeight: 1043,
+    gap: 16,
+    marginTop: 0,
+    paddingBottom: 24,
+  },
+  activeJobsStack: {
+    height: 256,
+    gap: 16,
+    marginTop: 0,
   },
   card: {
     borderRadius: 14,
@@ -673,6 +704,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
+  modalSubmitButton: {
+    width: "100%",
+    borderRadius: 10,
+    backgroundColor: "#2F8A57",
+    paddingVertical: 11,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalSubmitText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "600",
+  },
   actionsBlock: {
     marginTop: 10,
     borderTopWidth: 1,
@@ -781,3 +825,4 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
 });
+
