@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useState } from "react";
-import { Image, Pressable, ScrollView, Switch, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Dimensions, Image, LayoutChangeEvent, Pressable, ScrollView, Text, View } from "react-native";
 import { useAuthStore } from "@/store/auth";
 import { toFirstName } from "@/lib/display-name";
-import bell from "../../../../../assets/bell-notification.png";
 import availabilityToggle from "../../../../../assets/available-toggle.png";
 import availabilityToggleOff from "../../../../../assets/available-toggle-off.png";
 
@@ -91,10 +91,92 @@ const recentTransactions = [
   },
 ];
 
+type TourTarget = "header" | "stats" | "earnings" | "revenue" | "transactions" | "none";
+type TooltipPlacement = "top" | "bottom" | "center";
+
+const tourSteps = [
+  {
+    id: 0,
+    title: "Welcome to your dashboard",
+    body: "Manage jobs, track your earnings, and\nmonitor your performance all in one place.",
+    badge: "",
+    cta: "Take a quick tour",
+    target: "none" as TourTarget,
+    placement: "center" as TooltipPlacement,
+    pointer: "none" as const,
+  },
+  {
+    id: 1,
+    title: "Availability Status",
+    body: "Turn this on to start receiving job requests.\nWhen off, clients won't be able to hire you.",
+    badge: "1 of 6",
+    cta: "Next",
+    target: "header" as TourTarget,
+    placement: "bottom" as TooltipPlacement,
+    pointer: "top" as const,
+  },
+  {
+    id: 2,
+    title: "Welcome Phil",
+    body: "Here you can track your Total revenue,\nmanage jobs, and monitor your ratings.",
+    badge: "2 of 6",
+    cta: "Next",
+    target: "stats" as TourTarget,
+    placement: "bottom" as TooltipPlacement,
+    pointer: "top" as const,
+  },
+  {
+    id: 3,
+    title: "Wallet",
+    body: "Track your available balance and withdraw\nyour earnings anytime.",
+    badge: "3 of 6",
+    cta: "Next",
+    target: "earnings" as TourTarget,
+    placement: "bottom" as TooltipPlacement,
+    pointer: "top" as const,
+  },
+  {
+    id: 4,
+    title: "Performance Insights",
+    body: "Monitor your earnings, response time, and\njob performance.",
+    badge: "4 of 6",
+    cta: "Next",
+    target: "revenue" as TourTarget,
+    placement: "top" as TooltipPlacement,
+    pointer: "bottom" as const,
+  },
+  {
+    id: 5,
+    title: "Recent Transaction",
+    body: "View your latest payments, tips,\nand withdrawals.",
+    badge: "5 of 6",
+    cta: "Next",
+    target: "transactions" as TourTarget,
+    placement: "top" as TooltipPlacement,
+    pointer: "bottom" as const,
+  },
+  {
+    id: 6,
+    title: "Explore your tools",
+    body: "Use the Nav bar to access hire alerts,\nmessages, activity, and profile settings.",
+    badge: "6 of 6",
+    cta: "Got it!",
+    target: "none" as TourTarget,
+    placement: "bottom" as TooltipPlacement,
+    pointer: "bottom" as const,
+  },
+];
+
 export default function ServiceProviderHome() {
+  const router = useRouter();
+  const scrollRef = useRef<ScrollView>(null);
   const [isOnline, setIsOnline] = useState(true);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [nextOnlineState, setNextOnlineState] = useState<boolean | null>(null);
+  const [tourStep, setTourStep] = useState<number | null>(0);
+  const [showTourDoneModal, setShowTourDoneModal] = useState(false);
+  const [sectionLayouts, setSectionLayouts] = useState<Partial<Record<TourTarget, { y: number; height: number }>>>({});
+  const [scrollY, setScrollY] = useState(0);
   const email = useAuthStore((state) => state.email);
   const name = useAuthStore((state) => state.name);
   const displayName = useMemo(() => toFirstName(name, email), [name, email]);
@@ -117,15 +199,130 @@ export default function ServiceProviderHome() {
     closeStatusModal();
   };
 
+  const currentTourStep = tourStep !== null ? tourSteps[tourStep] : null;
+
+  const closeTour = () => {
+    setTourStep(null);
+    setShowTourDoneModal(false);
+  };
+
+  const nextTourStep = () => {
+    if (tourStep === null) return;
+
+    if (tourStep >= tourSteps.length - 1) {
+      setTourStep(null);
+      const earningsLayout = sectionLayouts.earnings;
+      if (earningsLayout) {
+        const nextScrollY = Math.max(0, earningsLayout.y - 220);
+        scrollRef.current?.scrollTo({ y: nextScrollY, animated: true });
+        setTimeout(() => setShowTourDoneModal(true), 180);
+      } else {
+        setShowTourDoneModal(true);
+      }
+      return;
+    }
+
+    setTourStep((prev) => (prev === null ? prev : prev + 1));
+  };
+
+  const setSectionLayout = (key: TourTarget) => (event: LayoutChangeEvent) => {
+    const { y, height } = event.nativeEvent.layout;
+    setSectionLayouts((prev) => ({ ...prev, [key]: { y, height } }));
+  };
+
+  const getTooltipTop = () => {
+    if (!currentTourStep) return 0;
+
+    const screenHeight = Dimensions.get("window").height;
+    const estimatedCardHeight = currentTourStep.id === 6 ? 122 : currentTourStep.id === 0 ? 132 : 116;
+    const minTop = 92;
+    const maxTop = screenHeight - estimatedCardHeight - 36;
+
+    if (currentTourStep.id === 0) return 226;
+    if (currentTourStep.id === 6) return Math.max(minTop, Math.min(maxTop, screenHeight - 210));
+
+    const targetLayout = currentTourStep.target !== "none" ? sectionLayouts[currentTourStep.target] : null;
+    if (!targetLayout) return Math.max(minTop, Math.min(maxTop, 320));
+    const targetViewportY = targetLayout.y - scrollY;
+
+    if (currentTourStep.placement === "bottom") {
+      return Math.max(minTop, Math.min(maxTop, targetViewportY + targetLayout.height + 8));
+    }
+
+    if (currentTourStep.placement === "top") {
+      return Math.max(minTop, Math.min(maxTop, targetViewportY - estimatedCardHeight - 8));
+    }
+
+    return Math.max(minTop, Math.min(maxTop, targetViewportY));
+  };
+
+  const getHighlightStyle = (target: TourTarget) => {
+    if (!currentTourStep || currentTourStep.target !== target) return undefined;
+    return {
+      borderColor: "#0F7A3A",
+      borderWidth: 1,
+      borderRadius: 12,
+      shadowColor: "#0F7A3A",
+      shadowOpacity: 0.08,
+      shadowRadius: 8,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 2,
+    } as const;
+  };
+
+  const getReadyModalStyle = () => {
+    const modalWidth = 250;
+    const left = 48;
+
+    const earningsLayout = sectionLayouts.earnings;
+    if (!earningsLayout) {
+      return { top: 258, left, width: modalWidth, minHeight: 118 } as const;
+    }
+
+    return { top: 104, left, width: modalWidth, minHeight: 118 } as const;
+  };
+
+  useEffect(() => {
+    if (!currentTourStep || currentTourStep.target === "none") return;
+
+    const targetLayout = sectionLayouts[currentTourStep.target];
+    if (!targetLayout) return;
+
+    const desiredViewportTopByStep: Record<number, number> = {
+      1: 92,
+      2: 180,
+      3: 320,
+      4: 430,
+      5: 560,
+      6: 430,
+    };
+
+    const desiredViewportTop = desiredViewportTopByStep[currentTourStep.id] ?? 240;
+    const nextScrollY = Math.max(0, targetLayout.y - desiredViewportTop);
+
+    const timer = setTimeout(() => {
+      scrollRef.current?.scrollTo({ y: nextScrollY, animated: true });
+    }, 40);
+
+    return () => clearTimeout(timer);
+  }, [currentTourStep, sectionLayouts]);
+
   return (
-    <View className="flex-1 bg-[#F6F7F3]">
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 20, paddingTop: 20, paddingBottom: 40 }}>
-        <View className="flex-row items-center justify-between">
+    <View className="flex-1 bg-[#FFFFFF]">
+      <ScrollView
+        ref={scrollRef}
+        className="flex-1"
+        contentContainerStyle={{ padding: 20, paddingTop: 20, paddingBottom: 40 }}
+        scrollEnabled={!currentTourStep}
+        onScroll={(event) => setScrollY(event.nativeEvent.contentOffset.y)}
+        scrollEventThrottle={16}
+      >
+        <View className="flex-row items-center justify-between" onLayout={setSectionLayout("header")}>
           <View>
-            <Text className="text-xs text-[#231F2099]">Hello</Text>
+            <Text className="text-[13px] text-[#231F2099]">Hello</Text>
             <Text className="mt-1 text-lg font-semibold text-[#231F20]">{displayName} 👋</Text>
           </View>
-          <View className="flex-row items-center gap-3">
+          <View className="flex-row items-center gap-3" style={getHighlightStyle("header")}>
             <Pressable onPress={openStatusModal} className="rounded-full">
               <Image
                 source={isOnline ? availabilityToggle : availabilityToggleOff}
@@ -133,13 +330,20 @@ export default function ServiceProviderHome() {
                 resizeMode="contain"
               />
             </Pressable>
-            <Pressable className="h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
-              <Image source={bell} className="h-6 w-6" resizeMode="contain" />
+            <Pressable
+              className="h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm"
+              onPress={() => router.push("/(protected)/(serviceProvider)/notifications")}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Open notifications"
+            >
+              <Ionicons name="notifications-outline" size={18} color="#231F20" />
+              <View className="absolute right-[9px] top-[9px] h-[6px] w-[6px] rounded-full bg-[#E53935]" />
             </Pressable>
           </View>
         </View>
 
-        <View className="mt-5 flex-row flex-wrap gap-3">
+        <View className="mt-5 flex-row flex-wrap gap-3" style={getHighlightStyle("stats")} onLayout={setSectionLayout("stats")}>
           {statCards.map((card) => (
             <View key={card.label} className="w-[48%] rounded-2xl p-3" style={{ backgroundColor: card.bg }}>
               <View className="flex-row items-center gap-2">
@@ -153,7 +357,11 @@ export default function ServiceProviderHome() {
           ))}
         </View>
 
-        <View className="mt-6 rounded-2xl bg-white p-4 shadow-sm">
+        <View
+          className="mt-6 rounded-2xl bg-white p-4 shadow-sm"
+          style={getHighlightStyle("earnings")}
+          onLayout={setSectionLayout("earnings")}
+        >
           <Text className="text-xs font-semibold text-[#231F2099]">Earnings</Text>
           <View className="mt-3 flex-row gap-3">
             {earnings.map((item) => (
@@ -190,7 +398,11 @@ export default function ServiceProviderHome() {
           </View>
         </View>
 
-        <View className="mt-6 rounded-2xl bg-white p-4 shadow-sm">
+        <View
+          className="mt-6 rounded-2xl bg-white p-4 shadow-sm"
+          style={getHighlightStyle("revenue")}
+          onLayout={setSectionLayout("revenue")}
+        >
           <View className="flex-row items-center justify-between">
             <Text className="text-sm font-semibold text-[#231F20]">Revenue Overview</Text>
             <View className="flex-row items-center gap-1 rounded-full bg-[#F2F3EE] px-3 py-1">
@@ -243,10 +455,17 @@ export default function ServiceProviderHome() {
           </View>
         </View>
 
-        <View className="mt-6 rounded-2xl bg-white p-4 shadow-sm">
+        <View
+          className="mt-6 rounded-2xl bg-white p-4 shadow-sm"
+          style={getHighlightStyle("transactions")}
+          onLayout={setSectionLayout("transactions")}
+        >
           <View className="flex-row items-center justify-between">
             <Text className="text-xs font-semibold text-[#231F2099]">Recent Transaction</Text>
-            <Pressable className="flex-row items-center gap-1">
+            <Pressable
+              className="flex-row items-center gap-1"
+              onPress={() => router.push("/(protected)/(serviceProvider)/transaction-history")}
+            >
               <Text className="text-[10px] font-semibold text-[#231F2099]">See all</Text>
               <Ionicons name="chevron-forward" size={12} color="#231F2099" />
             </Pressable>
@@ -283,6 +502,113 @@ export default function ServiceProviderHome() {
           </View>
         </View>
       </ScrollView>
+
+      {currentTourStep && (
+        <View className="absolute inset-0 bg-black/45 px-6">
+          <View
+            className="absolute rounded-[8px] bg-white px-3 py-3"
+            style={
+              currentTourStep.id === 0
+                ? { top: 144, left: 48, width: 270, minHeight: 137 }
+                : currentTourStep.id === 1
+                  ? { top: 80, left: 71, width: 270, minHeight: 137 }
+                : currentTourStep.id === 2
+                  ? { top: getTooltipTop(), left: 56, width: 250, minHeight: 122 }
+                : currentTourStep.id === 3
+                  ? { top: getTooltipTop() + 8, left: 56, width: 270, minHeight: 124 }
+                : currentTourStep.id === 4
+                  ? { top: getTooltipTop() - 8, left: 24, width: 270, minHeight: 122 }
+                : currentTourStep.id === 5
+                  ? { top: getTooltipTop() - 26, left: 24, width: 270, minHeight: 122 }
+                : currentTourStep.id === 6
+                  ? { top: getTooltipTop() - 20, left: 56, width: 250, minHeight: 114 }
+                : { top: getTooltipTop(), left: 24, right: 24 }
+            }
+          >
+            {currentTourStep.pointer === "top" && (
+              <View
+                className="absolute -top-2 h-0 w-0 border-b-[8px] border-l-[8px] border-r-[8px] border-b-white border-l-transparent border-r-transparent"
+                style={
+                  currentTourStep.id === 2 || currentTourStep.id === 3
+                    ? { left: 18 }
+                    : { right: currentTourStep.id === 1 ? 58 : 8 }
+                }
+              />
+            )}
+            {currentTourStep.pointer === "bottom" && (
+              <View
+                className="absolute -bottom-2 h-0 w-0 border-l-[8px] border-r-[8px] border-t-[8px] border-l-transparent border-r-transparent border-t-white"
+                style={
+                  currentTourStep.id === 6
+                    ? { left: 18 }
+                    : currentTourStep.id === 4 || currentTourStep.id === 5
+                      ? { right: 18 }
+                      : { left: 8 }
+                }
+              />
+            )}
+
+            <View className="flex-row items-start justify-between">
+              <Text className="text-[14px] font-semibold text-[#2D2F33]">{currentTourStep.title}</Text>
+              {!!currentTourStep.badge && <Text className="text-[12px] text-[#8D929A]">{currentTourStep.badge}</Text>}
+            </View>
+            <Text
+              className={`${
+                currentTourStep.id === 0
+                  ? "mt-5"
+                  : currentTourStep.id === 1
+                    ? "mt-3"
+                  : currentTourStep.id === 2
+                    ? "mt-4"
+                  : currentTourStep.id === 3
+                      ? "mt-4"
+                      : currentTourStep.id === 4
+                        ? "mt-3"
+                        : currentTourStep.id === 5
+                          ? "mt-3"
+                          : currentTourStep.id === 6
+                            ? "mt-4"
+                      : "mt-2"
+              } text-[12px] leading-[17px] text-[#737881]`}
+            >
+              {currentTourStep.body}
+            </Text>
+
+            <View className="mt-3 flex-row items-center justify-between">
+              <Pressable onPress={closeTour}>
+                <Text className="text-[13px] text-[#7C8189]">Skip</Text>
+              </Pressable>
+              <Pressable className="rounded-[4px] bg-[#2F8A57] px-3 py-1.5" onPress={nextTourStep}>
+                <Text className="text-[12px] font-medium text-white">{currentTourStep.cta}</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {showTourDoneModal && (
+        <View className="absolute inset-0 bg-black/45 px-6">
+          <View
+            className="absolute rounded-[8px] bg-white px-4 py-3"
+            style={getReadyModalStyle()}
+          >
+            <Text className="text-[16px] font-semibold text-[#2D2F33]">You're Ready to Go!</Text>
+            <View className="mt-2">
+              <Text className="text-[11px] leading-[16px] text-[#737881]">You've completed the dashboard tour.</Text>
+              <Text className="text-[11px] leading-[16px] text-[#737881]">Remember, you can always revisit the tour or</Text>
+              <Text className="text-[11px] leading-[16px] text-[#737881]">access helpful tips from the Help section.</Text>
+            </View>
+            <View className="mt-3 flex-row items-center justify-between">
+              <Pressable onPress={closeTour}>
+                <Text className="text-[13px] text-[#7C8189]">Skip</Text>
+              </Pressable>
+              <Pressable className="rounded-[4px] bg-[#2F8A57] px-3 py-1.5" onPress={closeTour}>
+                <Text className="text-[12px] font-medium text-white">Continue</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      )}
 
       {showStatusModal && (
         <View className="absolute inset-0 items-center justify-center bg-black/40 px-6">

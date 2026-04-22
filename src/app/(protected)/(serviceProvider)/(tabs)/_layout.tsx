@@ -16,7 +16,7 @@ export default function ProviderTabsLayout() {
         options={{
           title: "Home",
           headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
             <Ionicons name={focused ? "home" : "home-outline"} size={18} color={color} />
           ),
         }}
@@ -26,7 +26,7 @@ export default function ProviderTabsLayout() {
         options={{
           title: "Hire",
           headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
             <Ionicons name={focused ? "briefcase" : "briefcase-outline"} size={18} color={color} />
           ),
         }}
@@ -37,7 +37,7 @@ export default function ProviderTabsLayout() {
         options={{
           title: "Messages",
           headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
             <Ionicons
               name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"}
               size={18}
@@ -51,7 +51,7 @@ export default function ProviderTabsLayout() {
         options={{
           title: "Activity",
           headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
             <Ionicons name={focused ? "calendar" : "calendar-outline"} size={18} color={color} />
           ),
         }}
@@ -61,7 +61,7 @@ export default function ProviderTabsLayout() {
         options={{
           title: "Profile",
           headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
             <Ionicons name={focused ? "person" : "person-outline"} size={18} color={color} />
           ),
         }}
