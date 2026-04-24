@@ -13,7 +13,8 @@
       "backgroundColor": "#005823CC"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sabiguy.mobile"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +24,7 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.misturadev.SabiGuyMobile"
+      "package": "com.sabiguy.mobile"
     },
     "plugins": [
       "expo-router",
