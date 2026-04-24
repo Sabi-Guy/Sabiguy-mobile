@@ -7,6 +7,7 @@ import ProgressBar from "@/components/ProgressBar";
 import * as DocumentPicker from "expo-document-picker";
 import Toast from "react-native-toast-message";
 import { apiRequest } from "@/lib/api";
+import { useAuthStore } from "@/store/auth";
 
 type AccountKind = "individual" | "business";
 type UploadDoc = { title: string; subtitle: string };
@@ -106,6 +107,7 @@ function UploadBlock({
 
 export default function AccountType() {
   const router = useRouter();
+  const setSession = useAuthStore((state) => state.setSession);
   const [accountType, setAccountType] = useState<AccountKind>("individual");
   const [uploadedDocs, setUploadedDocs] = useState<Record<string, PickedDoc | undefined>>({});
   const [businessName, setBusinessName] = useState("");
@@ -172,6 +174,7 @@ export default function AccountType() {
           text1: "Saved",
           text2: "Account type updated.",
         });
+        await setSession({ kycLevel: 3 });
         router.push("/(auth)/(serviceProvider)/face-capture");
       } catch (err) {
         Toast.show({
@@ -211,6 +214,7 @@ export default function AccountType() {
         text1: "Saved",
         text2: "Business details updated.",
       });
+      await setSession({ kycLevel: 3 });
       router.push("/(auth)/(serviceProvider)/face-capture");
     } catch (err) {
       Toast.show({

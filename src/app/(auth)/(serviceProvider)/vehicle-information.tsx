@@ -8,6 +8,7 @@ import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
 import { apiRequest } from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
+import { useAuthStore } from "@/store/auth";
 
 type PickedImage = { name: string; uri: string; mimeType?: string; size?: number; remoteUrl?: string };
 
@@ -50,6 +51,7 @@ function UploadBlock({
 
 export default function VehicleInformation() {
   const router = useRouter();
+  const setSession = useAuthStore((state) => state.setSession);
   const { category, role, driverLicenseNumber } = useLocalSearchParams<{
     category?: string;
     role?: string;
@@ -167,6 +169,7 @@ export default function VehicleInformation() {
         text1: "Saved",
         text2: "Vehicle information updated.",
       });
+      await setSession({ kycLevel: 6 });
       router.push("/(auth)/(serviceProvider)/bank-account");
     } catch (err) {
       Toast.show({
