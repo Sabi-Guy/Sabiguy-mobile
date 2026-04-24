@@ -18,6 +18,7 @@ import tool from "../../../../../../assets/hand-tools.png";
 import siren from "../../../../../../assets/siren.png";
 import truck from "../../../../../../assets/truck.png";
 import book from "../../../../../../assets/book.png";
+import Entypo from '@expo/vector-icons/Entypo';
 
 import PopularCard from "../../../../../components/Cards/popularCard";
 import ServicesCard from "@/components/Cards/servicesCard";
@@ -45,9 +46,9 @@ export default function Home() {
               Hello, {firstName} 👋
             </Text>
             <View className="mt-2 flex-row items-center gap-2 py-1 rounded-full self-start">
-              <Image source={location} className="h-5 w-5" />
+              <Entypo name="location-pin" size={20} color="white" />
               <TouchableOpacity onPress={() => router.push("/(protected)/(serviceUser)/location")}>
-                <Text className="text-white text-xs">
+                <Text className="text-white text-sm">
                   Add your location
                 </Text>
               </TouchableOpacity>
