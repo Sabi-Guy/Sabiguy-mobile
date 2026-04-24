@@ -58,7 +58,7 @@ export default function RideRating() {
 				</View>
 
 				<View className="mt-5">
-					<Text className="text-[12px] text-[#111827]">
+					<Text className="text-[12px] text-[#111827]">a
 						Add a Tip <Text className="text-[#9CA3AF]">(optional)</Text>
 					</Text>
 
