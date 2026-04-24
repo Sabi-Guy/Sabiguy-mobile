@@ -32,6 +32,19 @@ type LoginResponse = {
   user?: { name?: string; kycLevel?: number | string; kyc_level?: number | string };
 };
 
+type ProviderKycResponse = {
+  success?: boolean;
+  message?: string;
+  kycLevel?: number | string;
+  kyc_level?: number | string;
+  data?: {
+    kycLevel?: number | string;
+    kyc_level?: number | string;
+    kycCompleted?: boolean;
+    kycVerified?: boolean;
+  };
+};
+
 export default function Login() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -89,7 +102,35 @@ export default function Login() {
           result?.data?.user?.kycLevel ??
           result?.data?.user?.kyc_level
       );
-      const kycLevel = role === "provider" ? parsedKycLevel ?? 1 : parsedKycLevel;
+      let providerKycLevel = parsedKycLevel;
+
+      if (role === "provider" && resolvedEmail) {
+        try {
+          const kycResult = await apiRequest<ProviderKycResponse>("/provider/kyc-level", {
+            method: "POST",
+            headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+            json: { email: resolvedEmail },
+          });
+
+          const endpointKycLevel = parseKycLevel(
+            kycResult?.data?.kycLevel ??
+              kycResult?.data?.kyc_level ??
+              kycResult?.kycLevel ??
+              kycResult?.kyc_level
+          );
+          const endpointCompleted = kycResult?.data?.kycCompleted === true;
+
+          if (endpointKycLevel !== null) {
+            providerKycLevel = endpointKycLevel;
+          } else if (endpointCompleted) {
+            providerKycLevel = 7;
+          }
+        } catch (kycErr) {
+          console.warn("[auth login] provider kyc fetch failed:", kycErr);
+        }
+      }
+
+      const kycLevel = role === "provider" ? providerKycLevel : parsedKycLevel;
 
       await setSession({
         token,
