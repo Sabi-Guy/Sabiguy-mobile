@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import BackButton from "@/components/BackButton";
 import Button from "@/components/Button";
 import { apiRequest } from "@/lib/api";
+import { getProviderOnboardingRoute, parseKycLevel } from "@/lib/provider-kyc";
 import { useAuthStore } from "@/store/auth";
 import Toast from "react-native-toast-message";
 
@@ -15,16 +16,20 @@ type LoginResponse = {
   email?: string;
   name?: string;
   role?: string;
+  kycLevel?: number | string;
+  kyc_level?: number | string;
   data?: {
     token?: string;
     accessToken?: string;
     refreshToken?: string;
     email?: string;
     name?: string;
-    user?: { name?: string };
+    user?: { name?: string; kycLevel?: number | string; kyc_level?: number | string };
     role?: string;
+    kycLevel?: number | string;
+    kyc_level?: number | string;
   };
-  user?: { name?: string };
+  user?: { name?: string; kycLevel?: number | string; kyc_level?: number | string };
 };
 
 export default function Login() {
@@ -42,7 +47,9 @@ export default function Login() {
   );
 
   const handleLogin = async () => {
-    if (!email.trim() || !password) {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail || !password) {
       Toast.show({
         type: "error",
         text1: "Missing details",
@@ -55,7 +62,7 @@ export default function Login() {
       setSubmitting(true);
       const result = await apiRequest<LoginResponse>("/auth", {
         method: "POST",
-        json: { email, password },
+        json: { email: normalizedEmail, password },
       });
       console.log("[auth login] response:", result);
 
@@ -66,12 +73,23 @@ export default function Login() {
         result?.data?.accessToken;
       const refresh = result?.refreshToken || result?.data?.refreshToken;
       const role = (result?.role || result?.data?.role || "").toLowerCase();
-      const resolvedEmail = result?.email || result?.data?.email || email.trim();
+      const resolvedEmail = result?.email || result?.data?.email || normalizedEmail;
       const fullName =
         result?.name ||
         result?.data?.name ||
         result?.user?.name ||
         result?.data?.user?.name;
+      const parsedKycLevel = parseKycLevel(
+        result?.kycLevel ??
+          result?.kyc_level ??
+          result?.data?.kycLevel ??
+          result?.data?.kyc_level ??
+          result?.user?.kycLevel ??
+          result?.user?.kyc_level ??
+          result?.data?.user?.kycLevel ??
+          result?.data?.user?.kyc_level
+      );
+      const kycLevel = role === "provider" ? parsedKycLevel ?? 1 : parsedKycLevel;
 
       await setSession({
         token,
@@ -79,6 +97,7 @@ export default function Login() {
         email: resolvedEmail,
         name: fullName,
         role,
+        kycLevel,
       });
 
       Toast.show({
@@ -88,7 +107,12 @@ export default function Login() {
       });
 
       if (role === "provider") {
-        router.replace("/(protected)/(serviceProvider)/(tabs)");
+        const pendingOnboardingRoute = getProviderOnboardingRoute(kycLevel);
+        router.replace(
+          pendingOnboardingRoute
+            ? "/(auth)/(serviceProvider)/continue-onboarding"
+            : "/(protected)/(serviceProvider)/(tabs)"
+        );
         return;
       }
 
