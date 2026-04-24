@@ -12,6 +12,7 @@ export default function ServiceProviderLayout() {
       <Stack.Screen name="vehicle-information" options={{ headerShown: false }} />
       <Stack.Screen name="bank-account" options={{ headerShown: false }} />
       <Stack.Screen name="profile-setup-complete" options={{ headerShown: false }} />
+      <Stack.Screen name="continue-onboarding" options={{ headerShown: false }} />
       <Stack.Screen name="verify-email" options={{ headerShown: false }} />
       <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
       <Stack.Screen name="forgot-password-code" options={{ headerShown: false }} />

@@ -1,11 +1,13 @@
 import { create } from "zustand";
 import {
   clearAuthToken,
+  clearUserKycLevel,
   clearRefreshToken,
   clearUserEmail,
   clearUserName,
   clearUserRole,
   getAuthToken,
+  getUserKycLevel,
   getRefreshToken,
   getUserEmail,
   getUserName,
@@ -13,9 +15,11 @@ import {
   setAuthToken,
   setRefreshToken,
   setUserEmail,
+  setUserKycLevel,
   setUserName,
   setUserRole,
 } from "@/lib/token";
+import { parseKycLevel } from "@/lib/provider-kyc";
 
 export type AuthRole = "provider" | "buyer" | "user" | null;
 
@@ -25,6 +29,7 @@ type SessionPayload = {
   email?: string | null;
   name?: string | null;
   role?: string | null;
+  kycLevel?: number | string | null;
 };
 
 type AuthState = {
@@ -34,6 +39,7 @@ type AuthState = {
   email: string | null;
   name: string | null;
   role: AuthRole;
+  kycLevel: number | null;
   isAuthenticated: boolean;
   initializeAuth: () => Promise<void>;
   setSession: (payload: SessionPayload) => Promise<void>;
@@ -53,19 +59,23 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   refreshToken: null,
   email: null,
+  name: null,
   role: null,
+  kycLevel: null,
   isAuthenticated: false,
 
   initializeAuth: async () => {
-    const [token, refreshToken, email, role, name] = await Promise.all([
+    const [token, refreshToken, email, role, name, kycLevelRaw] = await Promise.all([
       getAuthToken(),
       getRefreshToken(),
       getUserEmail(),
       getUserRole(),
       getUserName(),
+      getUserKycLevel(),
     ]);
 
     const normalizedRole = normalizeRole(role);
+    const normalizedKycLevel = parseKycLevel(kycLevelRaw);
 
     set({
       hydrated: true,
@@ -74,12 +84,14 @@ export const useAuthStore = create<AuthState>((set) => ({
       email,
       name,
       role: normalizedRole,
+      kycLevel: normalizedKycLevel,
       isAuthenticated: Boolean(token),
     });
   },
 
-  setSession: async ({ token, refreshToken, email, name, role }) => {
+  setSession: async ({ token, refreshToken, email, name, role, kycLevel }) => {
     const normalizedRole = normalizeRole(role);
+    const normalizedKycLevel = parseKycLevel(kycLevel);
 
     if (token) {
       await setAuthToken(token);
@@ -96,6 +108,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (normalizedRole) {
       await setUserRole(normalizedRole);
     }
+    if (normalizedKycLevel !== null) {
+      await setUserKycLevel(normalizedKycLevel);
+    }
 
     set((state) => ({
       token: token ?? state.token,
@@ -103,6 +118,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       email: email ?? state.email,
       name: name ?? state.name,
       role: normalizedRole ?? state.role,
+      kycLevel: normalizedKycLevel ?? state.kycLevel,
       isAuthenticated: Boolean(token ?? state.token),
     }));
   },
@@ -114,6 +130,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       clearUserEmail(),
       clearUserName(),
       clearUserRole(),
+      clearUserKycLevel(),
     ]);
 
     set({
@@ -122,6 +139,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       email: null,
       name: null,
       role: null,
+      kycLevel: null,
       isAuthenticated: false,
     });
   },

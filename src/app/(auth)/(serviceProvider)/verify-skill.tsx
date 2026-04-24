@@ -9,6 +9,7 @@ import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
 import { apiRequest } from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
+import { useAuthStore } from "@/store/auth";
 
 const CATEGORIES = [
   "Emergency Services",
@@ -61,6 +62,7 @@ function UploadBlock({
 
 export default function VerifySkill() {
   const router = useRouter();
+  const setSession = useAuthStore((state) => state.setSession);
   const [category, setCategory] = useState("");
   const [role, setRole] = useState("");
   const [categoryQuery, setCategoryQuery] = useState("");
@@ -217,6 +219,7 @@ export default function VerifySkill() {
         });
         return;
       }
+      await setSession({ kycLevel: 5 });
       router.push({
         pathname: "/(auth)/(serviceProvider)/vehicle-information",
         params: {
@@ -251,6 +254,7 @@ export default function VerifySkill() {
         text1: "Saved",
         text2: "Job and service details updated.",
       });
+      await setSession({ kycLevel: 6 });
       router.push("/(auth)/(serviceProvider)/bank-account");
     } catch (err) {
       Toast.show({

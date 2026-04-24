@@ -8,9 +8,11 @@ import ProgressBar from "@/components/ProgressBar";
 import Toast from "react-native-toast-message";
 import { uploadFile } from "@/lib/upload";
 import { apiRequest } from "@/lib/api";
+import { useAuthStore } from "@/store/auth";
 
 export default function FaceCapture() {
   const router = useRouter();
+  const setSession = useAuthStore((state) => state.setSession);
   const cameraRef = useRef<CameraView>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const [capturedUri, setCapturedUri] = useState<string | null>(null);
@@ -72,6 +74,7 @@ export default function FaceCapture() {
         type: "success",
         text1: "Profile photo saved",
       });
+      await setSession({ kycLevel: 4 });
       router.push("/(auth)/(serviceProvider)/verify-skill");
     } catch (err) {
       Toast.show({

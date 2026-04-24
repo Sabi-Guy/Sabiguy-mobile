@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import BackButton from "@/components/BackButton";
 import OTP from "@/components/OTP";
 import { apiRequest } from "@/lib/api";
+import { parseKycLevel } from "@/lib/provider-kyc";
 import { useAuthStore } from "@/store/auth";
 
 export default function VerifyEmail() {
@@ -37,7 +38,16 @@ export default function VerifyEmail() {
         token?: string;
         refreshToken?: string;
         accessToken?: string;
-        data?: { token?: string; accessToken?: string; refreshToken?: string };
+        kycLevel?: number | string;
+        kyc_level?: number | string;
+        data?: {
+          token?: string;
+          accessToken?: string;
+          refreshToken?: string;
+          kycLevel?: number | string;
+          kyc_level?: number | string;
+          user?: { kycLevel?: number | string; kyc_level?: number | string };
+        };
       }>("/auth/email", {
         method: "POST",
         json: { otp: code },
@@ -49,6 +59,15 @@ export default function VerifyEmail() {
         result?.data?.accessToken;
       const refresh =
         result?.refreshToken || result?.data?.refreshToken;
+      const kycLevel =
+        parseKycLevel(
+          result?.kycLevel ??
+            result?.kyc_level ??
+            result?.data?.kycLevel ??
+            result?.data?.kyc_level ??
+            result?.data?.user?.kycLevel ??
+            result?.data?.user?.kyc_level
+        ) ?? 1;
 
       if (token) {
         await setSession({
@@ -56,6 +75,7 @@ export default function VerifyEmail() {
           refreshToken: refresh,
           email,
           role: "provider",
+          kycLevel,
         });
         router.push("/(auth)/(serviceProvider)/account-setup");
       } else {

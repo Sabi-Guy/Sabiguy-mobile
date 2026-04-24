@@ -1,10 +1,12 @@
 import { Redirect, Stack } from "expo-router";
+import { getProviderOnboardingRoute } from "@/lib/provider-kyc";
 import { useAuthStore } from "@/store/auth";
 
 export default function ServiceProviderProtectedLayout() {
   const hydrated = useAuthStore((state) => state.hydrated);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const role = useAuthStore((state) => state.role);
+  const kycLevel = useAuthStore((state) => state.kycLevel);
 
   if (!hydrated) {
     return null;
@@ -12,6 +14,11 @@ export default function ServiceProviderProtectedLayout() {
 
   if (!isAuthenticated || role !== "provider") {
     return <Redirect href="/(auth)/login" />;
+  }
+
+  const pendingOnboardingRoute = getProviderOnboardingRoute(kycLevel);
+  if (pendingOnboardingRoute) {
+    return <Redirect href={pendingOnboardingRoute} />;
   }
 
   return (

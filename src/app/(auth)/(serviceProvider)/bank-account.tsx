@@ -7,11 +7,13 @@ import ProgressBar from "@/components/ProgressBar";
 import BottomSheet from "@/components/bottomSheet";
 import Toast from "react-native-toast-message";
 import { apiRequest } from "@/lib/api";
+import { useAuthStore } from "@/store/auth";
 
 type Bank = { name: string; code: string; slug?: string };
 
 export default function BankAccount() {
   const router = useRouter();
+  const setSession = useAuthStore((state) => state.setSession);
   const [bank, setBank] = useState("");
   const [bankCode, setBankCode] = useState("");
   const [isBankSheetVisible, setIsBankSheetVisible] = useState(false);
@@ -131,6 +133,7 @@ export default function BankAccount() {
         text1: "Saved",
         text2: "Bank details updated.",
       });
+      await setSession({ kycLevel: 7 });
       router.push("/(auth)/(serviceProvider)/profile-setup-complete");
     } catch (err) {
       Toast.show({

@@ -7,7 +7,8 @@ export async function apiRequest<T = unknown>(path: string, options: ApiOptions 
   const { json, headers, ...rest } = options;
   const { getAuthToken } = await import("./token");
   const token = await getAuthToken();
-  const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
+  const shouldAttachAuth = !path.startsWith("/auth");
+  const authHeader = shouldAttachAuth && token ? { Authorization: `Bearer ${token}` } : {};
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...rest,
     headers: {

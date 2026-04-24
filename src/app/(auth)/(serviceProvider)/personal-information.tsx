@@ -6,11 +6,13 @@ import { Ionicons } from "@expo/vector-icons";
 import ProgressBar from "@/components/ProgressBar";
 import Toast from "react-native-toast-message";
 import { apiRequest } from "@/lib/api";
+import { useAuthStore } from "@/store/auth";
 
 const GENDER_OPTIONS = ["Female", "Male", "Other", "Prefer not to say"];
 
 export default function PersonalInformation() {
   const router = useRouter();
+  const setSession = useAuthStore((state) => state.setSession);
   const [gender, setGender] = useState<string>("");
   const [showGenderOptions, setShowGenderOptions] = useState(false);
   const [address, setAddress] = useState("");
@@ -42,6 +44,7 @@ export default function PersonalInformation() {
         text1: "Saved",
         text2: "Personal information updated.",
       });
+      await setSession({ kycLevel: 2 });
       router.push("/(auth)/(serviceProvider)/account-type");
     } catch (err) {
       Toast.show({
