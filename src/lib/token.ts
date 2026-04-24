@@ -6,6 +6,7 @@ const REFRESH_TOKEN_KEY = "refresh_token";
 const EMAIL_KEY = "user_email";
 const ROLE_KEY = "user_role";
 const NAME_KEY = "user_name";
+const KYC_LEVEL_KEY = "provider_kyc_level";
 
 let secureStoreAvailable: boolean | null = null;
 
@@ -107,4 +108,17 @@ export async function getUserName() {
 
 export async function clearUserName() {
   await deleteStoredItem(NAME_KEY);
+}
+
+export async function setUserKycLevel(level: number) {
+  if (!Number.isFinite(level)) return;
+  await setStoredItem(KYC_LEVEL_KEY, String(level));
+}
+
+export async function getUserKycLevel() {
+  return getStoredItem(KYC_LEVEL_KEY);
+}
+
+export async function clearUserKycLevel() {
+  await deleteStoredItem(KYC_LEVEL_KEY);
 }

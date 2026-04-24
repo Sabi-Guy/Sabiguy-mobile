@@ -2,9 +2,11 @@ import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuthStore } from "@/store/auth";
 
 export default function ProfileSetupComplete() {
   const router = useRouter();
+  const setSession = useAuthStore((state) => state.setSession);
 
   return (
     <View className="flex-1 items-center justify-center bg-white px-6">
@@ -30,7 +32,10 @@ export default function ProfileSetupComplete() {
 
       <Pressable
         className="mt-10 w-full rounded-md bg-[#005823CC] py-4"
-        onPress={() => router.push("/(protected)/(serviceProvider)/(tabs)")}
+        onPress={async () => {
+          await setSession({ kycLevel: 7 });
+          router.push("/(protected)/(serviceProvider)/(tabs)");
+        }}
       >
         <Text className="text-center font-semibold text-white">Continue</Text>
       </Pressable>
