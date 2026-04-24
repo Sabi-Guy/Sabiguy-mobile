@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 
@@ -17,6 +17,7 @@ type MyRequestCardProps = {
   review?: string;
   onPress?: () => void;
   onCancelPress?: () => void;
+  onTrackPress?: () => void;
 };
 
 export default function MyRequestCard({
@@ -32,10 +33,15 @@ export default function MyRequestCard({
   review,
   onPress,
   onCancelPress,
+  onTrackPress,
 }: MyRequestCardProps) {
+  const [showActions, setShowActions] = useState(status === "pending");
+
+  const canShowActions = status === "active" || status === "pending";
+  const showActionsRow = status !== "completed";
   return (
-    <Pressable
-      onPress={onPress}
+    <View
+      
       className="rounded-xl border border-[#E5E7EB] bg-white p-3"
     >
       <View className="flex-row items-center justify-between">
@@ -91,39 +97,52 @@ export default function MyRequestCard({
 
       <View className="mt-3 flex-row items-center justify-between">
         <Text className="text-xs font-semibold text-[#0F7A3A]">{price}</Text>
-        {status === "active" ? (
-          <View className="rounded-md border border-[#E5E7EB] px-3 py-2">
+      </View>
+
+      {showActionsRow && (
+        <>
+          <View className="mt-3 h-px bg-[#E5E7EB]" />
+          <Pressable
+            onPress={() => setShowActions((prev) => !prev)}
+            className="mt-2 flex-row items-center justify-between"
+          >
             <Text className="text-[10px] font-semibold text-[#6B7280]">
               View Actions
             </Text>
-          </View>
-        ) : (
-          <View className="rounded-md border border-[#E5E7EB] px-3 py-2">
-            <Text className="text-[10px] font-semibold text-[#6B7280]">
-              View Details
-            </Text>
-          </View>
-        )}
-      </View>
-
-      {status === "active" && (
-        <View className="mt-2 items-center justify-center rounded-md bg-[#0F7A3A] py-2">
-          <Text className="text-[10px] font-semibold text-white">
-            Track Provider
-          </Text>
-        </View>
+            <MaterialIcons
+              name={showActions ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+              size={16}
+              color="#6B7280"
+            />
+          </Pressable>
+        </>
       )}
 
-      {(status === "active" || status === "pending") && (
-        <Pressable
-          onPress={onCancelPress}
-          disabled={!onCancelPress}
-          className="mt-2 items-center justify-center rounded-md border border-[#FCA5A5] py-2"
-        >
-          <Text className="text-[10px] font-semibold text-[#DC2626]">
-            Cancel Request
-          </Text>
-        </Pressable>
+      {canShowActions && showActions && (
+        <View className="mt-2 gap-2">
+          {(status === "active" || status === "pending") && (
+            <Pressable
+              onPress={onTrackPress}
+              disabled={!onTrackPress}
+              className="flex-row items-center justify-center gap-2 rounded-md bg-[#0F7A3A] py-2"
+            >
+              <MaterialIcons name="send" size={12} color="#FFFFFF" />
+              <Text className="text-[10px] font-semibold text-white">
+                Track Provider
+              </Text>
+            </Pressable>
+          )}
+
+          <Pressable
+            onPress={onCancelPress}
+            disabled={!onCancelPress}
+            className="items-center justify-center py-1"
+          >
+            <Text className="text-[10px] font-semibold text-[#DC2626]">
+              Cancel Request
+            </Text>
+          </Pressable>
+        </View>
       )}
 
       {status === "completed" && review && (
@@ -147,6 +166,6 @@ export default function MyRequestCard({
           <Text className="mt-1 text-[10px] text-[#0F7A3A]">Read more</Text>
         </View>
       )}
-    </Pressable>
+    </View>
   );
 }

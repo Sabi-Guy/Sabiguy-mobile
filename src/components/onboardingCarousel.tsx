@@ -1,63 +1,76 @@
-import React, { useMemo, useRef, useState } from 'react'
-import { FlatList, ImageSourcePropType, Pressable, Text, useWindowDimensions, View } from 'react-native'
-import { useRouter } from 'expo-router'
-import OnboardingSlide from './OnboardingSlide'
+import React, { useMemo, useRef, useState } from "react";
+import {
+  FlatList,
+  ImageSourcePropType,
+  Pressable,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import Feather from '@expo/vector-icons/Feather';
+import { useRouter, Link } from "expo-router";
+import OnboardingSlide from "./OnboardingSlide";
 
 type Slide = {
-  id: string
-  title: string
-  description: string
-  image: ImageSourcePropType
-  buttonText: string
-}
+  id: string;
+  title: string;
+  description: string;
+  image: ImageSourcePropType;
+  buttonText: string;
+};
 
 export default function OnboardingCarousel() {
-  const { width } = useWindowDimensions()
-  const router = useRouter()
-  const flatListRef = useRef<FlatList<Slide>>(null)
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
+  const { width } = useWindowDimensions();
+  const router = useRouter();
+  const flatListRef = useRef<FlatList<Slide>>(null);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   const slides = useMemo<Slide[]>(
     () => [
       {
-        id: '1',
-        title: 'Welcome to SabiGuy',
-        description: 'Get things done easily, connect with verified service experts near you',
-        image: require('../../assets/slide_one.png'),
-      buttonText: 'Continue'  
+        id: "1",
+        title: "Welcome to SabiGuy",
+        description:
+          "Get things done easily, connect with verified service experts near you",
+        image: require("../../assets/slide_one.png"),
+        buttonText: "Continue",
       },
       {
-        id: '2',
-        title: 'Browse & Book Services',
-        description: 'Find professionals across home repairs, cleaning, and more, all in one place',
-        image: require('../../assets/slide_two.png'),
-        buttonText: 'Continue'  
+        id: "2",
+        title: "Browse & Book Services",
+        description:
+          "Find professionals across home repairs, cleaning, and more, all in one place",
+        image: require("../../assets/slide_two.png"),
+        buttonText: "Continue",
       },
       {
-        id: '3',
-        title: 'Verified & Trusted Providers',
-        description: 'Every professional is vetted and reviewed to ensure safe and reliable service',
-        image: require('../../assets/slide_three.png'),
-        buttonText: 'Get Started'  
+        id: "3",
+        title: "Verified & Trusted Providers",
+        description:
+          "Every professional is vetted and reviewed to ensure safe and reliable service",
+        image: require("../../assets/slide_three.png"),
+        buttonText: "Get Started",
       },
     ],
     []
-  )
+  );
 
   const handleContinue = () => {
-    const nextIndex = currentSlideIndex + 1
+    const nextIndex = currentSlideIndex + 1;
     if (nextIndex < slides.length) {
       flatListRef.current?.scrollToIndex({
         index: nextIndex,
         animated: true,
-      })
-      setCurrentSlideIndex(nextIndex)
+      });
+      setCurrentSlideIndex(nextIndex);
     }
-  }
+  };
 
   const handleGetStarted = () => {
-    router.push('/(auth)/chooseRole')
-  }
+    router.push("/(auth)/chooseRole");
+  };
+
+  const isLastSlide = currentSlideIndex === slides.length - 1;
 
   return (
     <View className="flex-1">
@@ -76,9 +89,9 @@ export default function OnboardingCarousel() {
         })}
         onScrollToIndexFailed={() => {
           setTimeout(() => {
-            flatListRef.current?.scrollToIndex({ index: 0, animated: true })
-            setCurrentSlideIndex(0)
-          }, 100)
+            flatListRef.current?.scrollToIndex({ index: 0, animated: true });
+            setCurrentSlideIndex(0);
+          }, 100);
         }}
         renderItem={({ item, index }) => (
           <OnboardingSlide
@@ -86,33 +99,40 @@ export default function OnboardingCarousel() {
             title={item.title}
             description={item.description}
             image={item.image}
+            isActive={index === currentSlideIndex}
+            totalSlides={slides.length}
+            currentIndex={currentSlideIndex}
           />
         )}
       />
-      <View className="px-8 pb-28">
-        <View className="my-6 flex-row items-center justify-center">
-          {Array.from({ length: slides.length }).map((_, index) => (
-            <View
-              key={index}
-              className={`mx-1 h-2 rounded-full ${
-                index === currentSlideIndex ? 'w-6 bg-[#005823CC]' : 'w-2 bg-gray-300'
-              }`}
-            />
-          ))}
-        </View>
-        <Pressable
-          className="rounded-md bg-[#005823CC] py-4"
-          onPress={
-            currentSlideIndex === slides.length - 1
-              ? handleGetStarted
-              : handleContinue
-          }
-        >
-          <Text className="text-center text-white">
-            {slides[currentSlideIndex]?.buttonText ?? 'Continue'}
-          </Text>
-        </Pressable>
+
+      <View className="px-8 pb-10">
+        {!isLastSlide ? (
+          <View className="flex-row items-center justify-between">
+            <Link href="/(auth)/chooseRole" className="text-[12px] text-[#6B7280]">
+              Skip
+            </Link>
+
+            <Pressable
+              className="h-10 w-10 items-center justify-center rounded-full  bg-[#0F7A3A]"
+              onPress={handleContinue}
+            >
+              <Feather name="arrow-right" size={24} color="white" />
+            </Pressable>
+          </View>
+        ) : (
+          <View className="items-center">
+            <Pressable
+              className="mt-2 w-full rounded-md bg-[#0F7A3A] py-3"
+              onPress={handleGetStarted}
+            >
+              <Text className="text-center text-[12px] font-semibold text-white">
+                {slides[currentSlideIndex]?.buttonText ?? "Get Started"}
+              </Text>
+            </Pressable>
+          </View>
+        )}
       </View>
     </View>
-  )
+  );
 }

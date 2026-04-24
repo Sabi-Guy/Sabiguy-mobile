@@ -317,6 +317,7 @@ export default function Hire() {
                     rating={"rating" in item ? item.rating : undefined}
                     review={"review" in item ? item.review : undefined}
                     onPress={() => router.push(item.routeId)}
+                    onTrackPress={() => router.push(item.routeId)}
                     onCancelPress={openCancelSheet}
                   />
                 )}
