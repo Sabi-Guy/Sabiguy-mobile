@@ -102,6 +102,18 @@ export default function OnboardingCarousel() {
             isActive={index === currentSlideIndex}
             totalSlides={slides.length}
             currentIndex={currentSlideIndex}
+            collageImages={
+              item.id === "3"
+                ? [
+                    require("../../assets/Star 1.png"),
+                    require("../../assets/Star 3.png"),
+                    require("../../assets/Star 4.png"),
+                    require("../../assets/Star 5.png"),
+                    require("../../assets/Star 6.png"),
+                    require("../../assets/Star 8.png"),
+                  ]
+                : undefined
+            }
           />
         )}
       />
@@ -114,16 +126,16 @@ export default function OnboardingCarousel() {
             </Link>
 
             <Pressable
-              className="h-10 w-10 items-center justify-center rounded-full  bg-[#0F7A3A]"
+              className="h-12 w-12 items-center justify-center rounded-full bg-[#0F7A3A]"
               onPress={handleContinue}
             >
-              <Feather name="arrow-right" size={24} color="white" />
+              <Feather name="arrow-right" size={36} color="white" />
             </Pressable>
           </View>
         ) : (
           <View className="items-center">
             <Pressable
-              className="mt-2 w-full rounded-md bg-[#0F7A3A] py-3"
+              className="mt-2 w-full rounded-lg bg-[#0F7A3A] py-5"
               onPress={handleGetStarted}
             >
               <Text className="text-center text-[12px] font-semibold text-white">
