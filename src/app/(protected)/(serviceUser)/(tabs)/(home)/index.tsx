@@ -20,7 +20,6 @@ import truck from "../../../../../../assets/truck.png";
 import book from "../../../../../../assets/book.png";
 
 import PopularCard from "../../../../../components/Cards/popularCard";
-import ProviderCards from "@/components/Cards/ProviderCards";
 import ServicesCard from "@/components/Cards/servicesCard";
 import { useRouter } from "expo-router";
 
@@ -103,14 +102,6 @@ export default function Home() {
               text_one="Domestic "
               text_two="& Lifestyle"
             />
-          </View>
-        </View>
-        {/* popular providers */}
-        <View className="mt-6">
-          <Text className="text-base font-semibold text-gray-900">Popular Providers</Text>
-          <View className="gap-3 mt-3">
-            <ProviderCards />
-            <ProviderCards />
           </View>
         </View>
       </View>

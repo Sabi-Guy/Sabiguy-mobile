@@ -1,23 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-	Modal,
-	PanResponder,
-	Pressable,
-	StyleProp,
-	StyleSheet,
-	useWindowDimensions,
-	View,
-	ViewStyle,
-} from "react-native";
-import Animated, {
-	Extrapolation,
-	interpolate,
-	runOnJS,
-	useAnimatedStyle,
-	useSharedValue,
-	withSpring,
-	withTiming,
-} from "react-native-reanimated";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import BottomSheet, {
+	BottomSheetBackdrop,
+	BottomSheetBackdropProps,
+	BottomSheetModal,
+	BottomSheetView,
+} from "@gorhom/bottom-sheet";
 
 type BottomSheetProps = {
 	isVisible: boolean;
@@ -30,6 +18,7 @@ type BottomSheetProps = {
 	showHandle?: boolean;
 	enableBackdropClose?: boolean;
 	showBackdropShadow?: boolean;
+	allowClose?: boolean;
 	useModal?: boolean;
 	sheetStyle?: StyleProp<ViewStyle>;
 	contentContainerStyle?: StyleProp<ViewStyle>;
@@ -49,14 +38,12 @@ const normalizeSnapPoints = (snapPoints: number[]) => {
 	return uniquePoints.sort((a, b) => a - b);
 };
 
-const closestPoint = (targetY: number, snapPoints: number[], windowHeight: number) => {
+const closestSnapPoint = (target: number, snapPoints: number[]) => {
 	let nearest = snapPoints[0];
 	let nearestDistance = Number.MAX_SAFE_INTEGER;
 
 	for (const point of snapPoints) {
-		const translateY = windowHeight * (1 - point / 100);
-		const distance = Math.abs(targetY - translateY);
-
+		const distance = Math.abs(target - point);
 		if (distance < nearestDistance) {
 			nearest = point;
 			nearestDistance = distance;
@@ -66,7 +53,7 @@ const closestPoint = (targetY: number, snapPoints: number[], windowHeight: numbe
 	return nearest;
 };
 
-export default function BottomSheet({
+export default function CustomBottomSheet({
 	isVisible,
 	onClose,
 	children,
@@ -77,209 +64,176 @@ export default function BottomSheet({
 	showHandle = true,
 	enableBackdropClose = true,
 	showBackdropShadow = true,
+	allowClose,
 	useModal = true,
 	sheetStyle,
 	contentContainerStyle,
 }: BottomSheetProps) {
-	const { height: windowHeight } = useWindowDimensions();
-	const [activeSnapPoint, setActiveSnapPoint] = useState(initialSnapPoint);
-	const [shouldRender, setShouldRender] = useState(isVisible);
-	const [isBackdropInteractive, setIsBackdropInteractive] = useState(false);
-	const dragStartY = useRef(0);
-	const isClosingRef = useRef(false);
-	const translateY = useSharedValue(windowHeight);
-
+	const modalRef = useRef<BottomSheetModal>(null);
+	const sheetRef = useRef<BottomSheet>(null);
+	const closingRef = useRef(false);
+	const programmaticCloseRef = useRef(false);
 	const validSnapPoints = useMemo(() => normalizeSnapPoints(snapPoints), [snapPoints]);
+	const effectiveSnapPoints = useMemo(
+		() => validSnapPoints.filter((point) => point > 0),
+		[validSnapPoints]
+	);
+	const computedAllowClose = useMemo(() => validSnapPoints.includes(0), [validSnapPoints]);
+	const canClose = allowClose ?? computedAllowClose;
 
-	const toTranslateY = useCallback(
-		(point: number) => {
-			const safePoint = clamp(point, 0, 100);
-			return windowHeight * (1 - safePoint / 100);
+	const fallbackSnapPoint = effectiveSnapPoints[effectiveSnapPoints.length - 1] ?? 50;
+	const openSnapPoint = initialSnapPoint > 0 && effectiveSnapPoints.length
+		? closestSnapPoint(initialSnapPoint, effectiveSnapPoints)
+		: fallbackSnapPoint;
+	const initialIndex = Math.max(0, effectiveSnapPoints.indexOf(openSnapPoint));
+	const [currentIndex, setCurrentIndex] = useState(() => (isVisible ? initialIndex : -1));
+
+	const renderedSnapPoints = useMemo(() => {
+		const source = effectiveSnapPoints.length ? effectiveSnapPoints : [fallbackSnapPoint];
+		return source.map((point) => `${point}%`);
+	}, [effectiveSnapPoints, fallbackSnapPoint]);
+
+	const notifyClosed = useCallback(() => {
+		if (programmaticCloseRef.current) {
+			programmaticCloseRef.current = false;
+			return;
+		}
+		if (closingRef.current) {
+			return;
+		}
+		closingRef.current = true;
+		onSnapPointChange?.(0);
+		onClose?.();
+	}, [onClose, onSnapPointChange]);
+
+	const handleChange = useCallback(
+		(index: number) => {
+			setCurrentIndex(index);
+			if (index === -1) {
+				notifyClosed();
+				return;
+			}
+
+			const nextPoint = effectiveSnapPoints[index] ?? openSnapPoint;
+			onSnapPointChange?.(nextPoint);
 		},
-		[windowHeight]
+		[effectiveSnapPoints, notifyClosed, onSnapPointChange, openSnapPoint]
 	);
 
-	const animateToPoint = useCallback(
-		(point: number, onDone?: () => void) => {
-			translateY.value = withSpring(
-				toTranslateY(point),
-				{
-					damping: 24,
-					stiffness: 260,
-					mass: 0.85,
-				},
-				(finished) => {
-					if (!finished) {
-						return;
-					}
+	const handleDismiss = useCallback(() => {
+		notifyClosed();
+	}, [notifyClosed]);
 
-					runOnJS(setActiveSnapPoint)(point);
-					if (onSnapPointChange) {
-						runOnJS(onSnapPointChange)(point);
-					}
-					if (onDone) {
-						runOnJS(onDone)();
-					}
-				}
+	const renderBackdrop = useCallback(
+		(props: BottomSheetBackdropProps) => {
+			if (!showBackdropShadow) {
+				return null;
+			}
+
+			return (
+				<BottomSheetBackdrop
+					{...props}
+					opacity={0.45}
+					pressBehavior={canClose && enableBackdropClose ? "close" : "none"}
+					appearsOnIndex={0}
+					disappearsOnIndex={-1}
+				/>
 			);
 		},
-		[onSnapPointChange, toTranslateY, translateY]
+		[canClose, enableBackdropClose, showBackdropShadow]
 	);
 
-	const closeSheet = useCallback(() => {
-		if (isClosingRef.current) {
+	const renderHandle = useCallback(() => {
+		if (topContent) {
+			return <View style={styles.topArea}>{topContent}</View>;
+		}
+
+		if (!showHandle) {
+			return <View style={styles.topAreaHidden} />;
+		}
+
+		return (
+			<View style={styles.topArea}>
+				<View style={styles.handle} />
+			</View>
+		);
+	}, [showHandle, topContent]);
+
+	useEffect(() => {
+		closingRef.current = false;
+		if (isVisible) {
+			programmaticCloseRef.current = false;
+		}
+		if (!isVisible) {
+			programmaticCloseRef.current = true;
+			setCurrentIndex(-1);
+			if (useModal) {
+				modalRef.current?.dismiss();
+			} else {
+				sheetRef.current?.close();
+			}
 			return;
 		}
 
-		isClosingRef.current = true;
-		setIsBackdropInteractive(false);
-		animateToPoint(0, () => {
-			isClosingRef.current = false;
-			onClose?.();
-		});
-	}, [animateToPoint, onClose]);
-
-	useEffect(() => {
-		if (isVisible) {
-			setShouldRender(true);
-			isClosingRef.current = false;
-			setIsBackdropInteractive(false);
-			const startPoint = validSnapPoints.includes(initialSnapPoint)
-				? initialSnapPoint
-				: validSnapPoints[validSnapPoints.length - 1];
-
-			translateY.value = windowHeight;
-			animateToPoint(startPoint);
-			const timer = setTimeout(() => {
-				setIsBackdropInteractive(true);
-			}, 180);
-			return () => clearTimeout(timer);
-		}
-
-		setIsBackdropInteractive(false);
-		if (shouldRender) {
-			translateY.value = withTiming(windowHeight, { duration: 220 }, (finished) => {
-				if (finished) {
-					runOnJS(setShouldRender)(false);
-				}
+		setCurrentIndex(initialIndex);
+		if (useModal) {
+			modalRef.current?.present();
+			requestAnimationFrame(() => {
+				modalRef.current?.snapToIndex(initialIndex);
 			});
+		} else {
+			sheetRef.current?.snapToIndex(initialIndex);
 		}
-	}, [
-		animateToPoint,
-		initialSnapPoint,
-		isVisible,
-		shouldRender,
-		translateY,
-		validSnapPoints,
-		windowHeight,
-	]);
+	}, [initialIndex, isVisible, useModal]);
 
-	useEffect(() => {
-		if (isVisible) {
-			translateY.value = toTranslateY(activeSnapPoint);
-		}
-	}, [activeSnapPoint, isVisible, toTranslateY, translateY]);
-
-	const panResponder = useMemo(
-		() =>
-			PanResponder.create({
-				onMoveShouldSetPanResponder: (_, gestureState) => Math.abs(gestureState.dy) > 3,
-				onPanResponderGrant: () => {
-					dragStartY.current = translateY.value;
-				},
-				onPanResponderMove: (_, gestureState) => {
-					const nextY = clamp(dragStartY.current + gestureState.dy, 0, windowHeight);
-					translateY.value = nextY;
-				},
-				onPanResponderRelease: (_, gestureState) => {
-					const projectedY = clamp(dragStartY.current + gestureState.dy, 0, windowHeight);
-					const nextPoint = closestPoint(projectedY, validSnapPoints, windowHeight);
-
-					if (nextPoint === 0) {
-						closeSheet();
-						return;
-					}
-
-					animateToPoint(nextPoint);
-				},
-			}),
-		[animateToPoint, closeSheet, translateY, validSnapPoints, windowHeight]
+	const content = (
+		<BottomSheetView style={[styles.content, contentContainerStyle]}>{children}</BottomSheetView>
 	);
 
-	const backdropStyle = useAnimatedStyle(() => ({
-		opacity: interpolate(translateY.value, [0, windowHeight], [0.45, 0], Extrapolation.CLAMP),
-	}));
-
-	const sheetAnimatedStyle = useAnimatedStyle(() => ({
-		transform: [{ translateY: translateY.value }],
-	}));
-
-	if (!shouldRender) {
-		return null;
-	}
-
-	const shouldRenderTopArea = Boolean(topContent || showHandle);
-	const topAreaContent = topContent ?? (showHandle ? <View style={styles.handle} /> : null);
-
-	const sheetContent = (
-		<View style={styles.root} pointerEvents={useModal ? "auto" : "box-none"}>
-			{showBackdropShadow && (
-				<Animated.View
-					style={[styles.backdrop, backdropStyle]}
-					pointerEvents={enableBackdropClose ? "auto" : "none"}
-				>
-					<Pressable
-						style={StyleSheet.absoluteFill}
-						onPress={enableBackdropClose && isBackdropInteractive ? closeSheet : undefined}
-					/>
-				</Animated.View>
-			)}
-
-			<Animated.View
-				style={[styles.sheet, { height: windowHeight }, sheetAnimatedStyle, sheetStyle]}
-				pointerEvents="auto"
+	if (useModal) {
+		return (
+			<BottomSheetModal
+				ref={modalRef}
+				index={isVisible ? currentIndex : -1}
+				snapPoints={renderedSnapPoints}
+				backdropComponent={renderBackdrop}
+				onChange={handleChange}
+				onDismiss={handleDismiss}
+				enablePanDownToClose={canClose}
+				handleComponent={renderHandle}
+				backgroundStyle={[styles.sheet, sheetStyle]}
 			>
-				<View
-					style={shouldRenderTopArea ? styles.topArea : styles.topAreaHidden}
-					{...panResponder.panHandlers}
-				>
-					{topAreaContent}
-				</View>
-
-				<View style={[styles.content, contentContainerStyle]}>{children}</View>
-			</Animated.View>
-		</View>
-	);
-
-	if (!useModal) {
-		return <View style={styles.rootNonModal}>{sheetContent}</View>;
+				{content}
+			</BottomSheetModal>
+		);
 	}
 
 	return (
-		<Modal transparent animationType="none" visible={shouldRender} onRequestClose={closeSheet}>
-			{sheetContent}
-		</Modal>
+		<BottomSheet
+			ref={sheetRef}
+			index={isVisible ? currentIndex : -1}
+			snapPoints={renderedSnapPoints}
+			backdropComponent={renderBackdrop}
+			onChange={handleChange}
+			enablePanDownToClose={canClose}
+			handleComponent={renderHandle}
+			backgroundStyle={[styles.sheet, sheetStyle]}
+			containerStyle={styles.nonModalContainer}
+		>
+			{content}
+		</BottomSheet>
 	);
 }
 
 const styles = StyleSheet.create({
-	root: {
-		flex: 1,
-		justifyContent: "flex-end",
-	},
-	rootNonModal: {
-		...StyleSheet.absoluteFillObject,
-		justifyContent: "flex-end",
-	},
-	backdrop: {
-		...StyleSheet.absoluteFillObject,
-		backgroundColor: "#111827",
-	},
 	sheet: {
 		borderTopLeftRadius: 24,
 		borderTopRightRadius: 24,
 		backgroundColor: "#FFFFFF",
 		overflow: "hidden",
+	},
+	nonModalContainer: {
+		...StyleSheet.absoluteFillObject,
 	},
 	topArea: {
 		alignItems: "center",
