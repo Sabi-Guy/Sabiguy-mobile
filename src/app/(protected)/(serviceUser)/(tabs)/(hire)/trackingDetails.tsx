@@ -12,6 +12,7 @@ import {
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import BottomSheet from "@/components/bottomSheet";
 import { useRouter } from "expo-router";
+import BackButton from "@/components/BackButton";
 
 type StatusItemProps = {
   title: string;
@@ -50,9 +51,7 @@ export default function TrackingDetails() {
       <View className="h-[44%] bg-[#DDF1E3]" />
 
       <View className="absolute left-0 right-0 top-10 flex-row items-center px-3">
-        <TouchableOpacity className="h-7 w-7 items-center justify-center rounded-full bg-white/80">
-          <Ionicons name="chevron-back" size={16} color="#111827" />
-        </TouchableOpacity>
+        <BackButton variant="inline"/>
         <Text className="flex-1 pr-7 text-center text-[11px] font-semibold text-[#111827]">
           Tracking Details
         </Text>
@@ -61,9 +60,10 @@ export default function TrackingDetails() {
       <BottomSheet
         isVisible={true}
         snapPoints={[20, 50, 68, 90]}
-        initialSnapPoint={60}
+        initialSnapPoint={50}
         showBackdropShadow={false}
         useModal={false}
+        allowClose={false}
       >
         <ScrollView
           showsVerticalScrollIndicator={false}

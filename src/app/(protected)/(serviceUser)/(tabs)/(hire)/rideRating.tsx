@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import BackButton from "@/components/BackButton";
 
 export default function RideRating() {
 	const [rating, setRating] = useState(0);
@@ -19,6 +20,7 @@ export default function RideRating() {
 			<View className="flex-1 rounded-[22px] bg-white px-4 pb-4 pt-3">
 				<View className="flex-row items-center">
 					<View className="h-7 w-7" />
+					<BackButton variant="inline"/>
 					<Text className="flex-1 text-center text-[12px] font-semibold text-[#111827]">
 						Rate Rider
 					</Text>

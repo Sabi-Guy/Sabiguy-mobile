@@ -79,6 +79,7 @@ export default function Booking() {
         initialSnapPoint={30}
         showBackdropShadow={false}
         useModal={false}
+        allowClose={false}
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -99,7 +100,7 @@ export default function Booking() {
                 </View>
               </View>
               <View className="mt-2 h-1 w-full rounded-full bg-[#E5E7EB]">
-                <View className="h-1 w-[55%] rounded-full bg-[#2E7D45]" />
+                <View className="h-1 w-full rounded-full bg-[#2E7D45]" />
               </View>
             </View>
 
