@@ -12,6 +12,7 @@ import {
 import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Ionicons } from "@expo/vector-icons";
+import BackButton from "@/components/BackButton";
 
 export default function BookingSummary() {
   const [paymentMethod, setPaymentMethod] = useState<"wallet" | "online">(
@@ -79,12 +80,7 @@ export default function BookingSummary() {
   return (
     <View className="flex-1 bg-[#F5F5F5]">
       <View className="flex-row items-center px-3 pb-2 pt-11">
-        <TouchableOpacity
-          className="h-7 w-7 items-center justify-center"
-          activeOpacity={0.8}
-        >
-          <Ionicons name="chevron-back" size={16} color="#111827" />
-        </TouchableOpacity>
+        <BackButton variant="inline" />
         <Text className="flex-1 pr-7 text-center text-[11px] font-semibold text-[#111827]">
           Booking Summary
         </Text>

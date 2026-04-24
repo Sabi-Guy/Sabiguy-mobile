@@ -226,7 +226,9 @@ export default function Booking() {
                 setCancelStep("reasons");
               }}
             >
-              <BackButton variant="inline" />
+              <View className="rounded-full p-2">
+                <MaterialIcons name="chevron-left" size={18} color="#111827" />
+              </View>
             </TouchableOpacity>
 
             <TextInput
