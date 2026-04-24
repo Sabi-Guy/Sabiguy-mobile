@@ -176,8 +176,8 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
 
   const handleLogout = async () => {
     setShowLogoutSheet(false);
-    router.replace("/(auth)/login");
     await clearSession();
+    router.replace("/(auth)/login");
   };
 
   const handleAccountItemPress = (item: MenuItem) => {
@@ -287,19 +287,21 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
         <View className="px-2 pt-2">
           <Text className="text-center text-lg font-semibold text-gray-900">Logout</Text>
           <Text className="mt-3 text-center text-sm text-gray-600">
-            This will clear your current session from the device and take you back to login.
+            Are you sure you want to log out of your account?
           </Text>
 
-          <Pressable className="mt-6 rounded-md bg-[#005823CC] py-4" onPress={handleLogout}>
-            <Text className="text-center font-semibold text-white">Continue</Text>
-          </Pressable>
+          <View className="mt-6 flex-row gap-3">
+            <Pressable
+              className="flex-1 rounded-md border border-gray-300 bg-white py-4"
+              onPress={() => setShowLogoutSheet(false)}
+            >
+              <Text className="text-center font-semibold text-gray-700">Cancel</Text>
+            </Pressable>
 
-          <Pressable
-            className="mt-3 rounded-md border border-gray-300 py-4"
-            onPress={() => setShowLogoutSheet(false)}
-          >
-            <Text className="text-center font-semibold text-gray-700">Cancel</Text>
-          </Pressable>
+            <Pressable className="flex-1 rounded-md bg-[#EF4444] py-4" onPress={handleLogout}>
+              <Text className="text-center font-semibold text-white">Logout</Text>
+            </Pressable>
+          </View>
         </View>
       </BottomSheet>
     </View>
