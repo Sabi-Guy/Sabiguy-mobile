@@ -16,6 +16,9 @@ type OnboardingSlideProps = {
   totalSlides: number;
   currentIndex: number;
   collageImages?: ImageSourcePropType[];
+  topBadges?: ImageSourcePropType[];
+  overlayCard?: ImageSourcePropType;
+  topRightIcon?: ImageSourcePropType;
 };
 
 export default function OnboardingSlide({
@@ -27,10 +30,48 @@ export default function OnboardingSlide({
   totalSlides,
   currentIndex,
   collageImages,
+  topBadges,
+  overlayCard,
+  topRightIcon,
 }: OnboardingSlideProps) {
   return (
-    <View style={{ width }} className="flex-1 items-center justify-center px-8">
-      <View className="items-center justify-center">
+    <View style={{ width }} className="relative flex-1 items-center justify-center px-8">
+      {topBadges ? (
+        <>
+          <View
+            style={{
+              position: "absolute",
+              top: 178,
+              left: 30,
+              width: 54,
+              height: 54,
+              borderRadius: 8,
+              borderWidth: 2,
+              borderColor: "#FFFFFF",
+              opacity: 0.9,
+              transform: [{ rotate: "18.98deg" }],
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#FFFFFF",
+            }}
+          >
+            <Image source={topBadges[0]} style={{ width: 54, height: 54, borderRadius: 8 }} resizeMode="contain" />
+          </View>
+          <Image
+            source={topBadges[1]}
+            style={{ position: "absolute", top: 132, left: 286, width: 54, height: 54 }}
+            resizeMode="contain"
+          />
+        </>
+      ) : null}
+      <View className="relative h-72 w-72 items-center justify-center">
+        {topRightIcon ? (
+          <Image
+            source={topRightIcon}
+            resizeMode="contain"
+            style={{ position: "absolute", top: -40, right: -2, width: 20, height: 20, zIndex: 15 }}
+          />
+        ) : null}
         {collageImages ? (
           <View className="h-72 w-72">
             <Image source={collageImages[0]} className="absolute left-3 top-10 h-12 w-12" />
@@ -39,15 +80,38 @@ export default function OnboardingSlide({
             <Image source={collageImages[3]} className="absolute left-1/2 top-24 -ml-9 h-18 w-18" />
             <Image source={collageImages[4]} className="absolute left-6 bottom-10 h-14 w-14" />
             <Image source={collageImages[5]} className="absolute right-6 bottom-8 h-14 w-14" />
+            {collageImages[6] ? (
+              <Image source={collageImages[6]} className="absolute left-1/2 bottom-2 -ml-7 h-14 w-14" />
+            ) : null}
           </View>
         ) : (
-          <Image source={image} resizeMode="contain" className="h-72 w-72" />
+          <Image
+            source={image}
+            resizeMode="contain"
+            className={`h-72 w-72 ${topBadges ? "mt-8" : ""}`}
+          />
         )}
+        {overlayCard ? (
+          <Image
+            source={overlayCard}
+            resizeMode="contain"
+            style={{
+              position: "absolute",
+              top: 208,
+              left: -18,
+              width: 301.4482727050781,
+              height: 62,
+              borderRadius: 17.1,
+              opacity: 1,
+              zIndex: 12,
+            }}
+          />
+        ) : null}
       </View>
       <Text className="mt-8 text-center text-[20px] font-semibold text-[#005823]">
         {title}
       </Text>
-      <Text className="mt-3 text-center text-[12px] leading-5 text-[#6B7280]">
+      <Text className={`text-center text-[12px] leading-5 text-[#6B7280] ${topBadges ? "mt-6" : "mt-3"}`}>
         {description}
       </Text>
       {isActive && (

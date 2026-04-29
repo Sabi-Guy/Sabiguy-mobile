@@ -31,8 +31,8 @@ export default function OnboardingCarousel() {
         id: "1",
         title: "Welcome to SabiGuy",
         description:
-          "Get things done easily, connect with verified service experts near you",
-        image: require("../../assets/slide_one.png"),
+          "Get things done easily, connect with verified\nservice experts near you",
+        image: require("../../assets/slide_one .png"),
         buttonText: "Continue",
       },
       {
@@ -47,7 +47,7 @@ export default function OnboardingCarousel() {
         id: "3",
         title: "Verified & Trusted Providers",
         description:
-          "Every professional is vetted and reviewed to ensure safe and reliable service",
+          "Every professional is vetted and reviewed to ensure\nsafe and reliable service",
         image: require("../../assets/slide_three.png"),
         buttonText: "Get Started",
       },
@@ -110,8 +110,27 @@ export default function OnboardingCarousel() {
                     require("../../assets/Star 4.png"),
                     require("../../assets/Star 5.png"),
                     require("../../assets/Star 6.png"),
+                    require("../../assets/Star 7.png"),
                     require("../../assets/Star 8.png"),
                   ]
+                : undefined
+            }
+            topBadges={
+              item.id === "1"
+                ? [
+                    require("../../assets/hand-tools.png"),
+                    require("../../assets/truck.png"),
+                  ]
+                : undefined
+            }
+            overlayCard={
+              item.id === "2"
+                ? require("../../assets/provider-on-the-way-card.png")
+                : undefined
+            }
+            topRightIcon={
+              item.id === "2"
+                ? require("../../assets/zondicons_location.png")
                 : undefined
             }
           />
