@@ -55,7 +55,7 @@ export default function UserWallet() {
                 router.push("transactionScreen")
               }
             >
-              <Text className="text-[10px] text-gray-400">See all</Text>
+              <Text className="text-xs font-bold text-green-700">See all</Text>
             </TouchableOpacity>
           </View>
           <Transactions />

@@ -1,5 +1,6 @@
 import React from "react";
-import { Image, Text, View, TouchableOpacity } from "react-native";
+import { Image, Text, View, Pressable } from "react-native";
+import { useRouter } from "expo-router";
 import rider from "../../../assets/rider.png";
 
 type ServicesCardProps = {
@@ -13,8 +14,10 @@ export default function ServicesCard({
   subtitle,
   cta,
 }: ServicesCardProps) {
+
+  const router = useRouter();
   return (
-    <View className="flex-row w-80 h-40 rounded-3xl overflow-hidden shadow-md">
+    <View className="flex-row w-80 h-44 rounded-3xl overflow-hidden shadow-md">
       <View
         className="w-48 px-5 py-5 justify-between"
         style={{ backgroundColor: "#28A745" }}
@@ -25,12 +28,13 @@ export default function ServicesCard({
             {subtitle}
           </Text>
         </View>
-        <TouchableOpacity
+        <Pressable
+        onPress={()=> router.push("/(protected)/(serviceUser)/(tabs)/(hire)")}
           className="self-start rounded-full px-3 py-1.5"
           style={{ backgroundColor: "rgba(255, 255, 255, 0.25)" }}
         >
           <Text className="text-white text-xs font-medium">{cta} →</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <View

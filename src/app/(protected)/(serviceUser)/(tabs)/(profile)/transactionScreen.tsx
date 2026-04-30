@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@expo/vector-icons/Ionicons';
+import Feather from '@expo/vector-icons/Feather';
 import BackButton from "@/components/BackButton";
 import BottomSheet from "@/components/bottomSheet";
 import Transaction, { TransactionItem } from "@/components/ui/Transaction";
@@ -89,7 +90,7 @@ export default function TransactionScreen() {
             onPress={() => setShowFilterSheet(true)}
             className="h-10 w-10 items-center justify-center rounded-xl border border-gray-200"
           >
-            <Ionicons name="filter" size={16} color="#6B7280" />
+          <Feather name="filter" size={24} color="black" />
           </Pressable>
         </View>
       </View>
