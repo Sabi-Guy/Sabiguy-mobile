@@ -75,7 +75,7 @@ export default function Booking() {
       </View>
       <BottomSheet
         isVisible={true}
-        snapPoints={[20, 35, 50]}
+        snapPoints={[10,20, 35, 50]}
         initialSnapPoint={30}
         showBackdropShadow={false}
         useModal={false}
@@ -228,6 +228,7 @@ export default function Booking() {
             >
               <View className="rounded-full p-2">
                 <MaterialIcons name="chevron-left" size={18} color="#111827" />
+                <Text>Back</Text>
               </View>
             </TouchableOpacity>
 
