@@ -1,18 +1,20 @@
 import React from "react";
-import { Image, Text, View, Pressable } from "react-native";
+import { Image, Text, View, Pressable, type ImageSourcePropType } from "react-native";
 import { useRouter } from "expo-router";
-import rider from "../../../assets/rider.png";
+
 
 type ServicesCardProps = {
   title?: string;
   subtitle?: string;
   cta?: string;
+  image?: ImageSourcePropType;
 };
 // 08124814441
 export default function ServicesCard({
   title,
   subtitle,
   cta,
+  image,
 }: ServicesCardProps) {
 
   const router = useRouter();
@@ -41,7 +43,7 @@ export default function ServicesCard({
         className="flex-1 items-center justify-center"
         style={{ backgroundColor: "rgba(35, 93, 58, 0.8)" }}
       >
-        <Image source={rider} className="h-28 w-28" resizeMode="contain" />
+        <Image source={image} className="h-28 w-28" resizeMode="contain" />
       </View>
     </View>
   );
