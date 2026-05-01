@@ -2,6 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
+const distanceIcon = require("../../../../../../assets/distance.png");
+
 const summaryItems = [
   { label: "Pickup Location", value: "15 Victoria Island, Lagos Ikeja", icon: "ellipse" as const },
   { label: "Dropoff Location", value: "24 Palm Avenue, Lekki Phase 1, Lagos", icon: "location" as const },
@@ -63,7 +65,11 @@ export default function HireDetails() {
               {summaryItems.map((item, index) => (
                 <View key={item.label} style={styles.summaryItem}>
                   <View style={styles.summaryIconCol}>
-                    <Ionicons name={item.icon} size={15} color="#2F8A57" />
+                    {item.label === "Distance" ? (
+                      <Image source={distanceIcon} style={styles.distanceIcon} resizeMode="contain" />
+                    ) : (
+                      <Ionicons name={item.icon} size={15} color="#2F8A57" />
+                    )}
                     {index === 0 ? <View style={styles.summaryConnector} /> : null}
                   </View>
                   <View style={styles.summaryTextWrap}>
@@ -175,6 +181,7 @@ const styles = StyleSheet.create({
   summaryList: { marginTop: 10, gap: 10 },
   summaryItem: { flexDirection: "row", alignItems: "flex-start", gap: 8 },
   summaryIconCol: { width: 16, alignItems: "center" },
+  distanceIcon: { width: 15, height: 15 },
   summaryConnector: { width: 1, height: 18, backgroundColor: "#D9DDD8", marginTop: 2 },
   summaryTextWrap: { flex: 1 },
   summaryLabel: { fontSize: 14, color: "#3D434B", fontWeight: "600" },
