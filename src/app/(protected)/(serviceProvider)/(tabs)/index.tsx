@@ -1,7 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Dimensions, Image, LayoutChangeEvent, Pressable, ScrollView, Switch, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthStore } from "@/store/auth";
 import { toFirstName } from "@/lib/display-name";
 
@@ -306,11 +308,12 @@ export default function ServiceProviderHome() {
   }, [currentTourStep, sectionLayouts]);
 
   return (
-    <View className="flex-1 bg-[#FFFFFF]">
+    <SafeAreaView className="flex-1 bg-[#FFFFFF]" edges={["top"]}>
+      <StatusBar style="dark" backgroundColor="#FFFFFF" />
       <ScrollView
         ref={scrollRef}
         className="flex-1"
-        contentContainerStyle={{ padding: 20, paddingTop: 20, paddingBottom: 40 }}
+        contentContainerStyle={{ padding: 20, paddingTop: 16, paddingBottom: 40 }}
         scrollEnabled={!currentTourStep}
         onScroll={(event) => setScrollY(event.nativeEvent.contentOffset.y)}
         scrollEventThrottle={16}
@@ -321,15 +324,15 @@ export default function ServiceProviderHome() {
             <Text className="mt-1 text-lg font-semibold text-[#231F20]">{displayName} 👋</Text>
           </View>
           <View className="flex-row items-center gap-1" style={getHighlightStyle("header")}>
-            <View className="flex-row items-center gap-0 rounded-md border border-[#E5E7EB] bg-[#F8FAF8] px-1.5 py-0.5">
-              <Ionicons name="location-outline" size={12} color={isOnline ? "#22C55E" : "#9CA3AF"} />
-              <Text className={`text-[10px] font-semibold ${isOnline ? "text-[#0F7A3A]" : "text-[#6B7280]"}`}>
+            <View className="flex-row items-center gap-0 rounded-lg border border-[#D9E2DA] bg-[#F8FAF8] px-2 py-1">
+              <Ionicons name="location-outline" size={13} color={isOnline ? "#22C55E" : "#9CA3AF"} />
+              <Text className={`text-[11px] font-semibold ${isOnline ? "text-[#0F7A3A]" : "text-[#6B7280]"}`}>
                 {isOnline ? "Available" : "Unavailable"}
               </Text>
               <Switch
                 value={isOnline}
                 onValueChange={openStatusModal}
-                style={{ marginLeft: -8, transform: [{ scaleX: 0.88 }, { scaleY: 0.88 }] }}
+                style={{ marginLeft: -5, transform: [{ scaleX: 0.94 }, { scaleY: 0.94 }] }}
                 trackColor={{ false: "#D1D5DB", true: "#22C55E" }}
                 thumbColor="#FFFFFF"
                 ios_backgroundColor="#D1D5DB"
@@ -362,16 +365,16 @@ export default function ServiceProviderHome() {
         </View>
 
         <View
-          className="mt-6 rounded-2xl bg-white p-4 shadow-sm"
+          className="mt-4 rounded-2xl border border-[#ECECEC] bg-white p-4"
           style={getHighlightStyle("earnings")}
           onLayout={setSectionLayout("earnings")}
         >
-          <Text className="text-xs font-semibold text-[#231F2099]">Earnings</Text>
-          <View className="mt-3 flex-row gap-3">
+          <Text className="text-[16px] font-bold text-[#231F20]">Earnings</Text>
+          <View className="mt-3 flex-row gap-2.5">
             {earnings.map((item) => (
               <View
                 key={item.label}
-                className={`flex-1 rounded-xl border px-3 py-3 ${
+                className={`h-[76px] flex-1 rounded-xl border px-3 py-3 ${
                   item.tone === "success" ? "border-[#0F7A3A] bg-[#0F7A3A]" : "border-[#E6E6E6] bg-[#F7F7F7]"
                 }`}
               >
@@ -382,18 +385,16 @@ export default function ServiceProviderHome() {
                         <Ionicons name="wallet-outline" size={14} color="#FFFFFF" />
                       </View>
                     )}
-                    <Text className={`text-sm font-semibold ${item.tone === "success" ? "text-white" : "text-[#231F20]"}`}>
+                    <Text className={`text-[20px] font-bold ${item.tone === "success" ? "text-white" : "text-[#231F20]"}`}>
                       {item.value}
                     </Text>
                   </View>
-                  {item.tone === "success" && (
-                    <View className="ml-auto mt-4">
-                      <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
-                    </View>
-                  )}
+                  <View className="ml-auto mr-[-2px] mt-4 w-4 items-end">
+                    {item.tone === "success" && <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />}
+                  </View>
                 </View>
                 <Text
-                  className={`mt-2 text-xs ${item.tone === "success" ? "text-white/80 ml-8" : "text-[#231F2099]"}`}
+                  className={`mt-1.5 text-[13px] ${item.tone === "success" ? "ml-8 text-white/90" : "text-[#7B7B7B]"}`}
                 >
                   {item.label}
                 </Text>
@@ -403,14 +404,14 @@ export default function ServiceProviderHome() {
         </View>
 
         <View
-          className="mt-6 rounded-2xl bg-white p-4 shadow-sm"
+          className="mt-4 rounded-2xl border border-[#ECECEC] bg-white p-4"
           style={getHighlightStyle("revenue")}
           onLayout={setSectionLayout("revenue")}
         >
           <View className="flex-row items-center justify-between">
-            <Text className="text-sm font-semibold text-[#231F20]">Revenue Overview</Text>
-            <View className="flex-row items-center gap-1 rounded-full bg-[#F2F3EE] px-3 py-1">
-              <Text className="text-[10px] text-[#231F2099]">Last 6 months</Text>
+            <Text className="text-[16px] font-bold text-[#231F20]">Revenue Overview</Text>
+            <View className="flex-row items-center gap-1 rounded-lg border border-[#E5E7EB] bg-white px-2.5 py-1.5">
+              <Text className="text-[12px] text-[#5F6368]">Last 6 months</Text>
               <Ionicons name="chevron-down" size={12} color="#231F2099" />
             </View>
           </View>
@@ -442,7 +443,7 @@ export default function ServiceProviderHome() {
               </View>
               <View className="mt-2 flex-row justify-between px-1">
                 {["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((label) => (
-                  <Text key={label} className="text-[10px] text-[#231F2099]">
+                  <Text key={label} className="text-[10px] text-[#6B7280]">
                     {label}
                   </Text>
                 ))}
@@ -460,17 +461,17 @@ export default function ServiceProviderHome() {
         </View>
 
         <View
-          className="mt-6 rounded-2xl bg-white p-4 shadow-sm"
+          className="mt-4 rounded-2xl border border-[#ECECEC] bg-white p-4"
           style={getHighlightStyle("transactions")}
           onLayout={setSectionLayout("transactions")}
         >
           <View className="flex-row items-center justify-between">
-            <Text className="text-xs font-semibold text-[#231F2099]">Recent Transaction</Text>
+            <Text className="text-[16px] font-bold text-[#231F20]">Recent Transaction</Text>
             <Pressable
               className="flex-row items-center gap-1"
               onPress={() => router.push("/(protected)/(serviceProvider)/transaction-history")}
             >
-              <Text className="text-[10px] font-semibold text-[#231F2099]">See all</Text>
+              <Text className="text-[12px] text-[#8A8F98]">See all</Text>
               <Ionicons name="chevron-forward" size={12} color="#231F2099" />
             </Pressable>
           </View>
@@ -638,6 +639,6 @@ export default function ServiceProviderHome() {
           </View>
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
