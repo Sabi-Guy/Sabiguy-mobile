@@ -1,11 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Dimensions, Image, LayoutChangeEvent, Pressable, ScrollView, Text, View } from "react-native";
+import { Dimensions, Image, LayoutChangeEvent, Pressable, ScrollView, Switch, Text, View } from "react-native";
 import { useAuthStore } from "@/store/auth";
 import { toFirstName } from "@/lib/display-name";
-import availabilityToggle from "../../../../../assets/available-toggle.png";
-import availabilityToggleOff from "../../../../../assets/available-toggle-off.png";
 
 const statCards = [
   {
@@ -322,23 +320,29 @@ export default function ServiceProviderHome() {
             <Text className="text-[13px] text-[#231F2099]">Hello</Text>
             <Text className="mt-1 text-lg font-semibold text-[#231F20]">{displayName} 👋</Text>
           </View>
-          <View className="flex-row items-center gap-3" style={getHighlightStyle("header")}>
-            <Pressable onPress={openStatusModal} className="rounded-full">
-              <Image
-                source={isOnline ? availabilityToggle : availabilityToggleOff}
-                className="h-7 w-[86px]"
-                resizeMode="contain"
+          <View className="flex-row items-center gap-1" style={getHighlightStyle("header")}>
+            <View className="flex-row items-center gap-0 rounded-md border border-[#E5E7EB] bg-[#F8FAF8] px-1.5 py-0.5">
+              <Ionicons name="location-outline" size={12} color={isOnline ? "#22C55E" : "#9CA3AF"} />
+              <Text className={`text-[10px] font-semibold ${isOnline ? "text-[#0F7A3A]" : "text-[#6B7280]"}`}>
+                {isOnline ? "Available" : "Unavailable"}
+              </Text>
+              <Switch
+                value={isOnline}
+                onValueChange={openStatusModal}
+                style={{ marginLeft: -8, transform: [{ scaleX: 0.88 }, { scaleY: 0.88 }] }}
+                trackColor={{ false: "#D1D5DB", true: "#22C55E" }}
+                thumbColor="#FFFFFF"
+                ios_backgroundColor="#D1D5DB"
               />
-            </Pressable>
+            </View>
             <Pressable
-              className="h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm"
+              className="h-10 w-10 items-center justify-center"
               onPress={() => router.push("/(protected)/(serviceProvider)/notifications")}
               hitSlop={8}
               accessibilityRole="button"
               accessibilityLabel="Open notifications"
             >
-              <Ionicons name="notifications-outline" size={18} color="#231F20" />
-              <View className="absolute right-[9px] top-[9px] h-[6px] w-[6px] rounded-full bg-[#E53935]" />
+              <Ionicons name="notifications-outline" size={23} color="#4B5563" />
             </Pressable>
           </View>
         </View>
@@ -611,8 +615,8 @@ export default function ServiceProviderHome() {
       )}
 
       {showStatusModal && (
-        <View className="absolute inset-0 items-center justify-center bg-black/40 px-6">
-          <View className="w-full rounded-2xl bg-white p-5 shadow-lg">
+        <View className="absolute inset-0 bg-black/40">
+          <View className="absolute right-1 top-[86px] w-[280px] rounded-xl bg-white p-4 shadow-lg">
             <Text className="text-sm font-semibold text-[#231F20]">
               {nextOnlineState ? "Ready to Receive Orders?" : "Go Offline?"}
             </Text>
