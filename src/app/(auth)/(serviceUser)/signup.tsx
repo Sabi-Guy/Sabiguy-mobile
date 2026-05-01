@@ -15,6 +15,21 @@ import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 
 import { registerBuyer } from "@/lib/auth";
+import { apiRequest } from "@/lib/api";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+
+WebBrowser.maybeCompleteAuthSession();
+
+type GoogleBuyerRegisterResponse = {
+  email?: string;
+  data?: {
+    email?: string;
+    user?: { email?: string };
+  };
+  user?: { email?: string };
+  message?: string;
+};
 
 export default function signup() {
   const [agreed, setAgreed] = useState(false);
@@ -25,7 +40,14 @@ export default function signup() {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
   const router = useRouter();
+
+  const [googleRequest, , promptGoogleAuth] = Google.useIdTokenAuthRequest({
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  });
 
   const handlePhoneChange = (value: string) => {
     const digitsOnly = value.replace(/\D/g, "").slice(0, 11);
@@ -44,7 +66,7 @@ export default function signup() {
 
     try {
       setIsSubmitting(true);
-      const res = await registerBuyer({
+      await registerBuyer({
         name: formattedName,
         email: email.trim(),
         password,
@@ -52,12 +74,11 @@ export default function signup() {
         address: address.trim(),
       });
 
-      //  router.push("/(auth)/(serviceUser)/verify");
       router.push({
         pathname: "/(auth)/(serviceUser)/verify",
         params: { email: email.trim() },
       });
-       Toast.show({
+      Toast.show({
         type: "success",
         text1: "Registration successful",
         text2: "Please verify your email to continue.",
@@ -71,6 +92,58 @@ export default function signup() {
       console.error(error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleBuyerSignup = async () => {
+    if (!googleRequest) {
+      Toast.show({
+        type: "error",
+        text1: "Google Sign-In unavailable",
+        text2: "Please try again in a few seconds.",
+      });
+      return;
+    }
+
+    try {
+      setGoogleSubmitting(true);
+      const authResult = await promptGoogleAuth();
+
+      if (authResult.type !== "success") {
+        return;
+      }
+
+      const idToken = authResult.params?.id_token;
+      if (!idToken) {
+        throw new Error("Google id token was not returned.");
+      }
+
+      const result = await apiRequest<GoogleBuyerRegisterResponse>("/auth/google", {
+        method: "POST",
+        json: { idToken },
+      });
+
+      const resolvedEmail =
+        result?.email || result?.data?.email || result?.user?.email || result?.data?.user?.email;
+
+      Toast.show({
+        type: "success",
+        text1: "Google registration successful",
+        text2: "Please verify your email to continue.",
+      });
+
+      router.push({
+        pathname: "/(auth)/(serviceUser)/verify",
+        params: { email: resolvedEmail ?? "" },
+      });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Google registration failed",
+        text2: error instanceof Error ? error.message : "Unable to continue with Google.",
+      });
+    } finally {
+      setGoogleSubmitting(false);
     }
   };
 
@@ -143,7 +216,6 @@ export default function signup() {
             className="rounded-lg border border-gray-300 bg-[#231F200D] px-4 py-4 text-base text-gray-900"
             placeholderTextColor="#9CA3AF"
           />
-          
         </View>
 
         <View>
@@ -185,7 +257,7 @@ export default function signup() {
           }`}
         >
           {agreed ? (
-            <Text className="text-xs font-bold text-white">✓</Text>
+            <Text className="text-xs font-bold text-white">?</Text>
           ) : null}
         </View>
 
@@ -204,8 +276,7 @@ export default function signup() {
         onPress={handleRegister}
         disabled={!agreed || isSubmitting}
       />
-      {/* 
-      <Button buttonText="Continue" onPress={() => {)}} disabled={!agreed} /> */}
+
       <View className="mt-6 flex-row items-center">
         <View className="h-px flex-1 bg-gray-300" />
         <Text className="mx-3 text-sm text-gray-500">or</Text>
@@ -213,8 +284,12 @@ export default function signup() {
       </View>
 
       <Pressable
-        className="mt-4 w-full flex-row items-center justify-center rounded-md py-4"
+        className={`mt-4 w-full flex-row items-center justify-center rounded-md py-4 ${
+          googleSubmitting ? "opacity-60" : ""
+        }`}
         style={{ backgroundColor: "#231F200D" }}
+        disabled={googleSubmitting}
+        onPress={handleGoogleBuyerSignup}
       >
         <Image
           source={require("../../../../assets/google.png")}
@@ -222,7 +297,7 @@ export default function signup() {
           resizeMode="contain"
         />
         <Text className="font-semibold text-[#231F20]">
-          Continue with Google
+          {googleSubmitting ? "Connecting..." : "Continue with Google"}
         </Text>
       </Pressable>
 
