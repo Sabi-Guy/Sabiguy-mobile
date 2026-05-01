@@ -1,5 +1,5 @@
 // base API
-const BASE_URL = "https://sabiguy-backend.onrender.com/api/v1";
+const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? "https://api.nifesi.xyz/api/v1";
 
 // request type
 export interface RegisterBuyerPayload {
