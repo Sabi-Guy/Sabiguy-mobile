@@ -2,6 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
+const messageAvatar = require("../../../../../../assets/avatar.png");
+
 const threads = [
   {
     id: "stephen",
@@ -17,12 +19,12 @@ export default function MessageList() {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="px-5 pt-6">
+      <View className="px-5 pb-4 pt-6">
         <View className="flex-row items-center justify-center">
           <Text className="text-base font-semibold text-[#231F20]">Messages</Text>
         </View>
 
-        <View className="mt-4 flex-row items-center rounded-full border border-[#E6E6E6] bg-[#F7F7F7] px-3 py-2">
+        <View className="mt-4 h-12 flex-row items-center rounded-xl border border-[#E6E6E6] bg-[#F7F7F7] px-3">
           <Ionicons name="search-outline" size={16} color="#9CA3AF" />
           <TextInput
             placeholder="Search"
@@ -49,10 +51,8 @@ export default function MessageList() {
             onPress={() => router.push(`/(protected)/(serviceProvider)/(tabs)/message/${thread.id}`)}
           >
             <View className="flex-row items-center gap-3">
-              <View className="relative h-10 w-10 items-center justify-center rounded-full bg-[#E6F4EA]">
-                <Text className="text-sm font-semibold text-[#0F7A3A]">
-                  {thread.name.charAt(0)}
-                </Text>
+              <View className="relative h-10 w-10 rounded-full">
+                <Image source={messageAvatar} className="h-10 w-10 rounded-full" resizeMode="cover" />
                 {thread.online && (
                   <View className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-[#0F7A3A]" />
                 )}

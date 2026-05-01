@@ -2,6 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
+const messageAvatar = require("../../../../../../assets/avatar.png");
+
 const messages = [
   {
     id: "1",
@@ -36,9 +38,7 @@ export default function MessageThread() {
           <Pressable onPress={() => router.back()} className="h-8 w-8 items-center justify-center rounded-full bg-[#F2F3EE]">
             <Ionicons name="chevron-back" size={16} color="#231F20" />
           </Pressable>
-          <View className="h-9 w-9 items-center justify-center rounded-full bg-[#E6F4EA]">
-            <Text className="text-sm font-semibold text-[#0F7A3A]">M</Text>
-          </View>
+          <Image source={messageAvatar} className="h-9 w-9 rounded-full" resizeMode="cover" />
           <View>
             <Text className="text-sm font-semibold text-[#231F20]">Mistura</Text>
             <View className="mt-0.5 flex-row items-center gap-1">
@@ -59,7 +59,7 @@ export default function MessageThread() {
 
       <ScrollView className="flex-1 px-4" contentContainerStyle={{ paddingTop: 32, paddingBottom: 24 }}>
         <View className="items-center">
-          <View className="rounded-full bg-[#E6F4EA] px-3 py-1">
+          <View className="rounded-lg border border-[#E5E7EB] bg-white px-3 py-1">
             <Text className="text-[10px] font-semibold text-[#0F7A3A]">Today</Text>
           </View>
         </View>
@@ -82,11 +82,11 @@ export default function MessageThread() {
                   </Text>
                 </View>
                 <View
-                  className={`max-w-[78%] rounded-2xl px-4 py-2 ${
+                  className={`max-w-[64%] rounded-2xl px-4 py-2 ${
                     message.inbound ? "bg-[#F2F3EE]" : "bg-[#E6F4EA]"
                   }`}
                 >
-                  <Text className="text-xs text-[#231F20]">{message.text}</Text>
+                  <Text className="text-xs leading-5 text-[#231F20]">{message.text}</Text>
                 </View>
                 <Text className="text-[10px] text-[#9CA3AF]">{message.time}</Text>
               </View>
