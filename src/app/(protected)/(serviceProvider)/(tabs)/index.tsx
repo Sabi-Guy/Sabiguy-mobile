@@ -293,7 +293,7 @@ export default function ServiceProviderHome() {
       2: 180,
       3: 320,
       4: 430,
-      5: 560,
+      5: 500,
       6: 430,
     };
 
@@ -514,17 +514,17 @@ export default function ServiceProviderHome() {
             className="absolute rounded-[8px] bg-white px-3 py-3"
             style={
               currentTourStep.id === 0
-                ? { top: 144, left: 48, width: 270, minHeight: 137 }
+                ? { top: 176, left: 48, width: 270, minHeight: 137 }
                 : currentTourStep.id === 1
-                  ? { top: 80, left: 71, width: 270, minHeight: 137 }
+                  ? { top: 96, left: 71, width: 270, minHeight: 137 }
                 : currentTourStep.id === 2
-                  ? { top: getTooltipTop(), left: 56, width: 250, minHeight: 122 }
+                  ? { top: getTooltipTop() + 32, left: 38, width: 250, minHeight: 122 }
                 : currentTourStep.id === 3
-                  ? { top: getTooltipTop() + 8, left: 56, width: 270, minHeight: 124 }
+                  ? { top: getTooltipTop() + 30, left: 56, width: 270, minHeight: 124 }
                 : currentTourStep.id === 4
-                  ? { top: getTooltipTop() - 8, left: 24, width: 270, minHeight: 122 }
+                  ? { top: getTooltipTop() + 6, left: 24, width: 270, minHeight: 122 }
                 : currentTourStep.id === 5
-                  ? { top: getTooltipTop() - 26, left: 24, width: 270, minHeight: 122 }
+                  ? { top: getTooltipTop() + 6, left: 24, width: 270, minHeight: 122 }
                 : currentTourStep.id === 6
                   ? { top: getTooltipTop() - 20, left: 56, width: 250, minHeight: 114 }
                 : { top: getTooltipTop(), left: 24, right: 24 }
