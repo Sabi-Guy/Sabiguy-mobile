@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { Linking } from "react-native";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 function ItemRow({
@@ -36,6 +37,12 @@ function ItemRow({
 
 export default function HelpScreen() {
   const router = useRouter();
+  const handleCall = async () => {
+    await Linking.openURL("tel:+2348167783930");
+  };
+  const handleEmail = async () => {
+    await Linking.openURL("mailto:hello@SabiGuy.com");
+  };
 
   return (
     <View className="flex-1 bg-[#F6F7F3]">
@@ -59,8 +66,19 @@ export default function HelpScreen() {
             icon="chatbubble-ellipses-outline"
             onPress={() => router.push("/(protected)/(serviceProvider)/support-chat")}
           />
-          <ItemRow title="Call Us" subtitle="+234 816 778 3930" icon="call-outline" />
-          <ItemRow title="Email Support" subtitle="hello@SabiGuy.com" icon="mail-outline" showDivider={false} />
+          <ItemRow
+            title="Call Us"
+            subtitle="+234 816 778 3930"
+            icon="call-outline"
+            onPress={handleCall}
+          />
+          <ItemRow
+            title="Email Support"
+            subtitle="hello@SabiGuy.com"
+            icon="mail-outline"
+            showDivider={false}
+            onPress={handleEmail}
+          />
         </View>
 
         <Text className="mb-2 text-[14px] font-semibold leading-[19px] uppercase text-[#818A95]">
