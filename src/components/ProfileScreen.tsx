@@ -55,14 +55,14 @@ function MenuSection({
           <Pressable
             key={item.label}
             onPress={() => onItemPress?.(item)}
-            className={`flex-row items-center px-3 py-3 ${
+            className={`flex-row items-center px-3 py-3.5 ${
               index < items.length - 1 ? "border-b border-[#F1F1F1]" : ""
             }`}
           >
-            <View className="mr-2 h-5 w-5 items-center justify-center rounded-full bg-[#E9F6EE]">
-              <Ionicons name={item.icon} size={11} color="#0F7A3A" />
+            <View className="mr-2 h-6 w-6 items-center justify-center rounded-full bg-[#E9F6EE]">
+              <Ionicons name={item.icon} size={12} color="#0F7A3A" />
             </View>
-            <Text className="flex-1 text-[11px] text-[#60656F]">{item.label}</Text>
+            <Text className="flex-1 text-[12px] text-[#60656F]">{item.label}</Text>
             <Ionicons name="chevron-forward" size={13} color="#C5C7CD" />
           </Pressable>
         ))}
@@ -84,9 +84,10 @@ function ProviderProfileView({
 }) {
   return (
     <ScrollView
-      className="flex-1"
-      contentContainerStyle={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: 28 }}
+      className="mt-1 flex-1"
+      contentContainerStyle={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: 36 }}
       showsVerticalScrollIndicator={false}
+      contentInsetAdjustmentBehavior="never"
     >
       <View className="items-center rounded-xl border border-[#F0F0F0] bg-[#F9F9F9] px-4 py-4">
         <Image source={require("../../assets/avatar.png")} className="h-14 w-14 rounded-full" resizeMode="cover" />
@@ -279,9 +280,9 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
       <BottomSheet
         isVisible={showLogoutSheet}
         onClose={() => setShowLogoutSheet(false)}
-        snapPoints={[0, 28, 34]}
-        initialSnapPoint={28}
-        contentContainerStyle={{ flex: 0, paddingBottom: 28 }}
+        snapPoints={[0, 74, 82]}
+        initialSnapPoint={74}
+        contentContainerStyle={{ flex: 0, paddingBottom: 86 }}
         showBackdropShadow={true}
       >
         <View className="px-2 pt-2">
