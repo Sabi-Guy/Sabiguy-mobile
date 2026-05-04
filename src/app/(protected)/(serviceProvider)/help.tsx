@@ -8,15 +8,18 @@ function ItemRow({
   icon,
   isFaq = false,
   showDivider = true,
+  onPress,
 }: {
   title: string;
   subtitle: string;
   icon: keyof typeof Ionicons.glyphMap;
   isFaq?: boolean;
   showDivider?: boolean;
+  onPress?: () => void;
 }) {
   return (
     <Pressable
+      onPress={onPress}
       className={`flex-row items-center px-3 ${isFaq ? "h-[45px]" : "py-2"} ${showDivider ? "border-b border-[#E8EBEF]" : ""}`}
     >
       <View className="mr-2 h-5 w-5 items-center justify-center rounded-full bg-[#E1ECE6]">
@@ -50,7 +53,12 @@ export default function HelpScreen() {
           CONTACT SUPPORT
         </Text>
         <View className="mb-6 h-[135px] w-[345px] self-center overflow-hidden rounded-[8px] border border-[#E6E9ED] bg-[#FFFFFF]">
-          <ItemRow title="Live Chat" subtitle="Chat with our support team" icon="chatbubble-ellipses-outline" />
+          <ItemRow
+            title="Live Chat"
+            subtitle="Chat with our support team"
+            icon="chatbubble-ellipses-outline"
+            onPress={() => router.push("/(protected)/(serviceProvider)/support-chat")}
+          />
           <ItemRow title="Call Us" subtitle="+234 816 778 3930" icon="call-outline" />
           <ItemRow title="Email Support" subtitle="hello@SabiGuy.com" icon="mail-outline" showDivider={false} />
         </View>

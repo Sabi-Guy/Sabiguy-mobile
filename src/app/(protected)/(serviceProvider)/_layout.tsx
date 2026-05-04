@@ -33,6 +33,7 @@ export default function ServiceProviderProtectedLayout() {
       <Stack.Screen name="terms-conditions" options={{ headerShown: false }} />
       <Stack.Screen name="privacy-policy" options={{ headerShown: false }} />
       <Stack.Screen name="help" options={{ headerShown: false }} />
+      <Stack.Screen name="support-chat" options={{ headerShown: false }} />
       <Stack.Screen name="wallet" options={{ headerShown: false }} />
       <Stack.Screen name="transaction-history" options={{ headerShown: false }} />
       <Stack.Screen name="withdraw" options={{ headerShown: false }} />
