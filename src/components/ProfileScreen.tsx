@@ -200,7 +200,7 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
         return;
       }
       if (item.label === "Notifications") {
-        router.push("/(protected)/(serviceProvider)/notifications");
+        router.push("/(protected)/(serviceProvider)/profile-notifications");
       }
       return;
     }
