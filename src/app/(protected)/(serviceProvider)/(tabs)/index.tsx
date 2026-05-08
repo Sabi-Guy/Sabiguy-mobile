@@ -42,11 +42,6 @@ const statCards = [
   },
 ];
 
-const earnings = [
-  { label: "Available", value: "\u20A694,000", tone: "success" as const },
-  { label: "Pending", value: "\u20A625,000", tone: "neutral" as const },
-];
-
 const revenueBars = [80, 40, 20, 36, 28, 80];
 
 const recentTransactions = [
@@ -180,6 +175,7 @@ export default function ServiceProviderHome() {
   const email = useAuthStore((state) => state.email);
   const name = useAuthStore((state) => state.name);
   const displayName = useMemo(() => toFirstName(name, email), [name, email]);
+  const availableBalanceText = "₦94,000";
 
   const openStatusModal = () => {
     const targetState = !isOnline;
@@ -197,6 +193,10 @@ export default function ServiceProviderHome() {
       setIsOnline(nextOnlineState);
     }
     closeStatusModal();
+  };
+
+  const handleCopyBalance = () => {
+    router.push("/(protected)/(serviceProvider)/wallet");
   };
 
   const currentTourStep = tourStep !== null ? tourSteps[tourStep] : null;
@@ -365,41 +365,44 @@ export default function ServiceProviderHome() {
         </View>
 
         <View
-          className="mt-4 rounded-2xl border border-[#ECECEC] bg-white p-4"
+          className="mt-4 rounded-2xl border border-[#ECECEC] bg-white p-3"
           style={getHighlightStyle("earnings")}
           onLayout={setSectionLayout("earnings")}
         >
-          <Text className="text-[16px] font-bold text-[#231F20]">Earnings</Text>
-          <View className="mt-3 flex-row gap-2.5">
-            {earnings.map((item) => (
-              <View
-                key={item.label}
-                className={`h-[76px] flex-1 rounded-xl border px-3 py-3 ${
-                  item.tone === "success" ? "border-[#0F7A3A] bg-[#0F7A3A]" : "border-[#E6E6E6] bg-[#F7F7F7]"
-                }`}
-              >
-                <View className="flex-row items-center">
-                  <View className="flex-row items-center gap-2">
-                    {item.tone === "success" && (
-                      <View className="h-6 w-6 items-center justify-center rounded-lg bg-white/20">
-                        <Ionicons name="wallet-outline" size={14} color="#FFFFFF" />
-                      </View>
-                    )}
-                    <Text className={`text-[20px] font-bold ${item.tone === "success" ? "text-white" : "text-[#231F20]"}`}>
-                      {item.value}
-                    </Text>
-                  </View>
-                  <View className="ml-auto mr-[-2px] mt-4 w-4 items-end">
-                    {item.tone === "success" && <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />}
-                  </View>
-                </View>
-                <Text
-                  className={`mt-1.5 text-[13px] ${item.tone === "success" ? "ml-8 text-white/90" : "text-[#7B7B7B]"}`}
-                >
-                  {item.label}
-                </Text>
-              </View>
-            ))}
+          <View className="flex-row items-center justify-between">
+            <Text className="text-[16px] font-bold text-[#231F20]">Wallet</Text>
+            <Pressable
+              className="h-9 w-9 items-center justify-center rounded-lg"
+              onPress={handleCopyBalance}
+              hitSlop={8}
+              android_ripple={{ color: "#E5E7EB", borderless: true }}
+            >
+              <Ionicons name="copy-outline" size={22} color="#98A2B3" />
+            </Pressable>
+          </View>
+          <Text className="mt-1.5 text-[13px] text-[#344054]">Available Balance</Text>
+          <Text className="mt-1 text-[34px] font-bold text-[#0F1C3F]">{availableBalanceText}</Text>
+
+          <Pressable
+            className="mt-2.5 h-10 flex-row items-center justify-center rounded-xl bg-[#0B6B2D]"
+            onPress={() => router.push("/(protected)/(serviceProvider)/withdraw")}
+            hitSlop={6}
+            android_ripple={{ color: "#0A5E27" }}
+          >
+            <Ionicons name="arrow-up-outline" size={22} color="#FFFFFF" style={{ transform: [{ rotate: "45deg" }] }} />
+            <Text className="ml-2 text-[16px] font-semibold text-white">Withdraw</Text>
+          </Pressable>
+
+          <View className="mt-2.5 h-px bg-[#EAECF0]" />
+          <View className="mt-2.5 flex-row">
+            <View className="flex-1">
+              <Text className="text-[12px] text-[#344054]">Total Withdrawn</Text>
+              <Text className="mt-0.5 text-[18px] font-semibold text-[#0F1C3F]">₦0.00</Text>
+            </View>
+            <View className="flex-1">
+              <Text className="text-[12px] text-[#344054]">Pending Earnings</Text>
+              <Text className="mt-0.5 text-[18px] font-semibold text-[#0F1C3F]">₦25,000</Text>
+            </View>
           </View>
         </View>
 
@@ -450,7 +453,7 @@ export default function ServiceProviderHome() {
               </View>
             </View>
           </View>
-          <View className="mt-3 flex-row items-center justify-center gap-2">
+          <View className="mt-2.5 flex-row items-center justify-center gap-2">
             {[0, 1, 2, 3, 4].map((dot) => (
               <View
                 key={dot}
@@ -579,7 +582,7 @@ export default function ServiceProviderHome() {
               {currentTourStep.body}
             </Text>
 
-            <View className="mt-3 flex-row items-center justify-between">
+            <View className="mt-2.5 flex-row items-center justify-between">
               <Pressable onPress={closeTour}>
                 <Text className="text-[13px] text-[#7C8189]">Skip</Text>
               </Pressable>
@@ -603,7 +606,7 @@ export default function ServiceProviderHome() {
               <Text className="text-[11px] leading-[16px] text-[#737881]">Remember, you can always revisit the tour or</Text>
               <Text className="text-[11px] leading-[16px] text-[#737881]">access helpful tips from the Help section.</Text>
             </View>
-            <View className="mt-3 flex-row items-center justify-between">
+            <View className="mt-2.5 flex-row items-center justify-between">
               <Pressable onPress={closeTour}>
                 <Text className="text-[13px] text-[#7C8189]">Skip</Text>
               </Pressable>
@@ -642,3 +645,4 @@ export default function ServiceProviderHome() {
     </SafeAreaView>
   );
 }
+
