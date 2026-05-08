@@ -40,7 +40,7 @@ export default function ManageProfileScreen() {
         </View>
 
         <View className="mt-3 gap-2.5">
-          <Field label="Full Name" value={displayName} editable={false} />
+          <Field label="Full Name" value={displayName} />
           <Field label="Phone number" value="+234 812 909 3873" keyboardType="phone-pad" />
           <Field
             label="Email Address"
