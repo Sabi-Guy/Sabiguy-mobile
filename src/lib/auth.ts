@@ -1,5 +1,4 @@
-// base API
-const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? "https://api.nifesi.xyz/api/v1";
+import { API_BASE_URL } from "@/lib/api";
 
 // request type
 export interface RegisterBuyerPayload {
@@ -12,7 +11,7 @@ export interface RegisterBuyerPayload {
 
 // register buyer
 export const registerBuyer = async (data: RegisterBuyerPayload) => {
-  const response = await fetch(`${BASE_URL}/auth/buyer`, {
+  const response = await fetch(`${API_BASE_URL}/auth/buyer`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -38,7 +37,7 @@ export interface loginUserPayload {
 }
 
 export const loginuser = async (data: loginUserPayload) => {
-  const response = await fetch(`${BASE_URL}/auth`, {
+  const response = await fetch(`${API_BASE_URL}/auth`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -62,7 +61,7 @@ export interface VerifyEmailPayload {
 }
 
 export const verifyEmailOtp = async (data: VerifyEmailPayload) => {
-  const response = await fetch(`${BASE_URL}/auth/email`, {
+  const response = await fetch(`${API_BASE_URL}/auth/email`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -87,7 +86,7 @@ export interface ResendOtpPayload {
 }
 
 export const resendOtp = async (data: ResendOtpPayload) => {
-  const response = await fetch(`${BASE_URL}/auth/resend-otp`, {
+  const response = await fetch(`${API_BASE_URL}/auth/resend-otp`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -112,7 +111,7 @@ export interface ForgotPasswordPayload {
 }
 
 export const forgotPassword = async (data: ForgotPasswordPayload) => {
-  const response = await fetch(`${BASE_URL}/auth/password`, {
+  const response = await fetch(`${API_BASE_URL}/auth/password`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -139,7 +138,7 @@ export interface ForgotPasswordOtpPayload {
 }
 
 export const resetPassword = async (data: ForgotPasswordOtpPayload) => {
-  const response = await fetch(`${BASE_URL}/auth/reset`, {
+  const response = await fetch(`${API_BASE_URL}/auth/reset`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

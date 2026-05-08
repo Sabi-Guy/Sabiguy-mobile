@@ -1,5 +1,13 @@
 import React, { useMemo, useRef, useState } from "react";
-import { FlatList, ImageSourcePropType, useWindowDimensions, View } from "react-native";
+import {
+  FlatList,
+  ImageSourcePropType,
+  Pressable,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import OnboardingSlide from "./OnboardingSlide";
 
@@ -59,6 +67,8 @@ export default function ServiceProviderOnboardingCarousel() {
     router.push("/(auth)/(serviceProvider)/account-setup");
   };
 
+  const isLastSlide = currentSlideIndex === slides.length - 1;
+
   return (
     <View className="flex-1">
       <FlatList
@@ -86,14 +96,36 @@ export default function ServiceProviderOnboardingCarousel() {
             title={item.title}
             description={item.description}
             image={item.image}
-            buttonText={item.buttonText}
-            currentSlideIndex={currentSlideIndex}
+            isActive={index === currentSlideIndex}
             totalSlides={slides.length}
-            isLastSlide={index === slides.length - 1}
-            onPress={index === slides.length - 1 ? handleGetStarted : handleContinue}
+            currentIndex={currentSlideIndex}
           />
         )}
       />
+
+      <View className="px-8 pb-10">
+        {!isLastSlide ? (
+          <View className="flex-row items-center justify-end">
+            <Pressable
+              className="h-12 w-12 items-center justify-center rounded-full bg-[#0F7A3A]"
+              onPress={handleContinue}
+            >
+              <Feather name="arrow-right" size={36} color="white" />
+            </Pressable>
+          </View>
+        ) : (
+          <View className="items-center">
+            <Pressable
+              className="mt-2 w-full rounded-lg bg-[#0F7A3A] py-5"
+              onPress={handleGetStarted}
+            >
+              <Text className="text-center text-[12px] font-semibold text-white">
+                {slides[currentSlideIndex]?.buttonText ?? "Get Started"}
+              </Text>
+            </Pressable>
+          </View>
+        )}
+      </View>
     </View>
   );
 }
