@@ -26,7 +26,6 @@ const accountItemsByVariant: Record<ProfileScreenProps["variant"], MenuItem[]> =
   user: [
     { label: "Manage Profile", icon: "person-outline" },
     { label: "Wallet", icon: "wallet-outline" },
-    { label: "Bookings", icon: "calendar-outline" },
     { label: "Password", icon: "lock-closed-outline" },
     { label: "Notifications", icon: "notifications-outline" },
   ],
@@ -200,7 +199,7 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
         return;
       }
       if (item.label === "Notifications") {
-        router.push("/(protected)/(serviceProvider)/notifications");
+        router.push("/(protected)/(serviceProvider)/profile-notifications");
       }
       return;
     }
@@ -211,10 +210,6 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
     }
     if (item.label === "Wallet") {
       router.push("/(protected)/(serviceUser)/(tabs)/(profile)/userWallet");
-      return;
-    }
-    if (item.label === "Bookings") {
-      router.push("/(protected)/(serviceUser)/(tabs)/(hire)");
       return;
     }
     if (item.label === "Password") {

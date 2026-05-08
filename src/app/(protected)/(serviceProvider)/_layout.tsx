@@ -28,6 +28,7 @@ export default function ServiceProviderProtectedLayout() {
       <Stack.Screen name="service-profile" options={{ headerShown: false }} />
       <Stack.Screen name="password" options={{ headerShown: false }} />
       <Stack.Screen name="notifications" options={{ headerShown: false }} />
+      <Stack.Screen name="profile-notifications" options={{ headerShown: false }} />
       <Stack.Screen name="refer-earn" options={{ headerShown: false }} />
       <Stack.Screen name="about-us" options={{ headerShown: false }} />
       <Stack.Screen name="terms-conditions" options={{ headerShown: false }} />
