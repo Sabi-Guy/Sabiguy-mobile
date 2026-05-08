@@ -78,19 +78,19 @@ export default function TransactionScreen() {
       </View>
       <View className="px-5">
         <View className="flex-row items-center gap-3">
-          <View className="flex-1 flex-row items-center rounded-xl border border-gray-200 px-3 py-2">
-            <Ionicons name="search" size={16} color="#9CA3AF" />
+          <View className="flex-1 flex-row items-center rounded-lg border border-gray-200 px-3 py-1.5">
+            <Ionicons name="search" size={14} color="#9CA3AF" />
             <TextInput
               placeholder="Search"
               placeholderTextColor="#9CA3AF"
-              className="ml-2 flex-1 text-sm text-gray-900"
+              className="ml-2 flex-1 text-[12px] text-gray-900"
             />
           </View>
           <Pressable
             onPress={() => setShowFilterSheet(true)}
-            className="h-10 w-10 items-center justify-center rounded-xl border border-gray-200"
+            className="h-9 w-9 items-center justify-center rounded-lg border border-gray-200"
           >
-          <Feather name="filter" size={24} color="black" />
+          <Feather name="filter" size={18} color="black" />
           </Pressable>
         </View>
       </View>
