@@ -280,7 +280,7 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
         isVisible={showLogoutSheet}
         onClose={() => setShowLogoutSheet(false)}
         snapPoints={[0, 28, 34]}
-        initialSnapPoint={28}
+        initialSnapPoint={35}
         contentContainerStyle={{ flex: 0, paddingBottom: 28 }}
         showBackdropShadow={true}
       >
