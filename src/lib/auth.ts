@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "@/lib/api";
+import { getAuthToken } from "@/lib/token";
 
 // request type
 export interface RegisterBuyerPayload {
@@ -151,6 +152,37 @@ export const resetPassword = async (data: ForgotPasswordOtpPayload) => {
   if (!response.ok) {
     const message =
       typeof result?.message === "string" ? result.message : "Password reset failed";
+    throw new Error(message);
+  }
+
+  return result;
+};
+
+export interface ChangePasswordPayload {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export const changePassword = async (data: ChangePasswordPayload, token?: string) => {
+  const resolvedToken = token ?? (await getAuthToken());
+  if (!resolvedToken) {
+    throw new Error("Authentication required");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${resolvedToken}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    const message =
+      typeof result?.message === "string" ? result.message : "Change password failed";
     throw new Error(message);
   }
 
