@@ -51,7 +51,7 @@ export default function popularCard({
       </View>
 
       {comingSoon && (
-        <View className="absolute -top-2 -right-2 rounded-full bg-[#ffe6ccde] px-2.5 py-0.5">
+        <View className="absolute -top-2 -right-2 rounded-full bg-[#ffffff7c] px-2.5 py-0.5">
           <Text className="text-[9px] font-semibold text-[#C2410C]">Coming soon</Text>
         </View>
       )}
@@ -70,7 +70,7 @@ export default function popularCard({
           isVisible={isSheetVisible}
           onClose={handleClose}
           snapPoints={[0, 35, 45]}
-          initialSnapPoint={35}
+          initialSnapPoint={40}
           contentContainerStyle={{ flex: 0, paddingBottom: 16 }}
           showHandle={false}
           showBackdropShadow={true}
