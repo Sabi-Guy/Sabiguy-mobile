@@ -1,6 +1,6 @@
 ﻿import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 
 type TabKey = "alerts" | "jobs";
@@ -33,6 +33,7 @@ type JobItem = {
 };
 
 const filters: JobFilter[] = ["all", "active", "pending", "completed"];
+const distanceIcon = require("../../../../../../assets/distance.png");
 const COMPLETED_REVIEW_TEXT =
   "Excellent work! Very professional and finished ahead of schedule.The kitchen looks amazing. Highly recommend! The attention to detail was outstanding and they cleaned up everything perfectly.";
 
@@ -197,9 +198,7 @@ export default function HireScreen() {
       </View>
       <View style={styles.rowBetween}>
         <View style={styles.distanceRow}>
-          <Ionicons name="location-sharp" size={11} color="#2F8A57" />
-          <Ionicons name="swap-horizontal-outline" size={11} color="#2F8A57" />
-          <Ionicons name="location-sharp" size={11} color="#2F8A57" />
+          <Image source={distanceIcon} style={styles.distanceIcon} resizeMode="contain" />
           <Text style={styles.metaText}>Distance: {distance}</Text>
         </View>
         <Text style={styles.fareText}>{fare}</Text>
@@ -664,6 +663,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
+  },
+  distanceIcon: {
+    width: 16,
+    height: 16,
   },
   fareText: {
     fontSize: 18,

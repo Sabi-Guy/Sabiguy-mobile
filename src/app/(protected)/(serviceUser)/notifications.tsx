@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, SafeAreaView, Text, View } from "react-native";
 
-export default function NotificationsScreen() {
+export default function UserNotificationsScreen() {
   const router = useRouter();
 
   return (

@@ -1,11 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Dimensions, Image, LayoutChangeEvent, Pressable, ScrollView, Text, View } from "react-native";
+import { Dimensions, Image, LayoutChangeEvent, Pressable, ScrollView, Switch, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthStore } from "@/store/auth";
 import { toFirstName } from "@/lib/display-name";
-import availabilityToggle from "../../../../../assets/available-toggle.png";
-import availabilityToggleOff from "../../../../../assets/available-toggle-off.png";
 
 const statCards = [
   {
@@ -40,11 +40,6 @@ const statCards = [
     iconBg: "#7B61FF",
     iconColor: "#FFFFFF",
   },
-];
-
-const earnings = [
-  { label: "Available", value: "\u20A694,000", tone: "success" as const },
-  { label: "Pending", value: "\u20A625,000", tone: "neutral" as const },
 ];
 
 const revenueBars = [80, 40, 20, 36, 28, 80];
@@ -180,6 +175,7 @@ export default function ServiceProviderHome() {
   const email = useAuthStore((state) => state.email);
   const name = useAuthStore((state) => state.name);
   const displayName = useMemo(() => toFirstName(name, email), [name, email]);
+  const availableBalanceText = "₦94,000";
 
   const openStatusModal = () => {
     const targetState = !isOnline;
@@ -197,6 +193,10 @@ export default function ServiceProviderHome() {
       setIsOnline(nextOnlineState);
     }
     closeStatusModal();
+  };
+
+  const handleCopyBalance = () => {
+    router.push("/(protected)/(serviceProvider)/wallet");
   };
 
   const currentTourStep = tourStep !== null ? tourSteps[tourStep] : null;
@@ -293,7 +293,7 @@ export default function ServiceProviderHome() {
       2: 180,
       3: 320,
       4: 430,
-      5: 560,
+      5: 500,
       6: 430,
     };
 
@@ -308,11 +308,12 @@ export default function ServiceProviderHome() {
   }, [currentTourStep, sectionLayouts]);
 
   return (
-    <View className="flex-1 bg-[#FFFFFF]">
+    <SafeAreaView className="flex-1 bg-[#FFFFFF]" edges={["top"]}>
+      <StatusBar style="dark" backgroundColor="#FFFFFF" />
       <ScrollView
         ref={scrollRef}
         className="flex-1"
-        contentContainerStyle={{ padding: 20, paddingTop: 20, paddingBottom: 40 }}
+        contentContainerStyle={{ padding: 20, paddingTop: 16, paddingBottom: 40 }}
         scrollEnabled={!currentTourStep}
         onScroll={(event) => setScrollY(event.nativeEvent.contentOffset.y)}
         scrollEventThrottle={16}
@@ -322,23 +323,29 @@ export default function ServiceProviderHome() {
             <Text className="text-[13px] text-[#231F2099]">Hello</Text>
             <Text className="mt-1 text-lg font-semibold text-[#231F20]">{displayName} 👋</Text>
           </View>
-          <View className="flex-row items-center gap-3" style={getHighlightStyle("header")}>
-            <Pressable onPress={openStatusModal} className="rounded-full">
-              <Image
-                source={isOnline ? availabilityToggle : availabilityToggleOff}
-                className="h-7 w-[86px]"
-                resizeMode="contain"
+          <View className="flex-row items-center gap-1" style={getHighlightStyle("header")}>
+            <View className="flex-row items-center gap-0 rounded-lg border border-[#D9E2DA] bg-[#F8FAF8] px-2 py-1">
+              <Ionicons name="location-outline" size={13} color={isOnline ? "#22C55E" : "#9CA3AF"} />
+              <Text className={`text-[11px] font-semibold ${isOnline ? "text-[#0F7A3A]" : "text-[#6B7280]"}`}>
+                {isOnline ? "Available" : "Unavailable"}
+              </Text>
+              <Switch
+                value={isOnline}
+                onValueChange={openStatusModal}
+                style={{ marginLeft: -5, transform: [{ scaleX: 0.94 }, { scaleY: 0.94 }] }}
+                trackColor={{ false: "#D1D5DB", true: "#22C55E" }}
+                thumbColor="#FFFFFF"
+                ios_backgroundColor="#D1D5DB"
               />
-            </Pressable>
+            </View>
             <Pressable
-              className="h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm"
+              className="h-10 w-10 items-center justify-center"
               onPress={() => router.push("/(protected)/(serviceProvider)/notifications")}
               hitSlop={8}
               accessibilityRole="button"
               accessibilityLabel="Open notifications"
             >
-              <Ionicons name="notifications-outline" size={18} color="#231F20" />
-              <View className="absolute right-[9px] top-[9px] h-[6px] w-[6px] rounded-full bg-[#E53935]" />
+              <Ionicons name="notifications-outline" size={23} color="#4B5563" />
             </Pressable>
           </View>
         </View>
@@ -358,55 +365,56 @@ export default function ServiceProviderHome() {
         </View>
 
         <View
-          className="mt-6 rounded-2xl bg-white p-4 shadow-sm"
+          className="mt-4 rounded-2xl border border-[#ECECEC] bg-white p-3"
           style={getHighlightStyle("earnings")}
           onLayout={setSectionLayout("earnings")}
         >
-          <Text className="text-xs font-semibold text-[#231F2099]">Earnings</Text>
-          <View className="mt-3 flex-row gap-3">
-            {earnings.map((item) => (
-              <View
-                key={item.label}
-                className={`flex-1 rounded-xl border px-3 py-3 ${
-                  item.tone === "success" ? "border-[#0F7A3A] bg-[#0F7A3A]" : "border-[#E6E6E6] bg-[#F7F7F7]"
-                }`}
-              >
-                <View className="flex-row items-center">
-                  <View className="flex-row items-center gap-2">
-                    {item.tone === "success" && (
-                      <View className="h-6 w-6 items-center justify-center rounded-lg bg-white/20">
-                        <Ionicons name="wallet-outline" size={14} color="#FFFFFF" />
-                      </View>
-                    )}
-                    <Text className={`text-sm font-semibold ${item.tone === "success" ? "text-white" : "text-[#231F20]"}`}>
-                      {item.value}
-                    </Text>
-                  </View>
-                  {item.tone === "success" && (
-                    <View className="ml-auto mt-4">
-                      <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
-                    </View>
-                  )}
-                </View>
-                <Text
-                  className={`mt-2 text-xs ${item.tone === "success" ? "text-white/80 ml-8" : "text-[#231F2099]"}`}
-                >
-                  {item.label}
-                </Text>
-              </View>
-            ))}
+          <View className="flex-row items-center justify-between">
+            <Text className="text-[16px] font-bold text-[#231F20]">Wallet</Text>
+            <Pressable
+              className="h-9 w-9 items-center justify-center rounded-lg"
+              onPress={handleCopyBalance}
+              hitSlop={8}
+              android_ripple={{ color: "#E5E7EB", borderless: true }}
+            >
+              <Ionicons name="copy-outline" size={22} color="#98A2B3" />
+            </Pressable>
+          </View>
+          <Text className="mt-1.5 text-[13px] text-[#344054]">Available Balance</Text>
+          <Text className="mt-1 text-[34px] font-bold text-[#0F1C3F]">{availableBalanceText}</Text>
+
+          <Pressable
+            className="mt-2.5 h-10 flex-row items-center justify-center rounded-xl bg-[#0B6B2D]"
+            onPress={() => router.push("/(protected)/(serviceProvider)/withdraw")}
+            hitSlop={6}
+            android_ripple={{ color: "#0A5E27" }}
+          >
+            <Ionicons name="arrow-up-outline" size={22} color="#FFFFFF" style={{ transform: [{ rotate: "45deg" }] }} />
+            <Text className="ml-2 text-[16px] font-semibold text-white">Withdraw</Text>
+          </Pressable>
+
+          <View className="mt-2.5 h-px bg-[#EAECF0]" />
+          <View className="mt-2.5 flex-row">
+            <View className="flex-1">
+              <Text className="text-[12px] text-[#344054]">Total Withdrawn</Text>
+              <Text className="mt-0.5 text-[18px] font-semibold text-[#0F1C3F]">₦0.00</Text>
+            </View>
+            <View className="flex-1">
+              <Text className="text-[12px] text-[#344054]">Pending Earnings</Text>
+              <Text className="mt-0.5 text-[18px] font-semibold text-[#0F1C3F]">₦25,000</Text>
+            </View>
           </View>
         </View>
 
         <View
-          className="mt-6 rounded-2xl bg-white p-4 shadow-sm"
+          className="mt-4 rounded-2xl border border-[#ECECEC] bg-white p-4"
           style={getHighlightStyle("revenue")}
           onLayout={setSectionLayout("revenue")}
         >
           <View className="flex-row items-center justify-between">
-            <Text className="text-sm font-semibold text-[#231F20]">Revenue Overview</Text>
-            <View className="flex-row items-center gap-1 rounded-full bg-[#F2F3EE] px-3 py-1">
-              <Text className="text-[10px] text-[#231F2099]">Last 6 months</Text>
+            <Text className="text-[16px] font-bold text-[#231F20]">Revenue Overview</Text>
+            <View className="flex-row items-center gap-1 rounded-lg border border-[#E5E7EB] bg-white px-2.5 py-1.5">
+              <Text className="text-[12px] text-[#5F6368]">Last 6 months</Text>
               <Ionicons name="chevron-down" size={12} color="#231F2099" />
             </View>
           </View>
@@ -438,14 +446,14 @@ export default function ServiceProviderHome() {
               </View>
               <View className="mt-2 flex-row justify-between px-1">
                 {["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((label) => (
-                  <Text key={label} className="text-[10px] text-[#231F2099]">
+                  <Text key={label} className="text-[10px] text-[#6B7280]">
                     {label}
                   </Text>
                 ))}
               </View>
             </View>
           </View>
-          <View className="mt-3 flex-row items-center justify-center gap-2">
+          <View className="mt-2.5 flex-row items-center justify-center gap-2">
             {[0, 1, 2, 3, 4].map((dot) => (
               <View
                 key={dot}
@@ -456,17 +464,17 @@ export default function ServiceProviderHome() {
         </View>
 
         <View
-          className="mt-6 rounded-2xl bg-white p-4 shadow-sm"
+          className="mt-4 rounded-2xl border border-[#ECECEC] bg-white p-4"
           style={getHighlightStyle("transactions")}
           onLayout={setSectionLayout("transactions")}
         >
           <View className="flex-row items-center justify-between">
-            <Text className="text-xs font-semibold text-[#231F2099]">Recent Transaction</Text>
+            <Text className="text-[16px] font-bold text-[#231F20]">Recent Transaction</Text>
             <Pressable
               className="flex-row items-center gap-1"
               onPress={() => router.push("/(protected)/(serviceProvider)/transaction-history")}
             >
-              <Text className="text-[10px] font-semibold text-[#231F2099]">See all</Text>
+              <Text className="text-[12px] text-[#8A8F98]">See all</Text>
               <Ionicons name="chevron-forward" size={12} color="#231F2099" />
             </Pressable>
           </View>
@@ -509,17 +517,17 @@ export default function ServiceProviderHome() {
             className="absolute rounded-[8px] bg-white px-3 py-3"
             style={
               currentTourStep.id === 0
-                ? { top: 144, left: 48, width: 270, minHeight: 137 }
+                ? { top: 176, left: 48, width: 270, minHeight: 137 }
                 : currentTourStep.id === 1
-                  ? { top: 80, left: 71, width: 270, minHeight: 137 }
+                  ? { top: 96, left: 71, width: 270, minHeight: 137 }
                 : currentTourStep.id === 2
-                  ? { top: getTooltipTop(), left: 56, width: 250, minHeight: 122 }
+                  ? { top: getTooltipTop() + 32, left: 38, width: 250, minHeight: 122 }
                 : currentTourStep.id === 3
-                  ? { top: getTooltipTop() + 8, left: 56, width: 270, minHeight: 124 }
+                  ? { top: getTooltipTop() + 30, left: 56, width: 270, minHeight: 124 }
                 : currentTourStep.id === 4
-                  ? { top: getTooltipTop() - 8, left: 24, width: 270, minHeight: 122 }
+                  ? { top: getTooltipTop() + 6, left: 24, width: 270, minHeight: 122 }
                 : currentTourStep.id === 5
-                  ? { top: getTooltipTop() - 26, left: 24, width: 270, minHeight: 122 }
+                  ? { top: getTooltipTop() + 6, left: 24, width: 270, minHeight: 122 }
                 : currentTourStep.id === 6
                   ? { top: getTooltipTop() - 20, left: 56, width: 250, minHeight: 114 }
                 : { top: getTooltipTop(), left: 24, right: 24 }
@@ -574,7 +582,7 @@ export default function ServiceProviderHome() {
               {currentTourStep.body}
             </Text>
 
-            <View className="mt-3 flex-row items-center justify-between">
+            <View className="mt-2.5 flex-row items-center justify-between">
               <Pressable onPress={closeTour}>
                 <Text className="text-[13px] text-[#7C8189]">Skip</Text>
               </Pressable>
@@ -598,7 +606,7 @@ export default function ServiceProviderHome() {
               <Text className="text-[11px] leading-[16px] text-[#737881]">Remember, you can always revisit the tour or</Text>
               <Text className="text-[11px] leading-[16px] text-[#737881]">access helpful tips from the Help section.</Text>
             </View>
-            <View className="mt-3 flex-row items-center justify-between">
+            <View className="mt-2.5 flex-row items-center justify-between">
               <Pressable onPress={closeTour}>
                 <Text className="text-[13px] text-[#7C8189]">Skip</Text>
               </Pressable>
@@ -611,8 +619,8 @@ export default function ServiceProviderHome() {
       )}
 
       {showStatusModal && (
-        <View className="absolute inset-0 items-center justify-center bg-black/40 px-6">
-          <View className="w-full rounded-2xl bg-white p-5 shadow-lg">
+        <View className="absolute inset-0 bg-black/40">
+          <View className="absolute right-1 top-[86px] w-[280px] rounded-xl bg-white p-4 shadow-lg">
             <Text className="text-sm font-semibold text-[#231F20]">
               {nextOnlineState ? "Ready to Receive Orders?" : "Go Offline?"}
             </Text>
@@ -634,6 +642,7 @@ export default function ServiceProviderHome() {
           </View>
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
+

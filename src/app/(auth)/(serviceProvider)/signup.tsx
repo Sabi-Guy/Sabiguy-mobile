@@ -1,4 +1,4 @@
-import { Alert, View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
+import { View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
 import React, { useMemo, useState } from "react";
 import Button from "@/components/Button";
 import BackButton from "@/components/BackButton";
@@ -7,8 +7,47 @@ import { Ionicons } from "@expo/vector-icons";
 import { apiRequest } from "@/lib/api";
 import { setUserEmail } from "@/lib/token";
 import Toast from "react-native-toast-message";
+import { getProviderOnboardingRoute, parseKycLevel } from "@/lib/provider-kyc";
+import { useAuthStore } from "@/store/auth";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+
+WebBrowser.maybeCompleteAuthSession();
 
 const PASSWORD_RULE = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
+type GoogleAuthResponse = {
+  token?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  role?: string;
+  email?: string;
+  name?: string;
+  kycLevel?: number | string;
+  kyc_level?: number | string;
+  data?: {
+    token?: string;
+    accessToken?: string;
+    refreshToken?: string;
+    role?: string;
+    email?: string;
+    name?: string;
+    kycLevel?: number | string;
+    kyc_level?: number | string;
+    user?: {
+      email?: string;
+      name?: string;
+      kycLevel?: number | string;
+      kyc_level?: number | string;
+    };
+  };
+  user?: {
+    email?: string;
+    name?: string;
+    kycLevel?: number | string;
+    kyc_level?: number | string;
+  };
+};
 
 export default function ServiceProviderSignup() {
   const [agreed, setAgreed] = useState(false);
@@ -21,6 +60,13 @@ export default function ServiceProviderSignup() {
   const [submitting, setSubmitting] = useState(false);
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
   const router = useRouter();
+  const setSession = useAuthStore((state) => state.setSession);
+
+  const [googleRequest, , promptGoogleAuth] = Google.useIdTokenAuthRequest({
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  });
 
   const canSubmit = useMemo(
     () =>
@@ -78,6 +124,82 @@ export default function ServiceProviderSignup() {
       });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleProviderGoogleSignup = async () => {
+    if (!googleRequest) {
+      Toast.show({
+        type: "error",
+        text1: "Google Sign-In unavailable",
+        text2: "Please try again in a few seconds.",
+      });
+      return;
+    }
+
+    try {
+      setGoogleSubmitting(true);
+      const authResult = await promptGoogleAuth();
+
+      if (authResult.type !== "success") {
+        return;
+      }
+
+      const idToken = authResult.params?.id_token;
+      if (!idToken) {
+        throw new Error("Google id token was not returned.");
+      }
+
+      const result = await apiRequest<GoogleAuthResponse>("/auth/google-provider", {
+        method: "POST",
+        json: { idToken },
+      });
+
+      const token =
+        result?.token ||
+        result?.accessToken ||
+        result?.data?.token ||
+        result?.data?.accessToken;
+      const refreshToken = result?.refreshToken || result?.data?.refreshToken;
+      const role = (result?.role || result?.data?.role || "provider").toLowerCase();
+      const resolvedEmail = result?.email || result?.data?.email || result?.user?.email || result?.data?.user?.email;
+      const resolvedName = result?.name || result?.data?.name || result?.user?.name || result?.data?.user?.name;
+      const kycLevel = parseKycLevel(
+        result?.kycLevel ??
+          result?.kyc_level ??
+          result?.data?.kycLevel ??
+          result?.data?.kyc_level ??
+          result?.user?.kycLevel ??
+          result?.user?.kyc_level ??
+          result?.data?.user?.kycLevel ??
+          result?.data?.user?.kyc_level
+      );
+
+      await setSession({
+        token,
+        refreshToken,
+        role,
+        email: resolvedEmail,
+        name: resolvedName,
+        kycLevel,
+      });
+
+      Toast.show({
+        type: "success",
+        text1: "Google signup successful",
+        text2: "Welcome!",
+      });
+
+      const pendingRoute = getProviderOnboardingRoute(kycLevel);
+      router.replace(pendingRoute ?? "/(protected)/(serviceProvider)/(tabs)");
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Google signup failed",
+        text2: err instanceof Error ? err.message : "Unable to continue with Google.",
+      });
+    } finally {
+      setGoogleSubmitting(false);
     }
   };
 
@@ -174,7 +296,7 @@ export default function ServiceProviderSignup() {
             agreed ? "border-[#005823] bg-[#005823]" : "border-gray-400 bg-white"
           }`}
         >
-          {agreed ? <Text className="text-xs font-bold text-white">✓</Text> : null}
+          {agreed ? <Text className="text-xs font-bold text-white">?</Text> : null}
         </View>
 
         <Text className="flex-1 text-sm text-gray-700">
@@ -201,26 +323,7 @@ export default function ServiceProviderSignup() {
         }`}
         style={{ backgroundColor: "#231F200D" }}
         disabled={googleSubmitting}
-        onPress={() => {
-          const hasClientId =
-            !!process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ||
-            !!process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
-            !!process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
-
-          if (!hasClientId) {
-            Alert.alert(
-              "Google Sign-In not configured",
-              "Ask your admin for Google OAuth client IDs, then we'll enable this."
-            );
-            return;
-          }
-
-          setGoogleSubmitting(true);
-          setTimeout(() => {
-            setGoogleSubmitting(false);
-            Alert.alert("Google Sign-In", "OAuth will be enabled once client IDs are added.");
-          }, 800);
-        }}
+        onPress={handleProviderGoogleSignup}
       >
         <Image
           source={require("../../../../assets/google.png")}
@@ -241,3 +344,5 @@ export default function ServiceProviderSignup() {
     </ScrollView>
   );
 }
+
+

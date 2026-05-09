@@ -1,5 +1,5 @@
 export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL ?? "https://sabiguy-backend.onrender.com/api/v1";
+  process.env.EXPO_PUBLIC_API_BASE_URL ?? "https://api.nifesi.xyz/api/v1";
 
 type ApiOptions = RequestInit & { json?: unknown };
 
@@ -8,14 +8,17 @@ export async function apiRequest<T = unknown>(path: string, options: ApiOptions 
   const { getAuthToken } = await import("./token");
   const token = await getAuthToken();
   const shouldAttachAuth = !path.startsWith("/auth");
-  const authHeader = shouldAttachAuth && token ? { Authorization: `Bearer ${token}` } : {};
+  const resolvedHeaders = new Headers(headers);
+  if (json !== undefined && !resolvedHeaders.has("Content-Type")) {
+    resolvedHeaders.set("Content-Type", "application/json");
+  }
+  if (shouldAttachAuth && token) {
+    resolvedHeaders.set("Authorization", `Bearer ${token}`);
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...rest,
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeader,
-      ...(headers ?? {}),
-    },
+    headers: resolvedHeaders,
     body: json !== undefined ? JSON.stringify(json) : rest.body,
   });
 

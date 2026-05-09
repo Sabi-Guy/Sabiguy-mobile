@@ -26,7 +26,16 @@ export default function chooseRole() {
         <Text className="text-sm font-semibold text-[#005823CC]">Login</Text>
       </Pressable>
       <View className="mb-6 items-center">
-        <Text className="text-2xl font-bold text-gray-900">How do you want to use SabiGuy?</Text>
+        <Text style={{ fontSize: 24, fontWeight: "700", color: "#231F20", textAlign: "center" }}>
+          Welcome to SabiGuy
+        </Text>
+        <Text
+          className="text-gray-900"
+          numberOfLines={1}
+          style={{ marginTop: 6, fontSize: 20, fontWeight: "400", lineHeight: 20, textAlign: "center" }}
+        >
+          How do you want to use SabiGuy?
+        </Text>
 
       </View>
       <View className="space-y-4">
@@ -42,9 +51,9 @@ export default function chooseRole() {
           <Image source={require("../../../assets/search.png")} className="h-10 w-10" resizeMode="contain" />
           <View className="items-center mt-3">
             <Text className="text-lg font-bold text-gray-900">I need a service</Text>
-            <Text className="text-base text-gray-600">Find skilled professional for your needs</Text>
-            <Text className="mt-1 text-center text-sm text-gray-600">
-              Connect with plumbers, electricians, tutor, tech experts and more
+            <Text className="text-base text-gray-600">Find skilled professional for your needs.</Text>
+            <Text className="mt-1 text-center text-[11px] leading-4 text-gray-600">
+              Connect with plumbers, electricians, tutor, tech{"\u00A0"}experts{"\n"}and more.
             </Text>
           </View>
         </Pressable>
@@ -63,9 +72,9 @@ export default function chooseRole() {
           <Image source={require("../../../assets/tool.png")} className="h-10 w-10" resizeMode="contain" />
           <View className="items-center mt-3">
             <Text className="text-lg font-bold text-gray-900">I provide a service</Text>
-            <Text className="text-base text-gray-600">Grow your business and find new clients</Text>
-            <Text className="mt-1 text-center text-sm text-gray-600">
-              Showcase your skills and get hired for jobs in your area
+            <Text className="text-[12px] text-gray-600">Grow your business and find new clients.</Text>
+            <Text className="mt-1 text-center text-[11px] leading-4 text-gray-600" numberOfLines={1}>
+              Showcase your skills and get hired for jobs in your area.
             </Text>
           </View>
         </Pressable>

@@ -7,8 +7,17 @@ export default function ProviderTabsLayout() {
       screenOptions={{
         tabBarActiveTintColor: "#0F7A3A",
         tabBarInactiveTintColor: "#9CA3AF",
-        tabBarStyle: { backgroundColor: "#F6F7F3", borderTopColor: "#E6E6E6" },
-        tabBarLabelStyle: { fontSize: 10, marginTop: -2 },
+        tabBarShowLabel: true,
+        tabBarStyle: {
+          backgroundColor: "#F6F7F3",
+          borderTopColor: "#E6E6E6",
+          height: 72,
+          paddingTop: 6,
+          paddingBottom: 8,
+        },
+        tabBarItemStyle: { paddingVertical: 2 },
+        tabBarLabelStyle: { fontSize: 10, marginTop: 2, paddingBottom: 1 },
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tabs.Screen

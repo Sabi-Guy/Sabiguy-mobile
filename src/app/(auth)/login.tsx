@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Alert, Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import BackButton from "@/components/BackButton";
@@ -8,6 +8,10 @@ import { apiRequest } from "@/lib/api";
 import { getProviderOnboardingRoute, parseKycLevel } from "@/lib/provider-kyc";
 import { useAuthStore } from "@/store/auth";
 import Toast from "react-native-toast-message";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+
+WebBrowser.maybeCompleteAuthSession();
 
 type LoginResponse = {
   token?: string;
@@ -54,10 +58,101 @@ export default function Login() {
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
   const setSession = useAuthStore((state) => state.setSession);
 
+  const [googleRequest, , promptGoogleAuth] = Google.useIdTokenAuthRequest({
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  });
+
   const canSubmit = useMemo(
     () => email.trim().length > 0 && password.length > 0 && !submitting,
     [email, password, submitting]
   );
+
+  const completeLogin = async (result: LoginResponse, fallbackEmail?: string) => {
+    const token =
+      result?.token ||
+      result?.accessToken ||
+      result?.data?.token ||
+      result?.data?.accessToken;
+    const refresh = result?.refreshToken || result?.data?.refreshToken;
+    const role = (result?.role || result?.data?.role || "").toLowerCase();
+    const resolvedEmail = result?.email || result?.data?.email || fallbackEmail;
+    const fullName =
+      result?.name ||
+      result?.data?.name ||
+      result?.user?.name ||
+      result?.data?.user?.name;
+    const parsedKycLevel = parseKycLevel(
+      result?.kycLevel ??
+        result?.kyc_level ??
+        result?.data?.kycLevel ??
+        result?.data?.kyc_level ??
+        result?.user?.kycLevel ??
+        result?.user?.kyc_level ??
+        result?.data?.user?.kycLevel ??
+        result?.data?.user?.kyc_level
+    );
+    let providerKycLevel = parsedKycLevel;
+
+    if (role === "provider" && resolvedEmail) {
+      try {
+        const kycResult = await apiRequest<ProviderKycResponse>("/provider/kyc-level", {
+          method: "POST",
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          json: { email: resolvedEmail },
+        });
+
+        const endpointKycLevel = parseKycLevel(
+          kycResult?.data?.kycLevel ??
+            kycResult?.data?.kyc_level ??
+            kycResult?.kycLevel ??
+            kycResult?.kyc_level
+        );
+        const endpointCompleted = kycResult?.data?.kycCompleted === true;
+
+        if (endpointKycLevel !== null) {
+          providerKycLevel = endpointKycLevel;
+        } else if (endpointCompleted) {
+          providerKycLevel = 7;
+        }
+      } catch (kycErr) {
+        console.warn("[auth login] provider kyc fetch failed:", kycErr);
+      }
+    }
+
+    const kycLevel = role === "provider" ? providerKycLevel : parsedKycLevel;
+
+    await setSession({
+      token,
+      refreshToken: refresh,
+      email: resolvedEmail,
+      name: fullName,
+      role,
+      kycLevel,
+    });
+
+    if (role === "provider") {
+      const pendingOnboardingRoute = getProviderOnboardingRoute(kycLevel);
+      router.replace(
+        pendingOnboardingRoute
+          ? "/(auth)/(serviceProvider)/continue-onboarding"
+          : "/(protected)/(serviceProvider)/(tabs)"
+      );
+      return;
+    }
+
+    if (role === "user" || role === "buyer") {
+      router.replace("/(protected)/(serviceUser)/(tabs)/(home)");
+      return;
+    }
+
+    Toast.show({
+      type: "error",
+      text1: "Unknown account type",
+      text2: "We could not determine where to send this account.",
+    });
+  };
 
   const handleLogin = async () => {
     const normalizedEmail = email.trim().toLowerCase();
@@ -77,99 +172,15 @@ export default function Login() {
         method: "POST",
         json: { email: normalizedEmail, password },
       });
-      console.log("[auth login] response:", result);
 
-      const token =
-        result?.token ||
-        result?.accessToken ||
-        result?.data?.token ||
-        result?.data?.accessToken;
-      const refresh = result?.refreshToken || result?.data?.refreshToken;
-      const role = (result?.role || result?.data?.role || "").toLowerCase();
-      const resolvedEmail = result?.email || result?.data?.email || normalizedEmail;
-      const fullName =
-        result?.name ||
-        result?.data?.name ||
-        result?.user?.name ||
-        result?.data?.user?.name;
-      const parsedKycLevel = parseKycLevel(
-        result?.kycLevel ??
-          result?.kyc_level ??
-          result?.data?.kycLevel ??
-          result?.data?.kyc_level ??
-          result?.user?.kycLevel ??
-          result?.user?.kyc_level ??
-          result?.data?.user?.kycLevel ??
-          result?.data?.user?.kyc_level
-      );
-      let providerKycLevel = parsedKycLevel;
-
-      if (role === "provider" && resolvedEmail) {
-        try {
-          const kycResult = await apiRequest<ProviderKycResponse>("/provider/kyc-level", {
-            method: "POST",
-            headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-            json: { email: resolvedEmail },
-          });
-
-          const endpointKycLevel = parseKycLevel(
-            kycResult?.data?.kycLevel ??
-              kycResult?.data?.kyc_level ??
-              kycResult?.kycLevel ??
-              kycResult?.kyc_level
-          );
-          const endpointCompleted = kycResult?.data?.kycCompleted === true;
-
-          if (endpointKycLevel !== null) {
-            providerKycLevel = endpointKycLevel;
-          } else if (endpointCompleted) {
-            providerKycLevel = 7;
-          }
-        } catch (kycErr) {
-          console.warn("[auth login] provider kyc fetch failed:", kycErr);
-        }
-      }
-
-      const kycLevel = role === "provider" ? providerKycLevel : parsedKycLevel;
-
-      await setSession({
-        token,
-        refreshToken: refresh,
-        email: resolvedEmail,
-        name: fullName,
-        role,
-        kycLevel,
-      });
+      await completeLogin(result, normalizedEmail);
 
       Toast.show({
         type: "success",
         text1: "Login successful",
-        text2: "Welcome back! 👋",
-      });
-
-      if (role === "provider") {
-        const pendingOnboardingRoute = getProviderOnboardingRoute(kycLevel);
-        router.replace(
-          pendingOnboardingRoute
-            ? "/(auth)/(serviceProvider)/continue-onboarding"
-            : "/(protected)/(serviceProvider)/(tabs)"
-        );
-        return;
-      }
-
-      if (role === "user" || role === "buyer") {
-        router.replace("/(protected)/(serviceUser)/(tabs)/(home)");
-        return;
-      }
-
-      console.warn("[login] unknown role:", role, result);
-      Toast.show({
-        type: "error",
-        text1: "Unknown account type",
-        text2: "We could not determine where to send this account.",
+        text2: "Welcome back!",
       });
     } catch (err) {
-      console.error("[auth login] error:", err);
       Toast.show({
         type: "error",
         text1: "Login failed",
@@ -177,6 +188,52 @@ export default function Login() {
       });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    if (!googleRequest) {
+      Toast.show({
+        type: "error",
+        text1: "Google Sign-In unavailable",
+        text2: "Please try again in a few seconds.",
+      });
+      return;
+    }
+
+    try {
+      setGoogleSubmitting(true);
+      const authResult = await promptGoogleAuth();
+
+      if (authResult.type !== "success") {
+        return;
+      }
+
+      const idToken = authResult.params?.id_token;
+      if (!idToken) {
+        throw new Error("Google id token was not returned.");
+      }
+
+      const result = await apiRequest<LoginResponse>("/auth/google-login", {
+        method: "POST",
+        json: { idToken },
+      });
+
+      await completeLogin(result);
+
+      Toast.show({
+        type: "success",
+        text1: "Google login successful",
+        text2: "Welcome back!",
+      });
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Google login failed",
+        text2: err instanceof Error ? err.message : "Unable to login with Google.",
+      });
+    } finally {
+      setGoogleSubmitting(false);
     }
   };
 
@@ -251,26 +308,7 @@ export default function Login() {
         }`}
         style={{ backgroundColor: "#231F200D" }}
         disabled={googleSubmitting}
-        onPress={() => {
-          const hasClientId =
-            !!process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ||
-            !!process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
-            !!process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
-
-          if (!hasClientId) {
-            Alert.alert(
-              "Google Sign-In not configured",
-              "Ask your admin for Google OAuth client IDs, then we'll enable this."
-            );
-            return;
-          }
-
-          setGoogleSubmitting(true);
-          setTimeout(() => {
-            setGoogleSubmitting(false);
-            Alert.alert("Google Sign-In", "OAuth will be enabled once client IDs are added.");
-          }, 800);
-        }}
+        onPress={handleGoogleLogin}
       >
         <Image
           source={require("../../../assets/google.png")}
@@ -291,3 +329,5 @@ export default function Login() {
     </ScrollView>
   );
 }
+
+

@@ -6,10 +6,9 @@ import {
   FlatList,
   TouchableOpacity,
   ImageBackground,
+  Pressable,
 } from "react-native";
 import React, { useMemo, useState } from "react";
-import bell from "../../../../../../assets/bell.png";
-import location from "../../../../../../assets/location.png";
 import bgimage from "../../../../../../assets/bgimage.png";
 import SearchBar from "../../../../../components/SearchBar";
 import { useAuthStore } from "@/store/auth";
@@ -21,7 +20,7 @@ import truck from "../../../../../../assets/truck.png";
 import creative from "../../../../../../assets/creative.png";
 import worker from "../../../../../../assets/worker.png";
 import freelance from "../../../../../../assets/freelance.png";
-import Entypo from "@expo/vector-icons/Entypo";
+import { Ionicons } from "@expo/vector-icons";
 
 import PopularCard from "../../../../../components/Cards/popularCard";
 import ServicesCard from "@/components/Cards/servicesCard";
@@ -117,25 +116,31 @@ export default function Home() {
           className="bg-[#2E7D52] px-5 pt-12 pb-6"
         >
           {/* top */}
-          <View className="flex-row items-start justify-between">
-            <View className="flex-1 pr-4">
-              <Text className="text-white text-lg font-semibold">
-                Hello, {firstName} 👋
-              </Text>
-              <View className="mt-2 flex-row items-center gap-2 py-1 rounded-full self-start">
-                <Entypo name="location-pin" size={20} color="white" />
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push("/(protected)/(serviceUser)/location")
-                  }
-                >
-                  <Text className="text-white text-sm">Add your location</Text>
-                </TouchableOpacity>
+          <View className="relative flex-row items-start justify-between">
+            <View className="flex-1 pr-28">
+              <View className="flex-row items-center">
+                <Text className="text-white text-lg font-semibold">
+                  Hello, {firstName}
+                </Text>
+                <Text className="ml-1 text-lg">👋</Text>
               </View>
+              <Text className="mt-2 text-[12px] font-bold text-white" numberOfLines={1}>
+                What do you need today?
+              </Text>
             </View>
 
-            <View className="h-10 w-10 rounded-full items-center justify-center">
-              <Image source={bell} className="h-5 w-5" />
+            <View className="absolute right-0 top-0">
+              <Pressable
+                className="h-10 w-10 items-center justify-center"
+                onPress={() =>
+                  router.push("/(protected)/(serviceUser)/notifications")
+                }
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Open notifications"
+              >
+                <Ionicons name="notifications-outline" size={23} color="#FFFFFF" />
+              </Pressable>
             </View>
           </View>
 
@@ -279,3 +284,6 @@ export default function Home() {
     </ScrollView>
   );
 }
+
+
+

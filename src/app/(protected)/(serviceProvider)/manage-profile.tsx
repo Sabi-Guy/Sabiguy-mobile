@@ -5,8 +5,6 @@ import { Image, Pressable, ScrollView, Text, TextInput, View } from "react-nativ
 import { toDisplayName } from "@/lib/display-name";
 import { useAuthStore } from "@/store/auth";
 
-const chips = ["5km", "10km", "15km", "20km", "Custom"] as const;
-
 export default function ManageProfileScreen() {
   const router = useRouter();
   const name = useAuthStore((state) => state.name);
@@ -44,7 +42,12 @@ export default function ManageProfileScreen() {
         <View className="mt-3 gap-2.5">
           <Field label="Full Name" value={displayName} />
           <Field label="Phone number" value="+234 812 909 3873" keyboardType="phone-pad" />
-          <Field label="Email Address" value={email ?? "philcrook00@gmail.com"} keyboardType="email-address" />
+          <Field
+            label="Email Address"
+            value={email ?? "philcrook00@gmail.com"}
+            keyboardType="email-address"
+            editable={false}
+          />
           <Field label="Gender" value="Male" />
           <Field label="Address" value="123, Palm Avenue" />
 
@@ -64,44 +67,6 @@ export default function ManageProfileScreen() {
             styleClassName="h-[72px] pt-2"
           />
         </View>
-
-        <View className="mt-3">
-          <Text className="mb-1.5 text-[10px] font-medium text-[#8A8F99]">Work coverage radius</Text>
-          <View className="flex-row items-center gap-1.5">
-            {chips.map((chip, index) => {
-              const selected = index === 0;
-              return (
-                <View
-                  key={chip}
-                  className={`rounded-full px-2.5 py-1 ${selected ? "bg-[#0F7A3A]" : "bg-[#EEF0EC]"}`}
-                >
-                  <Text className={`text-[9px] font-semibold ${selected ? "text-white" : "text-[#69707A]"}`}>{chip}</Text>
-                </View>
-              );
-            })}
-          </View>
-
-          <View className="mt-2">
-            <View className="h-1 w-full rounded-full bg-[#E7E9E3]">
-              <View className="h-1 rounded-full bg-[#0F7A3A]" style={{ width: "8%" }} />
-            </View>
-            <View className="mt-1 flex-row justify-between">
-              <Text className="text-[8px] text-[#9CA3AF]">1km</Text>
-              <Text className="text-[8px] text-[#0F7A3A]">3km</Text>
-              <Text className="text-[8px] text-[#9CA3AF]">50km</Text>
-            </View>
-          </View>
-
-          <View className="mt-2 flex-row items-start">
-            <View className="mt-[2px] h-3 w-3 rounded-[3px] border border-[#C6CBD1] bg-white" />
-            <View className="ml-2 flex-1">
-              <Text className="text-[10px] text-[#69707A]">Allow bookings outside my coverage area</Text>
-              <Text className="mt-0.5 text-[8.5px] text-[#A0A5AE]">
-                You will receive requests from clients beyond your preferred radius.
-              </Text>
-            </View>
-          </View>
-        </View>
       </ScrollView>
     </View>
   );
@@ -113,12 +78,14 @@ function Field({
   keyboardType,
   multiline,
   styleClassName,
+  editable = true,
 }: {
   label: string;
   value: string;
   keyboardType?: "default" | "email-address" | "phone-pad";
   multiline?: boolean;
   styleClassName?: string;
+  editable?: boolean;
 }) {
   return (
     <View>
@@ -126,6 +93,7 @@ function Field({
       <TextInput
         defaultValue={value}
         keyboardType={keyboardType ?? "default"}
+        editable={editable}
         multiline={multiline}
         textAlignVertical={multiline ? "top" : "center"}
         className={`h-10 rounded-md border border-[#E7E8EA] bg-[#F5F5F5] px-3 text-[12px] text-[#4A505A] ${styleClassName ?? ""}`}
