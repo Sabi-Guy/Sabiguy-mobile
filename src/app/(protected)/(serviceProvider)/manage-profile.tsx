@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
+import * as ImagePicker from "expo-image-picker";
 import { Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { toDisplayName } from "@/lib/display-name";
@@ -8,8 +9,10 @@ import {
   getCachedProviderProfile,
   setCachedProviderProfile,
   updateProviderProfile,
+  updateProviderProfilePicture,
 } from "@/lib/provider-profile";
 import { useAuthStore } from "@/store/auth";
+import { uploadFile } from "@/lib/upload";
 
 export default function ManageProfileScreen() {
   const router = useRouter();
@@ -20,8 +23,10 @@ export default function ManageProfileScreen() {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [profilePicture, setProfilePicture] = useState("");
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [updatingPhoto, setUpdatingPhoto] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -35,6 +40,7 @@ export default function ManageProfileScreen() {
         setAddress(result?.address?.trim() ?? "");
         setCity(result?.city?.trim() ?? "");
         setPhoneNumber(result?.phoneNumber?.trim() ?? "");
+        setProfilePicture(result?.profilePicture?.trim() ?? "");
       } catch (err) {
         if (!active) return;
         Toast.show({
@@ -81,6 +87,7 @@ export default function ManageProfileScreen() {
         city: result?.data?.city ?? normalizedCity,
         address: result?.data?.address ?? normalizedAddress,
         phoneNumber: result?.data?.phoneNumber ?? phoneNumber,
+        profilePicture,
       });
 
       Toast.show({
@@ -97,6 +104,65 @@ export default function ManageProfileScreen() {
       });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleProfilePictureUpdate = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Toast.show({
+        type: "error",
+        text1: "Permission required",
+        text2: "Please allow access to your photos.",
+      });
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.9,
+      allowsEditing: true,
+    });
+
+    if (result.canceled) return;
+    const asset = result.assets?.[0];
+    if (!asset?.uri) return;
+
+    try {
+      setUpdatingPhoto(true);
+      const uploadResponse = await uploadFile("profile_pictures", {
+        uri: asset.uri,
+        name: asset.fileName ?? "profile-photo",
+        mimeType: asset.mimeType,
+      });
+
+      const uploadedUrl = uploadResponse?.file?.url;
+      if (!uploadedUrl) {
+        throw new Error("Image upload failed. Please try again.");
+      }
+
+      const profilePicResponse = await updateProviderProfilePicture(uploadedUrl);
+      const resolvedProfilePicture = profilePicResponse?.profilePicture ?? uploadedUrl;
+
+      const cachedProfile = await getCachedProviderProfile();
+      await setCachedProviderProfile({
+        ...(cachedProfile ?? {}),
+        profilePicture: resolvedProfilePicture,
+      });
+      setProfilePicture(resolvedProfilePicture);
+
+      Toast.show({
+        type: "success",
+        text1: "Profile photo updated",
+      });
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Photo update failed",
+        text2: err instanceof Error ? err.message : "Please try again.",
+      });
+    } finally {
+      setUpdatingPhoto(false);
     }
   };
 
@@ -121,13 +187,30 @@ export default function ManageProfileScreen() {
         contentContainerStyle={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: 32 }}
       >
         <View className="items-center">
-          <View className="relative">
-            <Image source={require("../../../../assets/avatar.png")} className="h-16 w-16 rounded-full" resizeMode="cover" />
+          <Pressable
+            className="items-center"
+            onPress={handleProfilePictureUpdate}
+            disabled={updatingPhoto}
+            hitSlop={12}
+          >
+            <View className="relative">
+            <Image
+              source={
+                profilePicture
+                  ? { uri: profilePicture }
+                  : require("../../../../assets/avatar.png")
+              }
+              className="h-16 w-16 rounded-full"
+              resizeMode="cover"
+            />
             <View className="absolute -bottom-0.5 -right-1 h-5 w-5 items-center justify-center rounded-full bg-[#27AE60]">
               <Ionicons name="camera-outline" size={10} color="#FFFFFF" />
             </View>
-          </View>
-          <Text className="mt-2 text-[12px] font-semibold text-[#0F7A3A]">Set new photo</Text>
+            </View>
+            <Text className="mt-2 text-[12px] font-semibold text-[#0F7A3A]">
+              {updatingPhoto ? "Updating photo..." : "Set new photo"}
+            </Text>
+          </Pressable>
         </View>
 
         <View className="mt-3 gap-2.5">

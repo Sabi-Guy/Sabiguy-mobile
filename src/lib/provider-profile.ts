@@ -6,12 +6,19 @@ export type ProviderProfileData = {
   city?: string | null;
   address?: string | null;
   phoneNumber?: string | null;
+  profilePicture?: string | null;
 };
 
 export type ProviderProfileResponse = {
   success?: boolean;
   message?: string;
   data?: ProviderProfileData | null;
+};
+
+type ProviderProfilePictureResponse = {
+  success?: boolean;
+  message?: string;
+  profilePicture?: string;
 };
 
 const PROVIDER_PROFILE_CACHE_KEY = "provider_profile_cache";
@@ -24,6 +31,13 @@ export async function updateProviderProfile(payload: {
   return apiRequest<ProviderProfileResponse>("/provider", {
     method: "POST",
     json: payload,
+  });
+}
+
+export async function updateProviderProfilePicture(imageUrl: string) {
+  return apiRequest<ProviderProfilePictureResponse>("/provider/profile-pic", {
+    method: "PUT",
+    json: { imageUrl },
   });
 }
 
