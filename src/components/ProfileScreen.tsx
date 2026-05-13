@@ -1,10 +1,12 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { useIsFocused } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet from "@/components/bottomSheet";
 import { useAuthStore } from "@/store/auth";
 import { toDisplayName } from "@/lib/display-name";
+import { getCachedProviderProfile } from "@/lib/provider-profile";
 
 type MenuItem = {
   label: string;
@@ -72,11 +74,13 @@ function MenuSection({
 
 function ProviderProfileView({
   displayName,
+  profilePicture,
   onPressLogout,
   onAccountItemPress,
   onMoreItemPress,
 }: {
   displayName: string;
+  profilePicture?: string;
   onPressLogout: () => void;
   onAccountItemPress: (item: MenuItem) => void;
   onMoreItemPress: (item: MenuItem) => void;
@@ -89,7 +93,11 @@ function ProviderProfileView({
       contentInsetAdjustmentBehavior="never"
     >
       <View className="items-center rounded-xl border border-[#F0F0F0] bg-[#F9F9F9] px-4 py-4">
-        <Image source={require("../../assets/avatar.png")} className="h-14 w-14 rounded-full" resizeMode="cover" />
+        <Image
+          source={profilePicture ? { uri: profilePicture } : require("../../assets/avatar.png")}
+          className="h-14 w-14 rounded-full"
+          resizeMode="cover"
+        />
         <Text className="mt-2 text-[13px] font-semibold text-[#231F20]">{displayName}</Text>
         <View className="mt-1 flex-row items-center">
           <Ionicons name="star" size={12} color="#80C342" />
@@ -163,7 +171,9 @@ function UserProfileView({
 
 export default function ProfileScreen({ variant }: ProfileScreenProps) {
   const router = useRouter();
+  const isFocused = useIsFocused();
   const [showLogoutSheet, setShowLogoutSheet] = useState(false);
+  const [providerProfilePicture, setProviderProfilePicture] = useState("");
   const clearSession = useAuthStore((state) => state.clearSession);
   const name = useAuthStore((state) => state.name);
   const email = useAuthStore((state) => state.email);
@@ -173,6 +183,23 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
     return toDisplayName(email);
   }, [name, email]);
   const accountItems = accountItemsByVariant[variant];
+
+  useEffect(() => {
+    if (variant !== "provider" || !isFocused) return;
+    let active = true;
+
+    const loadProviderProfile = async () => {
+      const profile = await getCachedProviderProfile();
+      if (!active) return;
+      setProviderProfilePicture(profile?.profilePicture?.trim() ?? "");
+    };
+
+    loadProviderProfile();
+
+    return () => {
+      active = false;
+    };
+  }, [variant, isFocused]);
 
   const handleLogout = async () => {
     setShowLogoutSheet(false);
@@ -258,6 +285,7 @@ export default function ProfileScreen({ variant }: ProfileScreenProps) {
       {variant === "provider" ? (
         <ProviderProfileView
           displayName={displayName}
+          profilePicture={providerProfilePicture}
           onPressLogout={() => setShowLogoutSheet(true)}
           onAccountItemPress={handleAccountItemPress}
           onMoreItemPress={handleMoreItemPress}

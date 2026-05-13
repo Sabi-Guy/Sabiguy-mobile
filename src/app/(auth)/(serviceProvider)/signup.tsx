@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { apiRequest } from "@/lib/api";
 import { setUserEmail } from "@/lib/token";
+import { setCachedProviderProfile } from "@/lib/provider-profile";
 import Toast from "react-native-toast-message";
 import { getProviderOnboardingRoute, parseKycLevel } from "@/lib/provider-kyc";
 import { useAuthStore } from "@/store/auth";
@@ -106,6 +107,10 @@ export default function ServiceProviderSignup() {
         json: { name, email, password, phoneNumber, address: address.trim() },
       });
       await setUserEmail(email.trim());
+      await setCachedProviderProfile({
+        phoneNumber: phoneNumber.trim(),
+        address: address.trim(),
+      });
 
       Toast.show({
         type: "success",
