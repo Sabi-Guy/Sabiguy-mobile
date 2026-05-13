@@ -202,6 +202,7 @@ export default function AccountType() {
       await apiRequest("/provider/business", {
         method: "POST",
         json: {
+          accountType: "Business",
           BusinessName: businessName.trim(),
           regNumber: regNumber.trim(),
           BusinessAddress: businessAddress.trim(),
