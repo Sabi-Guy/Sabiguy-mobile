@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthStore } from "@/store/auth";
 import { toFirstName } from "@/lib/display-name";
 import { getUnreadNotificationsCount } from "@/lib/notifications";
+import { getProviderDashboardStats, ProviderDashboardStats } from "@/lib/provider-dashboard";
 
 const statCards = [
   {
@@ -174,10 +175,26 @@ export default function ServiceProviderHome() {
   const [sectionLayouts, setSectionLayouts] = useState<Partial<Record<TourTarget, { y: number; height: number }>>>({});
   const [scrollY, setScrollY] = useState(0);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
+  const [dashboardStats, setDashboardStats] = useState<ProviderDashboardStats | null>(null);
   const email = useAuthStore((state) => state.email);
   const name = useAuthStore((state) => state.name);
   const displayName = useMemo(() => toFirstName(name, email), [name, email]);
-  const availableBalanceText = "₦94,000";
+  const formatNaira = (value?: number) =>
+    new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+      maximumFractionDigits: 0,
+    }).format(value ?? 0);
+  const availableBalanceText = formatNaira(dashboardStats?.availableEarnings);
+  const displayedStatCards = useMemo(
+    () => [
+      { ...statCards[0], value: String(dashboardStats?.totalBookings ?? 0) },
+      { ...statCards[1], value: String(dashboardStats?.completedBookings ?? 0) },
+      { ...statCards[2], value: String(dashboardStats?.activeBookings ?? 0) },
+      { ...statCards[3], value: String(dashboardStats?.pendingEarnings ?? 0) },
+    ],
+    [dashboardStats]
+  );
 
   const openStatusModal = () => {
     const targetState = !isOnline;
@@ -305,6 +322,26 @@ export default function ServiceProviderHome() {
   }, []);
 
   useEffect(() => {
+    let active = true;
+    const loadDashboardStats = async () => {
+      try {
+        const result = await getProviderDashboardStats();
+        if (!active) return;
+        setDashboardStats(result?.data ?? null);
+      } catch {
+        if (!active) return;
+        setDashboardStats(null);
+      }
+    };
+
+    loadDashboardStats();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!currentTourStep || currentTourStep.target === "none") return;
 
     const targetLayout = sectionLayouts[currentTourStep.target];
@@ -380,7 +417,7 @@ export default function ServiceProviderHome() {
         </View>
 
         <View className="mt-5 flex-row flex-wrap gap-3" style={getHighlightStyle("stats")} onLayout={setSectionLayout("stats")}>
-          {statCards.map((card) => (
+          {displayedStatCards.map((card) => (
             <View key={card.label} className="w-[48%] rounded-2xl p-3" style={{ backgroundColor: card.bg }}>
               <View className="flex-row items-center gap-2">
                 <View className="h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: card.iconBg }}>
@@ -426,11 +463,11 @@ export default function ServiceProviderHome() {
           <View className="mt-2.5 flex-row">
             <View className="flex-1">
               <Text className="text-[12px] text-[#344054]">Total Withdrawn</Text>
-              <Text className="mt-0.5 text-[18px] font-semibold text-[#0F1C3F]">₦0.00</Text>
+              <Text className="mt-0.5 text-[18px] font-semibold text-[#0F1C3F]">{formatNaira(dashboardStats?.totalWithdrawals)}</Text>
             </View>
             <View className="flex-1">
               <Text className="text-[12px] text-[#344054]">Pending Earnings</Text>
-              <Text className="mt-0.5 text-[18px] font-semibold text-[#0F1C3F]">₦25,000</Text>
+              <Text className="mt-0.5 text-[18px] font-semibold text-[#0F1C3F]">{formatNaira(dashboardStats?.pendingEarnings)}</Text>
             </View>
           </View>
         </View>
@@ -674,4 +711,6 @@ export default function ServiceProviderHome() {
     </SafeAreaView>
   );
 }
+
+
 
