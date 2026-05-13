@@ -6,6 +6,7 @@ import { Dimensions, Image, LayoutChangeEvent, Pressable, ScrollView, Switch, Te
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthStore } from "@/store/auth";
 import { toFirstName } from "@/lib/display-name";
+import { getUnreadNotificationsCount } from "@/lib/notifications";
 
 const statCards = [
   {
@@ -172,6 +173,7 @@ export default function ServiceProviderHome() {
   const [showTourDoneModal, setShowTourDoneModal] = useState(false);
   const [sectionLayouts, setSectionLayouts] = useState<Partial<Record<TourTarget, { y: number; height: number }>>>({});
   const [scrollY, setScrollY] = useState(0);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const email = useAuthStore((state) => state.email);
   const name = useAuthStore((state) => state.name);
   const displayName = useMemo(() => toFirstName(name, email), [name, email]);
@@ -283,6 +285,26 @@ export default function ServiceProviderHome() {
   };
 
   useEffect(() => {
+    let active = true;
+    const loadUnreadCount = async () => {
+      try {
+        const result = await getUnreadNotificationsCount();
+        if (!active) return;
+        setUnreadNotificationsCount(result?.data?.unreadCount ?? 0);
+      } catch {
+        if (!active) return;
+        setUnreadNotificationsCount(0);
+      }
+    };
+
+    loadUnreadCount();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!currentTourStep || currentTourStep.target === "none") return;
 
     const targetLayout = sectionLayouts[currentTourStep.target];
@@ -346,6 +368,13 @@ export default function ServiceProviderHome() {
               accessibilityLabel="Open notifications"
             >
               <Ionicons name="notifications-outline" size={23} color="#4B5563" />
+              {unreadNotificationsCount > 0 ? (
+                <View className="absolute right-1 top-1 min-w-[16px] rounded-full bg-[#E53935] px-1">
+                  <Text className="text-center text-[9px] font-semibold text-white">
+                    {unreadNotificationsCount > 99 ? "99+" : unreadNotificationsCount}
+                  </Text>
+                </View>
+              ) : null}
             </Pressable>
           </View>
         </View>
