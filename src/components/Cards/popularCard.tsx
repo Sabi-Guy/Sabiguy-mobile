@@ -46,13 +46,19 @@ export default function popularCard({
   return (
     <>
     <TouchableOpacity onPress={handlePress} className="relative items-center">
-      <View className="h-12 w-12 bg-gray-300 rounded-full items-center justify-center">
+      <View
+        className={`h-12 w-12 rounded-full items-center justify-center ${
+          comingSoon ? "bg-gray-200" : "bg-[#EAF6EF]"
+        }`}
+      >
         <Image source={image} className="h-6 w-6 rounded-full" />
       </View>
 
       {comingSoon && (
-        <View className="absolute -top-2 -right-2 rounded-full bg-[#ffffff7c] px-2.5 py-0.5">
-          <Text className="text-[9px] font-semibold text-[#C2410C]">Coming soon</Text>
+        <View className="absolute -top-2 -right-2 rounded-full bg-[#FFE6CC] px-2.5 py-0.5">
+          <Text className="text-[9px] font-semibold text-[#C2410C]">
+            Coming soon
+          </Text>
         </View>
       )}
 
