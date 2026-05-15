@@ -29,6 +29,7 @@ import CategoryDetailSheet from "@/components/CategoryDetailSheet";
 import { getCachedUserLocation } from "@/lib/getLocation";
 import { useFocusEffect } from "@react-navigation/native";
 
+
 type CategoryItem = {
   key: string;
   spacer?: boolean;
@@ -283,6 +284,7 @@ export default function Home() {
           />
         </View>
       </View>
+      
 
       <CategoryDetailSheet
         isVisible={isSheetVisible}
