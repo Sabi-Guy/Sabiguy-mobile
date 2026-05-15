@@ -8,7 +8,7 @@ import {
   ImageBackground,
   Pressable,
 } from "react-native";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import bgimage from "../../../../../../assets/bgimage.png";
 import SearchBar from "../../../../../components/SearchBar";
 import { useAuthStore } from "@/store/auth";
@@ -26,6 +26,8 @@ import PopularCard from "../../../../../components/Cards/popularCard";
 import ServicesCard from "@/components/Cards/servicesCard";
 import { useRouter } from "expo-router";
 import CategoryDetailSheet from "@/components/CategoryDetailSheet";
+import { getCachedUserLocation } from "@/lib/getLocation";
+import { useFocusEffect } from "@react-navigation/native";
 
 type CategoryItem = {
   key: string;
@@ -99,6 +101,26 @@ export default function Home() {
     (typeof categories)[number] | null
   >(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
+  const [userLocation, setUserLocation] = useState<string | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+
+      const loadLocation = async () => {
+        const cached = await getCachedUserLocation();
+        if (active) {
+          setUserLocation(cached?.address?.trim() || null);
+        }
+      };
+
+      loadLocation();
+
+      return () => {
+        active = false;
+      };
+    }, []),
+  );
 
   const handleOpenCategory = (category: (typeof categories)[number]) => {
     setSelectedCategory(category);
@@ -150,9 +172,11 @@ export default function Home() {
                 </Text>
                 <Text className="ml-1 text-lg">👋</Text>
               </View>
-              <Text className="mt-2 text-[12px] font-bold text-white" numberOfLines={1}>
-                What do you need today?
-              </Text>
+              <Pressable onPress={()=> router.push("/(protected)/(serviceUser)/location")}>
+                <Text className="mt-2 text-[12px] font-bold text-white" numberOfLines={1}>
+                  {userLocation ?? "Where do you live?"}
+                </Text>
+              </Pressable>
             </View>
 
             <View className="absolute right-0 top-0">
