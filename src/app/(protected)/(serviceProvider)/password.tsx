@@ -2,6 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Pressable, Text, TextInput, View } from "react-native";
+import Toast from "react-native-toast-message";
+import { changePassword } from "@/lib/auth";
+import { useAuthStore } from "@/store/auth";
 
 type PasswordFieldProps = {
   label: string;
@@ -33,7 +36,7 @@ function PasswordField({ label, value, onChangeText, placeholder, defaultHidden 
           style={{ height: 40, lineHeight: 14, paddingVertical: 0, transform: [{ translateY: -1 }] }}
         />
         <Pressable onPress={() => setHidden((prev) => !prev)}>
-          <Ionicons name={hidden ? "eye-off-outline" : "eye-outline"} size={14} color="#8F96A0" />
+          <Ionicons name={hidden ? "eye-off" : "eye"} size={20} color="#2E7B4F" />
         </Pressable>
       </View>
       {!!error && <Text className="mt-1 text-[10px] text-[#D94848]">{error}</Text>}
@@ -43,17 +46,15 @@ function PasswordField({ label, value, onChangeText, placeholder, defaultHidden 
 
 export default function PasswordScreen() {
   const router = useRouter();
-  const [currentPassword, setCurrentPassword] = useState("Phil Crook");
+  const token = useAuthStore((state) => state.token);
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<{ current?: string; new?: string; confirm?: string }>({});
-  const [submitError, setSubmitError] = useState("");
-  const [submitSuccess, setSubmitSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const clearFeedback = () => {
-    setSubmitError("");
-    setSubmitSuccess("");
+    setErrors({});
   };
 
   const validate = () => {
@@ -84,17 +85,46 @@ export default function PasswordScreen() {
   const handleResetPassword = async () => {
     clearFeedback();
     if (!validate()) {
-      setSubmitError("Please fix the highlighted fields.");
+      Toast.show({
+        type: "error",
+        text1: "Invalid details",
+        text2: "Please fix the highlighted fields.",
+      });
       return;
     }
 
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    setIsSubmitting(false);
+    if (!token) {
+      Toast.show({
+        type: "error",
+        text1: "Please log in again",
+      });
+      return;
+    }
 
-    setSubmitSuccess("Password reset successfully.");
-    setNewPassword("");
-    setConfirmPassword("");
+    try {
+      setIsSubmitting(true);
+      await changePassword(
+        { oldPassword: currentPassword.trim(), newPassword: newPassword.trim() },
+        token
+      );
+
+      Toast.show({
+        type: "success",
+        text1: "Password updated",
+      });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setErrors({});
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Update failed",
+        text2: err instanceof Error ? err.message : "Change password failed",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -157,8 +187,6 @@ export default function PasswordScreen() {
           )}
         </Pressable>
 
-        {!!submitError && <Text className="text-[10px] text-[#D94848]">{submitError}</Text>}
-        {!!submitSuccess && <Text className="text-[10px] text-[#2E7B4F]">{submitSuccess}</Text>}
       </View>
     </View>
   );

@@ -25,15 +25,15 @@ const filterOptions = [
 ] as const;
 
 const transactions: TransactionItem[] = [
-  { id: "1", title: "Kitchen Renovation", date: "Oct 28, 2025", amount: "+₦64,000", note: "Platform fee: ₦6,400", status: "successful" },
-  { id: "2", title: "Withdrawal to Bank", date: "Nov 13, 2025", amount: "-₦50,000", note: "Completed", status: "failed" },
-  { id: "3", title: "Withdrawal to Bank", date: "Nov 13, 2025", amount: "-₦50,000", note: "Completed", status: "failed" },
-  { id: "4", title: "Withdrawal to Bank", date: "Nov 13, 2025", amount: "-₦50,000", note: "Completed", status: "failed" },
-  { id: "5", title: "Kitchen Renovation", date: "Oct 28, 2025", amount: "+₦64,000", note: "Platform fee: ₦6,400", status: "successful" },
-  { id: "6", title: "Tip from John Smith", date: "Oct 28, 2025", amount: "+₦2,000", note: "", status: "successful" },
-  { id: "7", title: "Tip from John Smith", date: "Oct 28, 2025", amount: "+₦4,000", note: "", status: "successful" },
-  { id: "8", title: "Withdrawal to Bank", date: "Nov 13, 2025", amount: "-₦50,000", note: "Completed", status: "failed" },
-  { id: "9", title: "Withdrawal to Bank", date: "Nov 13, 2025", amount: "-₦50,000", note: "Completed", status: "failed" },
+  { id: "1", title: "Kitchen Renovation", date: "Oct 28, 2025", amount: "+\u20A664,000", note: "Platform fee: \u20A66,400", status: "successful" },
+  { id: "2", title: "Withdrawal to Bank", date: "Nov 13, 2025", amount: "-\u20A650,000", note: "Completed", status: "failed" },
+  { id: "3", title: "Withdrawal to Bank", date: "Nov 13, 2025", amount: "-\u20A650,000", note: "Completed", status: "failed" },
+  { id: "4", title: "Withdrawal to Bank", date: "Nov 13, 2025", amount: "-\u20A650,000", note: "Completed", status: "failed" },
+  { id: "5", title: "Kitchen Renovation", date: "Oct 28, 2025", amount: "+\u20A664,000", note: "Platform fee: \u20A66,400", status: "successful" },
+  { id: "6", title: "Tip from John Smith", date: "Oct 28, 2025", amount: "+\u20A62,000", note: "", status: "successful" },
+  { id: "7", title: "Tip from John Smith", date: "Oct 28, 2025", amount: "+\u20A64,000", note: "", status: "successful" },
+  { id: "8", title: "Withdrawal to Bank", date: "Nov 13, 2025", amount: "-\u20A650,000", note: "Completed", status: "failed" },
+  { id: "9", title: "Withdrawal to Bank", date: "Nov 13, 2025", amount: "-\u20A650,000", note: "Completed", status: "failed" },
 ];
 
 const weekdayLabels = ["S", "M", "T", "W", "T", "F", "S"];
