@@ -8,7 +8,7 @@ import {
   ImageBackground,
   Pressable,
 } from "react-native";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import bgimage from "../../../../../../assets/bgimage.png";
 import SearchBar from "../../../../../components/SearchBar";
 import { useAuthStore } from "@/store/auth";
@@ -26,6 +26,19 @@ import PopularCard from "../../../../../components/Cards/popularCard";
 import ServicesCard from "@/components/Cards/servicesCard";
 import { useRouter } from "expo-router";
 import CategoryDetailSheet from "@/components/CategoryDetailSheet";
+import { getCachedUserLocation } from "@/lib/getLocation";
+import { useFocusEffect } from "@react-navigation/native";
+
+
+type CategoryItem = {
+  key: string;
+  spacer?: boolean;
+  image?: any;
+  text_one?: string;
+  text_two?: string;
+  onPress?: () => void;
+  comingSoon?: boolean;
+};
 
 export default function Home() {
   const router = useRouter();
@@ -89,6 +102,26 @@ export default function Home() {
     (typeof categories)[number] | null
   >(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
+  const [userLocation, setUserLocation] = useState<string | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+
+      const loadLocation = async () => {
+        const cached = await getCachedUserLocation();
+        if (active) {
+          setUserLocation(cached?.address?.trim() || null);
+        }
+      };
+
+      loadLocation();
+
+      return () => {
+        active = false;
+      };
+    }, []),
+  );
 
   const handleOpenCategory = (category: (typeof categories)[number]) => {
     setSelectedCategory(category);
@@ -106,6 +139,22 @@ export default function Home() {
       params: { category: selectedCategory?.id, item: item.id },
     });
   };
+
+  // 4-column grid data:
+  // Row 1: 4 real cards
+  // Row 2: 1 spacer + 3 real cards — spacer pushes them to center
+  const categoryGridData: CategoryItem[] = [
+    { key: "transport", image: truck,     text_one: "Transport",    text_two: "& Logistics", onPress: () => handleOpenCategory(categories[0]) },
+    { key: "emergency", image: siren,     text_one: "Emergency",    text_two: "",            comingSoon: true },
+    { key: "home",      image: tool,      text_one: "Home",         text_two: "& Repair",    comingSoon: true },
+    { key: "domestic",  image: family,    text_one: "Domestic",     text_two: "& Lifestyle", comingSoon: true },
+
+    { key: "freelance", image: freelance, text_one: "Freelance",    text_two: "Services",    comingSoon: true },
+    { key: "worker",    image: worker,    text_one: "Professional", text_two: "Services",    comingSoon: true },
+    { key: "creative",  image: creative,  text_one: "Creative",     text_two: "Services",    comingSoon: true },
+        { key: "spacer",    spacer: true },
+  ];
+
   return (
     <ScrollView>
       {/* top view */}
@@ -124,9 +173,11 @@ export default function Home() {
                 </Text>
                 <Text className="ml-1 text-lg">👋</Text>
               </View>
-              <Text className="mt-2 text-[12px] font-bold text-white" numberOfLines={1}>
-                What do you need today?
-              </Text>
+              <Pressable onPress={()=> router.push("/(protected)/(serviceUser)/location")}>
+                <Text className="mt-2 text-[12px] font-bold text-white" numberOfLines={1}>
+                  {userLocation ?? "Where do you live?"}
+                </Text>
+              </Pressable>
             </View>
 
             <View className="absolute right-0 top-0">
@@ -188,6 +239,7 @@ export default function Home() {
             />
           </ScrollView>
         </View>
+
         {/* categories */}
         <View className="mt-6">
           <View className="flex-row justify-between items-center mb-3">
@@ -207,73 +259,32 @@ export default function Home() {
             </TouchableOpacity>
           </View>
 
-          <View className="flex-row flex-wrap justify-between">
-            <View className="mb-4" style={{ width: "23%" }}>
-              <PopularCard
-                image={truck}
-                text_one="Transport"
-                text_two="& Logistics"
-                onPress={() => handleOpenCategory(categories[0])}
-              />
-            </View>
-            <View className="mb-4" style={{ width: "23%" }}>
-              <PopularCard
-                image={siren}
-                text_one="Emergency"
-                text_two=""
-                // onPress={() => handleOpenCategory(categories[1])}
-                comingSoon
-              />
-            </View>
-            <View className="mb-4" style={{ width: "23%" }}>
-              <PopularCard
-                image={tool}
-                text_one="Home"
-                text_two="& Repair"
-                // onPress={() => handleOpenCategory(categories[2])}
-                comingSoon
-              />
-            </View>
-            <View className="mb-4" style={{ width: "23%" }}>
-              <PopularCard
-                image={family}
-                text_one="Domestic "
-                text_two="& Lifestyle"
-                onPress={() => handleOpenCategory(categories[3])}
-                comingSoon
-              />
-            </View>
-            <View className="mb-4" style={{ width: "23%" }}>
-              <PopularCard
-                image={freelance}
-                text_one="Freelance"
-                text_two="Services"
-                onPress={() => handleOpenCategory(categories[3])}
-                comingSoon
-              />
-            </View>
-
-            <View className="mb-4" style={{ width: "23%" }}>
-              <PopularCard
-                image={worker}
-                text_one="Professional"
-                text_two="Services"
-                onPress={() => handleOpenCategory(categories[3])}
-                comingSoon
-              />
-            </View>
-            <View className="mb-4" style={{ width: "23%" }}>
-              <PopularCard
-                image={creative}
-                text_one="Creative"
-                text_two="Services"
-                onPress={() => handleOpenCategory(categories[3])}
-                comingSoon
-              />
-            </View>
-          </View>
+          <FlatList
+            data={categoryGridData}
+            keyExtractor={(item) => item.key}
+            numColumns={4}
+            scrollEnabled={false}
+            columnWrapperStyle={{ marginBottom: 16 }}
+            renderItem={({ item }) => {
+              if (item.spacer) {
+                return <View style={{ flex: 1 }} />;
+              }
+              return (
+                <View style={{ flex: 1, alignItems: "center", paddingTop: 8 }}>
+                  <PopularCard
+                    image={item.image}
+                    text_one={item.text_one!}
+                    text_two={item.text_two!}
+                    onPress={item.onPress}
+                    comingSoon={item.comingSoon}
+                  />
+                </View>
+              );
+            }}
+          />
         </View>
       </View>
+      
 
       <CategoryDetailSheet
         isVisible={isSheetVisible}
@@ -284,6 +295,3 @@ export default function Home() {
     </ScrollView>
   );
 }
-
-
-

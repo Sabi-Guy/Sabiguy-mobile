@@ -6,7 +6,6 @@ export default function HomeStack() {
 		<Stack initialRouteName="index">
 			<Stack.Screen name="index" options={{ headerShown: false }}/>
 			<Stack.Screen name="location" options={{ headerShown: false }}/>
-			<Stack.Screen name="search" options={{ headerShown: false }}/>
 			<Stack.Screen
 				name="categories"
 				options={{
