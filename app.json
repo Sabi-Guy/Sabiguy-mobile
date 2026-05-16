@@ -30,14 +30,14 @@
       "expo-router",
       "expo-secure-store",
       [
-  "expo-build-properties",
-  {
-    "android": {
-      "kotlinVersion": "2.1.20",
-      "kspVersion": "2.1.20-2.0.1"
-    }
-  }
-]
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.1.20",
+            "kspVersion": "2.1.20-2.0.1"
+          }
+        }
+      ]
     ],
     "web": {
       "favicon": "./assets/favicon.png"
@@ -49,9 +49,7 @@
       }
     },
     "owner": "misturadev",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/acc82682-5973-479c-a8a8-4a07c2a14a22"
     }
