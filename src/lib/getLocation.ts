@@ -42,7 +42,7 @@ const sendLocation = async (payload: LocationPayload) => {
 		throw new Error(`Failed to update location: ${response.status}`);
 	}
 
-	await setCachedUserLocation({ address: payload.address });
+	await setCachedUserLocation({ address: payload.address, latitude: payload.latitude, longitude: payload.longitude });
 
 	return response.json();
 };
@@ -84,12 +84,12 @@ export async function getCachedUserLocation() {
 	const raw = await AsyncStorage.getItem(USER_LOCATION_CACHE_KEY);
 	if (!raw) return null;
 	try {
-		return JSON.parse(raw) as { address?: string | null };
+		return JSON.parse(raw) as { address?: string | null; latitude?: number; longitude?: number };
 	} catch {
 		return null;
 	}
 }
 
-export async function setCachedUserLocation(payload: { address: string }) {
+export async function setCachedUserLocation(payload: { address: string; latitude?: number; longitude?: number }) {
 	await AsyncStorage.setItem(USER_LOCATION_CACHE_KEY, JSON.stringify(payload));
 }

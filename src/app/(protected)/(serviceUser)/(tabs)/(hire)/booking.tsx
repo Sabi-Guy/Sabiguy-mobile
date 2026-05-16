@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -12,6 +12,8 @@ import BottomSheet from "@/components/bottomSheet";
 import BookingOfferCard from "@/components/BookingOfferCard";
 import BackButton from "@/components/BackButton";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Maps from "@/components/Maps";
+import { getCachedUserLocation } from "@/lib/getLocation";
 
 export default function Booking() {
   const router = useRouter();
@@ -19,6 +21,25 @@ export default function Booking() {
   const [cancelStep, setCancelStep] = useState<"reasons" | "other">("reasons");
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
   const [otherReason, setOtherReason] = useState("");
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [offers, setOffers] = useState(() => [
+    {
+      id: "1",
+      carName: "Toyota Corolla",
+      price: "N5,000",
+      rating: "4.5",
+      reviews: "82",
+      distance: "2.3 miles",
+    },
+    {
+      id: "2",
+      carName: "Toyota Corolla",
+      price: "N5,000",
+      rating: "4.5",
+      reviews: "82",
+      distance: "2.3 miles",
+    },
+  ]);
 
   const reasons = useMemo(
     () => [
@@ -52,26 +73,69 @@ export default function Booking() {
     setOtherReason("");
   };
 
+  const handleDecline = (id: string) => {
+    setOffers((prev) => prev.filter((offer) => offer.id !== id));
+  };
+
+  // Load user location from cache when component mounts
+  useEffect(() => {
+    const loadUserLocation = async () => {
+      try {
+        const cachedLocation = await getCachedUserLocation();
+        if (cachedLocation?.address && cachedLocation.latitude && cachedLocation.longitude) {
+          setUserLocation({
+            latitude: cachedLocation.latitude,
+            longitude: cachedLocation.longitude,
+          });
+        }
+      } catch (error) {
+        console.error("Error loading user location:", error);
+      }
+    };
+    loadUserLocation();
+  }, []);
+
+  // Simulated driver locations (in real app, these would come from websocket/API)
+  const driverLocation = {
+    latitude: 6.4721,
+    longitude: 3.635,
+  };
+
+  // Use cached location or default to Lagos
+  const mapUserLocation = userLocation || { latitude: 6.4621, longitude: 3.632 };
+
   return (
     <View className="flex-1 bg-[#EAF6EF]">
-      <View className="flex-1 bg-[#D7F0DF]" />
+      <Maps
+        initialRegion={{
+          latitude: mapUserLocation.latitude,
+          longitude: mapUserLocation.longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        }}
+        userLocation={mapUserLocation}
+        driverLocation={driverLocation}
+        followMode="both"
+        autoFitPadding={{ top: 80, right: 24, bottom: 200, left: 24 }}
+        showAccuracyCircle={true}
+        accuracyRadiusMeters={60}
+        interactionEnabled={true}
+      />
       <View className="absolute left-4 right-4 top-12 gap-4">
-        <BookingOfferCard
-          carName="Toyota Corolla"
-          price="N5,000"
-          rating="4.5"
-          reviews="82"
-          distance="2.3 miles"
-          onAccept={() => router.push("/(protected)/(serviceUser)/(tabs)/(hire)/1")}
-        />
-        <BookingOfferCard
-          carName="Toyota Corolla"
-          price="N5,000"
-          rating="4.5"
-          reviews="82"
-          distance="2.3 miles"
-          onAccept={() => router.push("/(protected)/(serviceUser)/(tabs)/(hire)/2")}
-        />
+        {offers.map((offer) => (
+          <BookingOfferCard
+            key={offer.id}
+            carName={offer.carName}
+            price={offer.price}
+            rating={offer.rating}
+            reviews={offer.reviews}
+            distance={offer.distance}
+            onDecline={() => handleDecline(offer.id)}
+            onAccept={() =>
+              router.push(`/(protected)/(serviceUser)/(tabs)/(hire)/${offer.id}`)
+            }
+          />
+        ))}
       </View>
       <BottomSheet
         isVisible={true}

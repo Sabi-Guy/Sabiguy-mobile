@@ -1,5 +1,5 @@
-import React from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import React, { useRef, useState } from "react";
+import { Animated, Dimensions, Image, Pressable, Text, View } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 
 export type BookingOfferCardProps = {
@@ -23,8 +23,29 @@ export default function BookingOfferCard({
   onDecline,
   onAccept,
 }: BookingOfferCardProps) {
+  const translateX = useRef(new Animated.Value(0)).current;
+  const [isDismissing, setIsDismissing] = useState(false);
+  const cardWidth = Dimensions.get("window").width + 40;
+
+  const handleDecline = () => {
+    if (isDismissing) {
+      return;
+    }
+    setIsDismissing(true);
+    Animated.timing(translateX, {
+      toValue: cardWidth,
+      duration: 260,
+      useNativeDriver: true,
+    }).start(() => {
+      onDecline?.();
+    });
+  };
+
   return (
-    <View className="rounded-xl border border-[#E5E7EB] bg-white p-3 shadow-sm">
+    <Animated.View
+      className="rounded-xl border border-[#E5E7EB] bg-white p-3 shadow-sm"
+      style={{ transform: [{ translateX }] }}
+    >
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
           <View className="h-12 w-12 items-center justify-center rounded-full bg-[#F3F4F6]">
@@ -34,6 +55,7 @@ export default function BookingOfferCard({
               <MaterialIcons name="directions-car" size={20} color="#9CA3AF" />
             )}
           </View>
+          
           <View>
             <Text className="text-sm font-semibold text-[#111827]">{carName}</Text>
             <View className="flex-row items-center gap-1">
@@ -51,19 +73,21 @@ export default function BookingOfferCard({
 
       <View className="mt-3 flex-row gap-2">
         <Pressable
-          onPress={onDecline}
+          onPress={handleDecline}
+          disabled={isDismissing}
           className="h-9 flex-1 items-center justify-center rounded-md border border-[#E5E7EB]"
         >
           <Text className="text-xs font-semibold text-[#6B7280]">Decline</Text>
         </Pressable>
         <Pressable
           onPress={onAccept}
+          disabled={isDismissing}
           className="h-9 flex-1 flex-row items-center justify-center gap-2 rounded-md bg-[#0F7A3A]"
         >
           <MaterialIcons name="check" size={14} color="#FFFFFF" />
           <Text className="text-xs font-semibold text-white">Accept</Text>
         </Pressable>
       </View>
-    </View>
+    </Animated.View>
   );
 }
